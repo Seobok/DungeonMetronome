@@ -5,5 +5,5 @@ using UnityEngine;
 public abstract class Weapon : Item
 {
     public abstract List<Tile> GetRange(Tile curTile);
-    public int damage = 0;
+    [HideInInspector] public int damage = 0;
 }

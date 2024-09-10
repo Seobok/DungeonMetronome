@@ -2,17 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class Item : Unit
 {
-    // Start is called before the first frame update
-    void Start()
+    [HideInInspector]public SpriteRenderer spriteRenderer;
+
+    private void OnEnable()
     {
-        
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ToggleSprite()
     {
-        
+        if(spriteRenderer.enabled)
+        {
+            spriteRenderer.enabled = false;
+        }
+        else
+        {
+            spriteRenderer.enabled = true;
+        }
     }
 }

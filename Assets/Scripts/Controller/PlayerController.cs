@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Player))]
@@ -60,30 +61,62 @@ public class PlayerController : MonoBehaviour
             //Tile에 Object가 있으면 상호작용
             if(floorTile.onTileUnit != null)
             {
-                
+                Item item = floorTile.onTileUnit.GetComponent<Item>();
+                if(item != null)
+                {
+                    Move(input);
+
+                    Weapon weapon = item.GetComponent<Weapon>();
+                    if(weapon != null)
+                    {
+                        if (player.weapon != null)
+                        {
+                            //가지고 있던 무기 버리기
+                            player.weapon.ToggleSprite();
+                            player.weapon.transform.SetParent(null);
+                            player.weapon.transform.position = player.GetTile().transform.position;
+                            player.weapon.GetTile().onTileUnit = player.weapon;
+                            player.weapon = null;
+                        }
+                        //줍기
+                        player.weapon = weapon;
+                        player.weapon.ToggleSprite();
+                        player.weapon.transform.SetParent(player.transform);
+                    }
+                }
             }
             else
             {
                 //이동
-                player.GetTile().onTileUnit = null;
-
-                transform.Translate(input.x, input.y, 0);
-                player.RoomX = nextXPos;
-                player.RoomY = nextYPos;
-
-                if (input.x > 0)
-                {
-                    spriteRenderer.flipX = false;
-                }
-                else if (input.x < 0)
-                {
-                    spriteRenderer.flipX = true;
-                }
-
-                player.GetTile().onTileUnit = player;
+                Move(input);
             }
         }
         
+    }
+
+    public void Pickup()
+    {
+
+    }
+
+    public void Move(Vector2 input)
+    {
+        player.GetTile().onTileUnit = null;
+
+        transform.Translate(input.x, input.y, 0);
+        player.RoomX = player.RoomX + (int)input.x;
+        player.RoomY = player.RoomY + (int)input.y;
+
+        if (input.x > 0)
+        {
+            spriteRenderer.flipX = false;
+        }
+        else if (input.x < 0)
+        {
+            spriteRenderer.flipX = true;
+        }
+
+        player.GetTile().onTileUnit = player;
     }
 
     /// <summary>
@@ -100,5 +133,8 @@ public class PlayerController : MonoBehaviour
 
         //훈련용 봇 위치 조정
         GameManager.instance.GenerateTrainingBot();
+
+        //연습용 단검 위치 조정
+        GameManager.instance.GenerateDagger();
     }
 }

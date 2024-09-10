@@ -13,6 +13,7 @@ public enum E_Dir
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private TrainingBot trainingBot_prefab;
+    [SerializeField] private Dagger dagger_prefab;
 
     public static GameManager instance;
 
@@ -43,5 +44,18 @@ public class GameManager : MonoBehaviour
         trainingBot.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         trainingBot.transform.position = trainingBot.GetTile().transform.position;
         trainingBot.GetTile().onTileUnit = trainingBot;
+    }
+
+    public void GenerateDagger()
+    {
+        if (dagger_prefab == null)
+            return;
+
+        var dagger = Instantiate(dagger_prefab);
+        dagger.RoomX = (Room.X / 2) - 1;
+        dagger.RoomY = (Room.Y / 2);
+        dagger.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
+        dagger.transform.position = dagger.GetTile().transform.position;
+        dagger.GetTile().onTileUnit = dagger;
     }
 }
