@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private TrainingBot trainingBot_prefab;
     [SerializeField] private Dagger dagger_prefab;
+    [SerializeField] private Spear spear_prefab;
 
     public static GameManager instance;
 
@@ -31,6 +32,13 @@ public class GameManager : MonoBehaviour
         //DEBUG ¸Ê »ý¼º
         DungeonManager.instance.GenerateRoom();
         //GenerateTrainingBot();
+    }
+
+    public void GenerateDebugDummy()
+    {
+        GenerateTrainingBot();
+        GenerateDagger();
+        GenerateSpear();
     }
 
     public void GenerateTrainingBot()
@@ -57,5 +65,18 @@ public class GameManager : MonoBehaviour
         dagger.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         dagger.transform.position = dagger.GetTile().transform.position;
         dagger.GetTile().onTileUnit = dagger;
+    }
+
+    public void GenerateSpear()
+    {
+        if (spear_prefab == null)
+            return;
+
+        var spear = Instantiate(spear_prefab);
+        spear.RoomX = (Room.X / 2);
+        spear.RoomY = (Room.Y / 2) - 1;
+        spear.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
+        spear.transform.position= spear.GetTile().transform.position;
+        spear.GetTile().onTileUnit = spear;
     }
 }

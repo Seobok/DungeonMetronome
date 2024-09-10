@@ -435,6 +435,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trainingBot_prefab: {fileID: 4109499598170269676, guid: c8d985740606fbb4297f772248931fbb, type: 3}
   dagger_prefab: {fileID: 8065164578269962059, guid: 840ee2516ae31574d862b8199320219e, type: 3}
+  spear_prefab: {fileID: -3757993082484870546, guid: b4af8e8377db109459e916098316a12a, type: 3}
 --- !u!4 &1159375815
 Transform:
   m_ObjectHideFlags: 0

@@ -4,6 +4,6 @@ using UnityEngine;
 
 public abstract class Weapon : Item
 {
-    public abstract List<Tile> GetRange(Tile curTile);
+    public abstract List<Tile> GetRange(Tile curTile, Vector2 dir);
     [HideInInspector] public int damage = 0;
 }

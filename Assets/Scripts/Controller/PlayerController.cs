@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
         //공격가능한 대상이 있는지 확인
         if(player.weapon != null)
         {
-            var rangeTiles = player.weapon.GetRange(nextTile);
+            var rangeTiles = player.weapon.GetRange(nextTile, input);
             List<IDamagable> damagableList = new List<IDamagable>();
             foreach (var rangeTile in rangeTiles)
             {
@@ -75,13 +75,17 @@ public class PlayerController : MonoBehaviour
                             player.weapon.ToggleSprite();
                             player.weapon.transform.SetParent(null);
                             player.weapon.transform.position = player.GetTile().transform.position;
-                            player.weapon.GetTile().onTileUnit = player.weapon;
+                            player.GetTile().onTileUnit = player.weapon;
                             player.weapon = null;
                         }
                         //줍기
                         player.weapon = weapon;
                         player.weapon.ToggleSprite();
                         player.weapon.transform.SetParent(player.transform);
+                        if(player.weapon == player.GetTile().onTileUnit)
+                        {
+                            player.GetTile().onTileUnit = null;
+                        }
                     }
                 }
             }
@@ -101,7 +105,7 @@ public class PlayerController : MonoBehaviour
 
     public void Move(Vector2 input)
     {
-        player.GetTile().onTileUnit = null;
+        player.GetTile().bisOnTilePlayer = false;
 
         transform.Translate(input.x, input.y, 0);
         player.RoomX = player.RoomX + (int)input.x;
@@ -116,7 +120,7 @@ public class PlayerController : MonoBehaviour
             spriteRenderer.flipX = true;
         }
 
-        player.GetTile().onTileUnit = player;
+        player.GetTile().bisOnTilePlayer = true;
     }
 
     /// <summary>
@@ -129,12 +133,9 @@ public class PlayerController : MonoBehaviour
         player.RoomY = Room.Y / 2;
         player.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         transform.position = player.GetTile().transform.position;
-        player.GetTile().onTileUnit = player;
+        player.GetTile().bisOnTilePlayer = true;
 
-        //훈련용 봇 위치 조정
-        GameManager.instance.GenerateTrainingBot();
-
-        //연습용 단검 위치 조정
-        GameManager.instance.GenerateDagger();
+        //디버깅용 더미 생성
+        GameManager.instance.GenerateDebugDummy();
     }
 }
