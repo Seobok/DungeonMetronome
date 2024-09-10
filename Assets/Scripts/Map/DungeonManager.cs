@@ -37,8 +37,7 @@ public class DungeonManager : MonoBehaviour
 
     private void Start()
     {
-        //DEBUG용 던전 생성
-        GenerateRoom();
+        
     }
 
     public void GenerateRoom()

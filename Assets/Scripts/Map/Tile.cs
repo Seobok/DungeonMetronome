@@ -9,6 +9,7 @@ public class Tile : MonoBehaviour
     [SerializeField] protected Sprite sprite;
     protected SpriteRenderer spriteRenderer;
     public Room parentRoom;
+    [HideInInspector] public Unit onTileUnit; 
 
     private void Awake()
     {

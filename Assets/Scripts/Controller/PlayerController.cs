@@ -4,109 +4,101 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
     private float playerSpeed = 1.0f;
     private SpriteRenderer spriteRenderer;
-
-    #region PlayerPosition
-    /// <summary>
-    /// Player의 위치 정보에 관한 변수
-    /// 현재 위치하는 방의 정보
-    /// 방에서의 X, Y 좌표
-    /// </summary>
-    private Room curRoom;
-    private int room_x, room_y;
-    public int Room_X
-    {
-        get { return room_x; }
-        set 
-        {
-            if(value >= Room.X)
-            {
-                value -= Room.X;
-                curRoom = curRoom.adjacentRoom[1];
-                Debug.Log(curRoom.name);
-            }
-            if(value < 0)
-            {
-                value += Room.X;
-                curRoom = curRoom.adjacentRoom[3];
-                Debug.Log(curRoom.name);
-            }
-            room_x = value; 
-        }
-    }
-    public int Room_Y
-    {
-        get { return room_y; }
-        set
-        {
-            if (value >= Room.Y)
-            {
-                value -= Room.Y;
-                curRoom = curRoom.adjacentRoom[0];
-                Debug.Log(curRoom.name);
-            }
-            if (value < 0)
-            {
-                value += Room.Y;
-                curRoom = curRoom.adjacentRoom[2];
-                Debug.Log(curRoom.name);
-            }
-            room_y = value;
-        }
-    }
-    #endregion
+    private Player player;
     
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        player = GetComponent<Player>();
     }
 
     private void OnMove(InputValue inputValue)
     {
         //임시 코드
-        if(curRoom == null)
+        if(player.curRoom == null)
         {
             InitPlayerPosition();
             return;
         }
         var input = inputValue.Get<Vector2>();
 
-        int nextXPos = Room_X + (int)input.x;
-        int nextYPos = Room_Y + (int)input.y;
+        int nextXPos = player.RoomX + (int)input.x;
+        int nextYPos = player.RoomY + (int)input.y;
+        var nextTile = player.curRoom.GetTile(nextXPos, nextYPos);
 
-        var floorTile = curRoom.GetTile(nextXPos, nextYPos).GetComponent<Floor>();
-
+        //공격가능한 대상이 있는지 확인
+        if(player.weapon != null)
+        {
+            var rangeTiles = player.weapon.GetRange(nextTile);
+            List<IDamagable> damagableList = new List<IDamagable>();
+            foreach (var rangeTile in rangeTiles)
+            {
+                if (rangeTile.onTileUnit != null)
+                {
+                    var damagableTile = rangeTile.onTileUnit.GetComponent<IDamagable>();
+                    if (damagableTile != null)
+                    {
+                        damagableList.Add(damagableTile);
+                    }
+                }
+            }
+            if (damagableList.Count > 0)
+            {
+                player.Attack(damagableList);
+                return;
+            }
+        }
+        
+        var floorTile = nextTile.GetComponent<Floor>();
         if (floorTile)
         {
             //Tile에 Object가 있으면 상호작용
+            if(floorTile.onTileUnit != null)
             {
-
+                
             }
-            //이동
-            transform.Translate(input.x, input.y, 0);
-            Room_X = nextXPos;
-            Room_Y = nextYPos;
+            else
+            {
+                //이동
+                player.GetTile().onTileUnit = null;
 
-            if (input.x > 0)
-            {
-                spriteRenderer.flipX = false;
-            }
-            else if (input.x < 0)
-            {
-                spriteRenderer.flipX = true;
+                transform.Translate(input.x, input.y, 0);
+                player.RoomX = nextXPos;
+                player.RoomY = nextYPos;
+
+                if (input.x > 0)
+                {
+                    spriteRenderer.flipX = false;
+                }
+                else if (input.x < 0)
+                {
+                    spriteRenderer.flipX = true;
+                }
+
+                player.GetTile().onTileUnit = player;
             }
         }
         
     }
 
+    /// <summary>
+    /// DEBUG 필요한 선 처리 작업
+    /// </summary>
     public void InitPlayerPosition()
     {
-        Room_X = Room.X / 2;
-        Room_Y = Room.Y / 2;
-        curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
-        transform.position = curRoom.GetTile(Room_X, Room_Y).transform.position;
+        //플레이어 위치 조정
+        player.RoomX = Room.X / 2;
+        player.RoomY = Room.Y / 2;
+        player.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
+        transform.position = player.GetTile().transform.position;
+        player.GetTile().onTileUnit = player;
+
+        //훈련용 봇 위치 조정
+        GameManager.instance.GenerateTrainingBot();
     }
 }
