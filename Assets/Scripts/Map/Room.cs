@@ -116,6 +116,20 @@ public class Room : MonoBehaviour
 
         return tiles[x, y];
     }
+    public List<Tile> GetTiles(Tile curTile, List<Vector2> range)
+    {
+        List<Tile> Range = new List<Tile>();
+        foreach(Vector2 pos in range)
+        {
+            var tile = GetTile(curTile.x + (int)pos.x, curTile.y + (int)pos.y);
+            if(tile != null)
+            {
+                Range.Add(tile);
+            }
+        }
+
+        return Range;
+    }
 
     public void SetWall()
     {

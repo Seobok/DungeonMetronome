@@ -108,11 +108,6 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    public void Pickup()
-    {
-
-    }
-
     public void Move(Vector2 input)
     {
         player.GetTile().bisOnTilePlayer = false;
