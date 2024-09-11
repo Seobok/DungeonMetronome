@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
 
     public void Start()
     {
-        //DEBUG ¸Ê »ı¼º
+        //DEBUG ë§µ ìƒì„±
         DungeonManager.instance.GenerateRoom();
         //GenerateTrainingBot();
     }
