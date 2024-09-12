@@ -12,6 +12,13 @@ public class Tile : MonoBehaviour
     public Unit onTileUnit;
     public bool bisOnTilePlayer = false;
 
+    #region AStar
+    public int fCost { get { return gCost + hCost; } }
+    public int gCost;
+    public int hCost;
+    public Tile astarParent;
+    #endregion
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();

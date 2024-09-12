@@ -133,5 +133,7 @@ public class PlayerController : MonoBehaviour
 
         //디버깅용 더미 생성
         GameManager.instance.GenerateDebugDummy();
+
+        AStarTest.instance.TestPathFinding();
     }
 }
