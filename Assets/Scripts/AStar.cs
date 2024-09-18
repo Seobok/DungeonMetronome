@@ -37,14 +37,12 @@ public class AStar : MonoBehaviour
 
                 openSet.Remove(currentTile);
                 closedSet.Add(currentTile);
-                Debug.Log($"currentTile : {currentTile.x} {currentTile.y}");
 
                 if (currentTile == end)
                 {
                     if(!pathSuccess)
                     {
                         pathSuccess = true;
-                        Debug.Log($"Complete PathFind");
                     }
                     break;
                 }
@@ -54,13 +52,12 @@ public class AStar : MonoBehaviour
                     var neighbor = currentTile.parentRoom.GetTile(currentTile.x + dirX[i], currentTile.y + dirY[i]);
                     if (neighbor == null || neighbor.onTileUnit != null) continue;
                     if (closedSet.Contains(neighbor)) continue;
+                    if (neighbor.GetComponent<Floor>() == null) continue;
                     if(openSet.Contains(neighbor) && currentTile.gCost + GetDistance(currentTile, neighbor) >= neighbor.gCost) continue;
 
                     neighbor.gCost = currentTile.gCost + GetDistance(currentTile, neighbor);
                     neighbor.hCost = GetDistance(neighbor, end);
                     neighbor.astarParent = currentTile;
-
-                    Debug.Log($"AddOpenSet : {neighbor.x} {neighbor.y}");
 
                     if (!openSet.Contains(neighbor))
                         openSet.Add(neighbor);

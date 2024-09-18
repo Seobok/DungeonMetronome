@@ -20,7 +20,11 @@ public class AStarTest : MonoBehaviour
     {
         if(start != null && end != null)
         {
-            AStar.FindPath(start, end);
+            var list = AStar.FindPath(start, end);
+            foreach(var item in list)
+            {
+                item.GetComponent<SpriteRenderer>().color = Color.red;
+            }
         }
     }
 }
