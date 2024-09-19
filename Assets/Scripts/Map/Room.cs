@@ -22,22 +22,25 @@ public class Room : MonoBehaviour
 
     [HideInInspector] public Room[] adjacentRoom;
 
+    /// <summary>
+    /// 방의 타일과 인접 방 초기화
+    /// 생성해야할 방 관련 프리팹 예외처리
+    /// 타일 생성
+    /// 이미지 생성 (벽 이미지문제로 인한 후 처리)
+    /// </summary>
     private void Awake()
     {
         tiles = new Tile[X, Y];
         adjacentRoom = new Room[4] { null, null, null, null };
-    }
 
-    private void Start()
-    {
-        if(floor_prefab == null || wall_prefab == null || room_prefab == null)
+        if (floor_prefab == null || wall_prefab == null || room_prefab == null)
         {
             Debug.LogError("Tile Prefab Is Empty");
         }
-        
-        for(int i=0; i< tiles.GetLength(0); i++)
+
+        for (int i = 0; i < tiles.GetLength(0); i++)
         {
-            for(int j = 0;j< tiles.GetLength(1); j++)
+            for (int j = 0; j < tiles.GetLength(1); j++)
             {
                 //문 위치
                 if ((i == 0 && j == Y / 2) || (i == X - 1 && j == Y / 2) || (i == X / 2 && j == 0) || (i == X / 2 && j == Y - 1))
@@ -66,19 +69,30 @@ public class Room : MonoBehaviour
         }
 
         //타일이 전체 생성된 이후 sprite 다시 생성
-        for(int i=0;i< tiles.GetLength(0);i++)
+        for (int i = 0; i < tiles.GetLength(0); i++)
         {
-            for(int j=0;j<tiles.GetLength(1);j++)
+            for (int j = 0; j < tiles.GetLength(1); j++)
             {
-                if (tiles[i,j] == null)
+                if (tiles[i, j] == null)
                     continue;
                 Wall go = tiles[i, j].GetComponent<Wall>();
-                if(go != null)
+                if (go != null)
                     go.SetWallSprite();
             }
         }
     }
 
+    private void Start()
+    {
+        
+    }
+
+    /// <summary>
+    /// 해당 방에서의 x, y 값을 기점으로 해당 타일을 가져오는 함수
+    /// </summary>
+    /// <param name="x">해당 방의 x값</param>
+    /// <param name="y">해당 방의 y값</param>
+    /// <returns>방의 범위를 넘어가도 타일을 가져오며, 방이없을 경우 null을 리턴</returns>
     public Tile GetTile(int x, int y)
     {
         if(x < 0)
@@ -116,6 +130,13 @@ public class Room : MonoBehaviour
 
         return tiles[x, y];
     }
+
+    /// <summary>
+    /// 타일과 그 타일로부터의 위치정보를 기반으로 해당 범위의 타일을 가져오는 함수
+    /// </summary>
+    /// <param name="curTile">범위의 기점이 되는 타일</param>
+    /// <param name="range">curTile로 부터 받아와야할 범위를 나타낼 타일 리스트</param>
+    /// <returns>curTile로부터 range만큼 떨어진 타일의 List</returns>
     public List<Tile> GetTiles(Tile curTile, List<Vector2> range)
     {
         List<Tile> Range = new List<Tile>();
@@ -131,6 +152,9 @@ public class Room : MonoBehaviour
         return Range;
     }
 
+    /// <summary>
+    /// 해당 방의 상하좌우를 확인하며 인접한 방이 있다면 문, 아니라면 벽으로 바닥을 생성하는 함수
+    /// </summary>
     public void SetWall()
     {
         for (int i = 0; i < 4; i++)

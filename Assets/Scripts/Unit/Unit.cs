@@ -21,13 +21,11 @@ public class Unit : MonoBehaviour
             {
                 value -= Room.X;
                 curRoom = curRoom.adjacentRoom[1];
-                Debug.Log(curRoom.name);
             }
             if (value < 0)
             {
                 value += Room.X;
                 curRoom = curRoom.adjacentRoom[3];
-                Debug.Log(curRoom.name);
             }
             _roomX = value;
         }
@@ -41,13 +39,11 @@ public class Unit : MonoBehaviour
             {
                 value -= Room.Y;
                 curRoom = curRoom.adjacentRoom[0];
-                Debug.Log(curRoom.name);
             }
             if (value < 0)
             {
                 value += Room.Y;
                 curRoom = curRoom.adjacentRoom[2];
-                Debug.Log(curRoom.name);
             }
             _roomY = value;
         }

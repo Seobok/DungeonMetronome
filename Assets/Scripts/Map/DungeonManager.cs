@@ -10,6 +10,7 @@ public class DungeonManager : MonoBehaviour
     /// </summary>
     [SerializeField] private Room room_prefabs;
     [HideInInspector] public Room[,] rooms;
+    [HideInInspector] public List<Room> roomList;
     int[] dirX = new int[4] { 0, 1, 0, -1 };
     int[] dirY = new int[4] { 1, 0, -1, 0 };
 
@@ -50,7 +51,7 @@ public class DungeonManager : MonoBehaviour
         startRoom.name = "startRoom";
 
         //랜덤으로 방을 선택할 수 있도록 보유중인 방을 리스트에 임시 저장
-        List<Room> roomList = new List<Room>();
+        roomList = new List<Room>();
         roomList.Add(startRoom);
 
         //특정 갯수의 방이 만들어 질때까지 반복

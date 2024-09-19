@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,12 +21,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnMove(InputValue inputValue)
     {
-        //임시 코드
-        if(player.curRoom == null)
-        {
-            InitPlayerPosition();
-            return;
-        }
         var input = inputValue.Get<Vector2>() * playerSpeed;
 
         //입력받은 방향으로 정면 전환
@@ -61,6 +56,7 @@ public class PlayerController : MonoBehaviour
             if (damagableList.Count > 0)
             {
                 player.Attack(damagableList);
+                GameManager.instance.ExecuteTurn();
                 return;
             }
         }
@@ -105,16 +101,19 @@ public class PlayerController : MonoBehaviour
                 Move(input);
             }
         }
-        
+
+        GameManager.instance.ExecuteTurn();
+        return;
     }
 
     public void Move(Vector2 input)
     {
         player.GetTile().bisOnTilePlayer = false;
 
-        transform.Translate(input.x, input.y, 0);
         player.RoomX = player.RoomX + (int)(input.x);
         player.RoomY = player.RoomY + (int)(input.y);
+
+        transform.DOMove(player.GetTile().transform.position, 0.2f).SetEase(Ease.InOutCubic);
 
         player.GetTile().bisOnTilePlayer = true;
     }
@@ -130,10 +129,5 @@ public class PlayerController : MonoBehaviour
         player.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         transform.position = player.GetTile().transform.position;
         player.GetTile().bisOnTilePlayer = true;
-
-        //디버깅용 더미 생성
-        GameManager.instance.GenerateDebugDummy();
-
-        AStarTest.instance.TestPathFinding();
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AStar : MonoBehaviour
+public class AStar
 {
     static int[] dirX = new int[4] { 0, 1, 0, -1 };
     static int[] dirY = new int[4] { 1, 0, -1, 0 };
@@ -63,11 +63,16 @@ public class AStar : MonoBehaviour
                         openSet.Add(neighbor);
                 }
             }
+
+            if(!pathSuccess)
+            {
+                return null;
+            }
+            
             Tile pathTile = end;
             while(pathTile != start)
             {
                 path.Push(pathTile);
-                Debug.Log(pathTile.x + " " + pathTile.y);
                 pathTile = pathTile.astarParent;
             }
         }

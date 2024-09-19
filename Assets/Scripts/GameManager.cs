@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Schema;
 using UnityEngine;
 
 public enum E_Dir
@@ -15,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TrainingBot trainingBot_prefab;
     [SerializeField] private Dagger dagger_prefab;
     [SerializeField] private Spear spear_prefab;
+    [SerializeField] private Bat bat_prefab;
+    [SerializeField] private Player player_prefab;
 
     public static GameManager instance;
 
@@ -31,7 +34,14 @@ public class GameManager : MonoBehaviour
     {
         //DEBUG 맵 생성
         DungeonManager.instance.GenerateRoom();
-        //GenerateTrainingBot();
+
+        //플레이어 생성
+        var playerGo = Instantiate(player_prefab);
+        playerGo.GetComponent<PlayerController>().InitPlayerPosition();
+        GetComponent<CameraManager>().player = playerGo;
+
+        //테스트용 더미 생성
+        GenerateDebugDummy();
     }
 
     public void GenerateDebugDummy()
@@ -39,6 +49,7 @@ public class GameManager : MonoBehaviour
         GenerateTrainingBot();
         GenerateDagger();
         GenerateSpear();
+        GenerateBat();
     }
 
     public void GenerateTrainingBot()
@@ -78,5 +89,32 @@ public class GameManager : MonoBehaviour
         spear.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         spear.transform.position= spear.GetTile().transform.position;
         spear.GetTile().onTileUnit = spear;
+    }
+
+    public void GenerateBat()
+    {
+        if (bat_prefab == null) return;
+
+        var bat = Instantiate(bat_prefab);
+        bat.curRoom = DungeonManager.instance.roomList[1];
+        bat.RoomX = (Room.X / 2);
+        bat.RoomY = (Room.Y / 2);
+
+        bat.transform.position = bat.GetTile().transform.position;
+        bat.GetTile().onTileUnit = bat;
+
+        MonsterSpawner.instance.monstersList.Add(bat);
+    }
+
+    /// <summary>
+    /// 메인 로직이 실행되는 함수
+    /// 해당 함수가 끝나면 다시 플레이어 턴
+    /// </summary>
+    public void ExecuteTurn()
+    {
+        foreach(var monster in MonsterSpawner.instance.monstersList)
+        {
+            monster.Act();
+        }
     }
 }
