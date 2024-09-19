@@ -61,6 +61,9 @@ public class Enemy : Unit
 
             //만약 공격했다면 이동하지 않음
             bIsReadyMove = false;
+
+            //공격을 한 직후에는 다음 행동 준비를 할 수 없음
+            return;
         }
         if(bIsReadyMove)
         {
@@ -189,24 +192,22 @@ public class Enemy : Unit
     {
         moveTile = GetTile();
 
+        int[] dx = { 0, 1, 0, -1 };
+        int[] dy = { 1, 0, -1, 0 };
+
         while (moveCnt > 0)
         {
-            var dir = Random.Range(0, 4);
-            switch(dir)
+            var nextTileList = new List<Tile>();
+            for(int i=0;i<4;i++)
             {
-                case (int)E_Dir.ED_Up:
-                    moveTile = moveTile.parentRoom.GetTile(moveTile.x, moveTile.y + 1);
-                    break;
-                case (int)E_Dir.ED_Right:
-                    moveTile = moveTile.parentRoom.GetTile(moveTile.x + 1, moveTile.y);
-                    break;
-                case (int) E_Dir.ED_Down:
-                    moveTile = moveTile.parentRoom.GetTile(moveTile.x, moveTile.y - 1);
-                    break;
-                case (int)E_Dir.ED_Left:
-                    moveTile = moveTile.parentRoom.GetTile(moveTile.x - 1, moveTile.y);
-                    break;
+                var nextTile = moveTile.parentRoom.GetTile(moveTile.x + dx[i], moveTile.y + dy[i]);
+                if (nextTile == null)
+                    continue;
+
+                if(nextTile.onTileUnit == null)
+                    nextTileList.Add(nextTile);
             }
+            moveTile = nextTileList[Random.Range(0, nextTileList.Count)];
             moveCnt--;
         }
         moveCnt = moveMaxCnt;
@@ -230,6 +231,7 @@ public class Enemy : Unit
         //TODO : MOVE
         GetTile().onTileUnit = null;
 
+        curRoom = moveTile.parentRoom;
         RoomX = moveTile.x;
         RoomY = moveTile.y;
         gameObject.transform.DOMove(moveTile.transform.position, 0.2f).SetEase(Ease.InOutCubic);

@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +6,9 @@ public class Unit : MonoBehaviour
 {
     #region Position Field
     /// <summary>
-    /// UnitÀÇ À§Ä¡ Á¤º¸¿¡ °üÇÑ º¯¼ö
-    /// ÇöÀç À§Ä¡ÇÏ´Â ¹æÀÇ Á¤º¸
-    /// ¹æ¿¡¼­ÀÇ X, Y ÁÂÇ¥
+    /// Unitì˜ ìœ„ì¹˜ ì •ë³´ì— ê´€í•œ ë³€ìˆ˜
+    /// í˜„ì¬ ìœ„ì¹˜í•˜ëŠ” ë°©ì˜ ì •ë³´
+    /// ë°©ì—ì„œì˜ X, Y ì¢Œí‘œ
     /// </summary>
     [HideInInspector] public Room curRoom;
     private int _roomX, _roomY;

@@ -16,9 +16,9 @@ public class Room : MonoBehaviour
     [HideInInspector] public int roomX;
     [HideInInspector] public int roomY;
 
-    [SerializeField] private Floor floor_prefab;
-    [SerializeField] private Wall wall_prefab;
     [SerializeField] private Room room_prefab;
+    [SerializeField] private Tile tile_prefab;
+    [SerializeField] private Block block_prefab;
 
     [HideInInspector] public Room[] adjacentRoom;
 
@@ -33,7 +33,7 @@ public class Room : MonoBehaviour
         tiles = new Tile[X, Y];
         adjacentRoom = new Room[4] { null, null, null, null };
 
-        if (floor_prefab == null || wall_prefab == null || room_prefab == null)
+        if (room_prefab == null)
         {
             Debug.LogError("Tile Prefab Is Empty");
         }
@@ -42,20 +42,8 @@ public class Room : MonoBehaviour
         {
             for (int j = 0; j < tiles.GetLength(1); j++)
             {
-                //문 위치
-                if ((i == 0 && j == Y / 2) || (i == X - 1 && j == Y / 2) || (i == X / 2 && j == 0) || (i == X / 2 && j == Y - 1))
-                    continue;
-
                 Tile go;
-                //벽 위치
-                if (i == 0 || j == 0 || i == X - 1 || j == Y - 1)
-                {
-                    go = Instantiate(wall_prefab);
-                }
-                else
-                {
-                    go = Instantiate(floor_prefab);
-                }
+                go = Instantiate(tile_prefab);
 
                 go.transform.SetParent(transform);
                 go.parentRoom = this;
@@ -67,24 +55,30 @@ public class Room : MonoBehaviour
                 go.transform.localPosition = new Vector3(i, j, 0);
             }
         }
-
-        //타일이 전체 생성된 이후 sprite 다시 생성
-        for (int i = 0; i < tiles.GetLength(0); i++)
-        {
-            for (int j = 0; j < tiles.GetLength(1); j++)
-            {
-                if (tiles[i, j] == null)
-                    continue;
-                Wall go = tiles[i, j].GetComponent<Wall>();
-                if (go != null)
-                    go.SetWallSprite();
-            }
-        }
     }
 
-    private void Start()
+    public void SetBlock()
     {
-        
+        int[] dx = { 0, 1, 0, -1 };
+        int[] dy = { 1, 0, -1, 0 };
+        foreach(var tile in tiles)
+        {
+            for(int i=0;i<4;i++)
+            {
+                if (GetTile(tile.x + dx[i], tile.y + dy[i]) == null)
+                {
+                    var blockGo = Instantiate(block_prefab);
+                    blockGo.curRoom = this;
+                    blockGo.RoomX = tile.x;
+                    blockGo.RoomY = tile.y;
+                    
+                    blockGo.transform.position = blockGo.GetTile().transform.position;
+                    blockGo.GetTile().onTileUnit = blockGo;
+
+                    break;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -150,54 +144,5 @@ public class Room : MonoBehaviour
         }
 
         return Range;
-    }
-
-    /// <summary>
-    /// 해당 방의 상하좌우를 확인하며 인접한 방이 있다면 문, 아니라면 벽으로 바닥을 생성하는 함수
-    /// </summary>
-    public void SetWall()
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            int door_x = 0, door_y = 0;
-            switch (i)
-            {
-                case (int)E_Dir.ED_Up:
-                    door_x = X / 2;
-                    door_y = Y - 1;
-                    break;
-                case (int)E_Dir.ED_Right:
-                    door_x = X - 1;
-                    door_y = Y / 2;
-                    break;
-                case (int)E_Dir.ED_Down:
-                    door_x = X / 2;
-                    door_y = 0;
-                    break;
-                case (int)E_Dir.ED_Left:
-                    door_x = 0;
-                    door_y = Y / 2;
-                    break;
-            }
-            Tile tile;
-            if (adjacentRoom[i] == null)
-            {
-                //벽으로 문 막기
-                tile = Instantiate(wall_prefab);
-            }
-            else
-            {
-                //문 달기
-                tile = Instantiate(floor_prefab);
-            }
-            tile.transform.SetParent(transform);
-            tile.parentRoom = this;
-            tile.x = door_x;
-            tile.y = door_y;
-
-            tiles[door_x, door_y] = tile;
-
-            tile.transform.localPosition = new Vector3(door_x, door_y, 0);
-        }
     }
 }

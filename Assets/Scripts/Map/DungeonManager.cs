@@ -114,9 +114,10 @@ public class DungeonManager : MonoBehaviour
             }
         }
 
+        //외벽 매꾸기
         foreach(var room in roomList)
         {
-            room.SetWall();
+            room.SetBlock();
         }
     }
 }

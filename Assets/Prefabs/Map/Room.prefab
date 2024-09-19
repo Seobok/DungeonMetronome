@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomX: 0
   roomY: 0
-  floor_prefab: {fileID: 2948437321401859625, guid: 552ad7dc6d777a54dba7ee34ae716c65, type: 3}
-  wall_prefab: {fileID: 2393125844665386498, guid: 4d8b7e8757e0bfa4da73a65db27054f8, type: 3}
   room_prefab: {fileID: 3612622321787733108}
+  tile_prefab: {fileID: 8821263374957726562, guid: 552ad7dc6d777a54dba7ee34ae716c65, type: 3}
+  block_prefab: {fileID: 7302701742499777888, guid: 74586e004dd184d41a9ad07237f1133f, type: 3}
   adjacentRoom: []

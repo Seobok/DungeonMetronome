@@ -52,7 +52,6 @@ public class AStar
                     var neighbor = currentTile.parentRoom.GetTile(currentTile.x + dirX[i], currentTile.y + dirY[i]);
                     if (neighbor == null || neighbor.onTileUnit != null) continue;
                     if (closedSet.Contains(neighbor)) continue;
-                    if (neighbor.GetComponent<Floor>() == null) continue;
                     if(openSet.Contains(neighbor) && currentTile.gCost + GetDistance(currentTile, neighbor) >= neighbor.gCost) continue;
 
                     neighbor.gCost = currentTile.gCost + GetDistance(currentTile, neighbor);

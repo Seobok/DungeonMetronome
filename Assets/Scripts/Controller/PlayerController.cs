@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviour
             List<IDamagable> damagableList = new List<IDamagable>();
             foreach (var rangeTile in rangeTiles)
             {
+                if (rangeTile == null) continue;
+
                 if (rangeTile.onTileUnit != null)
                 {
                     var damagableTile = rangeTile.onTileUnit.GetComponent<IDamagable>();
@@ -53,6 +55,7 @@ public class PlayerController : MonoBehaviour
                     }
                 }
             }
+                
             if (damagableList.Count > 0)
             {
                 player.Attack(damagableList);
@@ -61,13 +64,13 @@ public class PlayerController : MonoBehaviour
             }
         }
         
-        var floorTile = nextTile.GetComponent<Floor>();
-        if (floorTile)
+        var Tile = nextTile.GetComponent<Tile>();
+        if (Tile)
         {
             //Tile에 Object가 있으면 상호작용
-            if(floorTile.onTileUnit != null)
+            if(Tile.onTileUnit != null)
             {
-                Item item = floorTile.onTileUnit.GetComponent<Item>();
+                Item item = Tile.onTileUnit.GetComponent<Item>();
                 if(item != null)
                 {
                     Move(input);
