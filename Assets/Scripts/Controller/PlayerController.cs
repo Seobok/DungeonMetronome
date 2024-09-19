@@ -111,14 +111,14 @@ public class PlayerController : MonoBehaviour
 
     public void Move(Vector2 input)
     {
-        player.GetTile().bisOnTilePlayer = false;
+        player.GetTile().OnTilePlayer = null;
 
         player.RoomX = player.RoomX + (int)(input.x);
         player.RoomY = player.RoomY + (int)(input.y);
 
         transform.DOMove(player.GetTile().transform.position, 0.2f).SetEase(Ease.InOutCubic);
 
-        player.GetTile().bisOnTilePlayer = true;
+        player.GetTile().OnTilePlayer = player;
     }
 
     /// <summary>
@@ -131,6 +131,6 @@ public class PlayerController : MonoBehaviour
         player.RoomY = Room.Y / 2;
         player.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         transform.position = player.GetTile().transform.position;
-        player.GetTile().bisOnTilePlayer = true;
+        player.GetTile().OnTilePlayer = player;
     }
 }

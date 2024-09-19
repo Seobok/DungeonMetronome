@@ -68,6 +68,9 @@ public class Enemy : Unit
         if(bIsReadyMove)
         {
             Move();
+
+            //임시) 움직인 직후에는 행동 준비를 할 수 없음
+            return;
         }
 
         if(Detact())
@@ -95,7 +98,7 @@ public class Enemy : Unit
         var tiles = curRoom.GetTiles(GetTile(), detactTiles);
         foreach (var tile in tiles)
         {
-            if (tile.bisOnTilePlayer)
+            if (tile.OnTilePlayer != null)
             {
                 PlayerTile = tile;
                 return true;
@@ -116,9 +119,10 @@ public class Enemy : Unit
         var tiles = curRoom.GetTiles(GetTile(), rightDirRange);
         foreach (var tile in tiles)
         {
-            if (tile.bisOnTilePlayer)
+            if (tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
+                ShowAttackTile(attackTiles);
                 return true;
             }
         }
@@ -126,9 +130,10 @@ public class Enemy : Unit
         tiles = curRoom.GetTiles(GetTile(), upDirRange);
         foreach (var tile in tiles)
         {
-            if(tile.bisOnTilePlayer)
+            if(tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
+                ShowAttackTile(attackTiles);
                 return true;
             }
         }
@@ -136,9 +141,10 @@ public class Enemy : Unit
         tiles = curRoom.GetTiles(GetTile(), downDirRange);
         foreach (var tile in tiles)
         {
-            if (tile.bisOnTilePlayer)
+            if (tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
+                ShowAttackTile(attackTiles);
                 return true;
             }
         }
@@ -146,9 +152,10 @@ public class Enemy : Unit
         tiles = curRoom.GetTiles(GetTile(), leftDirRange);
         foreach (var tile in tiles)
         {
-            if (tile.bisOnTilePlayer)
+            if (tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
+                ShowAttackTile(attackTiles);
                 return true;
             }
         }
@@ -168,9 +175,7 @@ public class Enemy : Unit
             return;
         }
 
-        moveTile = GetTile();
-
-        var path = AStar.FindPath(moveTile, PlayerTile);
+        var path = AStar.FindPath(GetTile(), PlayerTile);
         if(path == null)
         {
             //길이 막혀있으면 랜덤이동으로 변경
@@ -178,8 +183,10 @@ public class Enemy : Unit
             return;
         }
 
-        while(moveCnt > 0 || path.Count != 0)
+        moveTile = path.Pop();
+        while (moveCnt > 0)
         {
+            if (path.Count != 0) break;
             moveTile = path.Pop();
             moveCnt--;
         }
@@ -221,12 +228,19 @@ public class Enemy : Unit
 
         //TODO : ATTACK
 
+        ReturnAttackTile(attackTiles);
         bIsReadyAttack = false;
     }
 
     public void Move()
     {
         Debug.Log("Move");
+
+        if(moveTile.OnTilePlayer != null)
+        {
+            //움직이는 대신 공격하기
+
+        }
 
         //TODO : MOVE
         GetTile().onTileUnit = null;
@@ -242,5 +256,20 @@ public class Enemy : Unit
 
         moveTile.GetComponent<SpriteRenderer>().color = Color.white;
         moveTile = null;
+    }
+
+    public void ShowAttackTile(List<Tile> tiles)
+    {
+        foreach(Tile tile in tiles)
+        {
+            tile.GetComponent<SpriteRenderer>().color = Color.red;
+        }
+    }
+    public void ReturnAttackTile(List<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
+        {
+            tile.GetComponent<SpriteRenderer>().color = Color.white;
+        }
     }
 }

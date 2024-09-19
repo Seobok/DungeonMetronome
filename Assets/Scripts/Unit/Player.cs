@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Unit
+public class Player : Unit, IDamagable
 {
     [HideInInspector] public Weapon weapon;
 
@@ -22,5 +22,10 @@ public class Player : Unit
         {
             damagableUnit.Damaged(weapon.damage, this);
         }
+    }
+
+    public void Damaged(int amount, Unit causer)
+    {
+        Debug.Log($"player가 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
     }
 }
