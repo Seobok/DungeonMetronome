@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +9,7 @@ public class Bat : Enemy, IDamagable
     private void Awake()
     {
         hp = 1;
+        detactRange = 5;
     }
 
     public void Damaged(int amount, Unit causer)

@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -122,7 +122,7 @@ public class Enemy : Unit
             if (tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
-                ShowAttackTile(attackTiles);
+                ShowAttackTile();
                 return true;
             }
         }
@@ -133,7 +133,7 @@ public class Enemy : Unit
             if(tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
-                ShowAttackTile(attackTiles);
+                ShowAttackTile();
                 return true;
             }
         }
@@ -144,7 +144,7 @@ public class Enemy : Unit
             if (tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
-                ShowAttackTile(attackTiles);
+                ShowAttackTile();
                 return true;
             }
         }
@@ -155,7 +155,7 @@ public class Enemy : Unit
             if (tile.OnTilePlayer != null)
             {
                 attackTiles = tiles;
-                ShowAttackTile(attackTiles);
+                ShowAttackTile();
                 return true;
             }
         }
@@ -193,7 +193,7 @@ public class Enemy : Unit
         moveCnt = moveMaxCnt;
 
         bIsReadyMove = true;
-        moveTile.GetComponent<SpriteRenderer>().color = Color.green;
+        ShowMoveTile();
     }
     public void MoveToRandom()
     {
@@ -219,7 +219,7 @@ public class Enemy : Unit
         }
         moveCnt = moveMaxCnt;
         bIsReadyMove = true;
-        moveTile.GetComponent<SpriteRenderer>().color = Color.green;
+        ShowMoveTile();
     }
 
     public void Attack()
@@ -228,7 +228,7 @@ public class Enemy : Unit
 
         //TODO : ATTACK
 
-        ReturnAttackTile(attackTiles);
+        ReturnAttackTile();
         bIsReadyAttack = false;
     }
 
@@ -244,7 +244,7 @@ public class Enemy : Unit
 
             bIsReadyMove = false;
 
-            moveTile.GetComponent<SpriteRenderer>().color = Color.white;
+            ReturnMoveTile();
             moveTile = null;
 
             return;
@@ -262,20 +262,36 @@ public class Enemy : Unit
 
         bIsReadyMove = false;
 
-        moveTile.GetComponent<SpriteRenderer>().color = Color.white;
+        ReturnMoveTile();
         moveTile = null;
     }
 
-    public void ShowAttackTile(List<Tile> tiles)
+    public void ShowMoveTile()
     {
-        foreach(Tile tile in tiles)
+        if(moveTile != null)
+        {
+            moveTile.GetComponent<SpriteRenderer>().color = Color.green;
+        }
+    }
+
+    public void ReturnMoveTile()
+    {
+        if(moveTile != null)
+        {
+            moveTile.GetComponent<SpriteRenderer>().color = Color.white;
+        }
+    }
+
+    public void ShowAttackTile()
+    {
+        foreach(Tile tile in attackTiles)
         {
             tile.GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
-    public void ReturnAttackTile(List<Tile> tiles)
+    public void ReturnAttackTile()
     {
-        foreach (Tile tile in tiles)
+        foreach (Tile tile in attackTiles)
         {
             tile.GetComponent<SpriteRenderer>().color = Color.white;
         }

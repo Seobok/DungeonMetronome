@@ -15,8 +15,8 @@ public class EffectManager : MonoBehaviour
             Destroy(this);
     }
 
-    public void HitEffect(Vector3 position)
+    public GameObject HitEffect(Vector3 position)
     {
-        Instantiate(hitEffect_prefab, position, Quaternion.identity);
+        return Instantiate(hitEffect_prefab, position, Quaternion.identity);
     }
 }

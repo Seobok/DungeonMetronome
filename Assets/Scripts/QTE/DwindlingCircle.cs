@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Rendering;
@@ -21,7 +21,7 @@ public class DwindlingCircle : MonoBehaviour
 
     private const float WAIT_TIME = 0.5f;
     private const float QUIT_TIME = 1f;
-    private const float ERROR_RANGE = 0.02f;
+    private const float ERROR_RANGE = 0.05f;
     private float duration = 0;
 
     private void Awake()

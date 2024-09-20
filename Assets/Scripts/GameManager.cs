@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Schema;
 using UnityEngine;
@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TrainingBot trainingBot_prefab;
     [SerializeField] private Dagger dagger_prefab;
     [SerializeField] private Spear spear_prefab;
+    [SerializeField] private DualDagger dualDagger_prefab;
     [SerializeField] private Bat bat_prefab;
     [SerializeField] private Player player_prefab;
 
@@ -59,6 +60,7 @@ public class GameManager : MonoBehaviour
         GenerateTrainingBot();
         GenerateDagger();
         GenerateSpear();
+        GenerateDualDagger();
         GenerateBat();
     }
 
@@ -81,8 +83,8 @@ public class GameManager : MonoBehaviour
             return;
 
         var dagger = Instantiate(dagger_prefab);
-        dagger.RoomX = (Room.X / 2) - 1;
-        dagger.RoomY = (Room.Y / 2);
+        dagger.RoomX = 4;
+        dagger.RoomY = 4;
         dagger.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         dagger.transform.position = dagger.GetTile().transform.position;
         dagger.GetTile().onTileUnit = dagger;
@@ -94,11 +96,24 @@ public class GameManager : MonoBehaviour
             return;
 
         var spear = Instantiate(spear_prefab);
-        spear.RoomX = (Room.X / 2);
-        spear.RoomY = (Room.Y / 2) - 1;
+        spear.RoomX = 6;
+        spear.RoomY = 4;
         spear.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         spear.transform.position= spear.GetTile().transform.position;
         spear.GetTile().onTileUnit = spear;
+    }
+
+    public void GenerateDualDagger()
+    {
+        if (dualDagger_prefab == null)
+            return;
+
+        var dualDagger = Instantiate(dualDagger_prefab);
+        dualDagger.RoomX = 8;
+        dualDagger.RoomY = 4;
+        dualDagger.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
+        dualDagger.transform.position = dualDagger.GetTile().transform.position;
+        dualDagger.GetTile().onTileUnit = dualDagger;
     }
 
     public void GenerateBat()

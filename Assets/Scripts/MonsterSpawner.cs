@@ -20,6 +20,9 @@ public class MonsterSpawner : MonoBehaviour
     public void Die(Enemy enemy)
     {
         monstersList.Remove(enemy);
+        enemy.GetTile().onTileUnit = null;
+        enemy.ReturnAttackTile();
+        enemy.ReturnMoveTile();
         Destroy(enemy.gameObject);
     }
 }
