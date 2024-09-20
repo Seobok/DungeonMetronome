@@ -21,12 +21,22 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
+    [HideInInspector] public bool[] isPlayerInput;
+
     private void Awake()
     {
         if(instance == null)
             instance = this;
         else
             Destroy(this);
+
+        //일단 싱글게임
+        isPlayerInput = new bool[1];
+
+        for(int i=0;i<isPlayerInput.Length;i++)
+        {
+            isPlayerInput[i] = false;
+        }
     }
 
 
@@ -116,5 +126,17 @@ public class GameManager : MonoBehaviour
         {
             monster.Act();
         }
+    }
+
+    public void ResultQTE(bool success, Player causer, List<IDamagable> damagableList)
+    {
+        if(success)
+        {
+            causer.Attack(damagableList);
+        }
+
+        isPlayerInput[0] = false;
+
+        ExecuteTurn();
     }
 }

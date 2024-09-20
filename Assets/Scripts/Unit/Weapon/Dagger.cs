@@ -14,4 +14,10 @@ public class Dagger : Weapon
         range.Add(forwardTile);
         return range;
     }
+
+    public override void AttackQTE(Player causer, List<IDamagable> damagableList)
+    {
+        var rand = Random.Range(2, 8);
+        QTEManager.instance.ActiveDwindlingCircle(new List<float>() { (float)rand / 10 }, 2, causer, damagableList);
+    }
 }

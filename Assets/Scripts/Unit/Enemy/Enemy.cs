@@ -239,7 +239,15 @@ public class Enemy : Unit
         if(moveTile.OnTilePlayer != null)
         {
             //움직이는 대신 공격하기
+            //이때는 AttackDamage에 상관없이 1의 피해를 입힘
+            moveTile.OnTilePlayer.Damaged(1, this);
 
+            bIsReadyMove = false;
+
+            moveTile.GetComponent<SpriteRenderer>().color = Color.white;
+            moveTile = null;
+
+            return;
         }
 
         //TODO : MOVE

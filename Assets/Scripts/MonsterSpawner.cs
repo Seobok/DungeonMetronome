@@ -16,4 +16,10 @@ public class MonsterSpawner : MonoBehaviour
         else
             Destroy(this);
     }
+
+    public void Die(Enemy enemy)
+    {
+        monstersList.Remove(enemy);
+        Destroy(enemy.gameObject);
+    }
 }

@@ -16,4 +16,9 @@ public class Spear : Weapon
         range.Add(forwardTile.parentRoom.GetTile((int)(forwardTile.x + dir.x), (int)(forwardTile.y + dir.y)));
         return range;
     }
+
+    public override void AttackQTE(Player causer, List<IDamagable> damagableList)
+    {
+        throw new System.NotImplementedException();
+    }
 }

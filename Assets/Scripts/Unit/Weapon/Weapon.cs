@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class Weapon : Item
 {
-    public abstract List<Tile> GetRange(Tile curTile, Vector2 dir);
     [HideInInspector] public int damage = 0;
+    public abstract List<Tile> GetRange(Tile curTile, Vector2 dir);
+    public abstract void AttackQTE(Player causer, List<IDamagable> damagableList);
 }

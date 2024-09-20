@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnMove(InputValue inputValue)
     {
+        if (GameManager.instance.isPlayerInput[0])
+            return;
+
         var input = inputValue.Get<Vector2>() * playerSpeed;
 
         //입력받은 방향으로 정면 전환
@@ -58,8 +61,8 @@ public class PlayerController : MonoBehaviour
                 
             if (damagableList.Count > 0)
             {
-                player.Attack(damagableList);
-                GameManager.instance.ExecuteTurn();
+                GameManager.instance.isPlayerInput[0] = true;
+                player.weapon.AttackQTE(player, damagableList);
                 return;
             }
         }
