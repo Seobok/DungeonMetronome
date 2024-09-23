@@ -462,6 +462,7 @@ MonoBehaviour:
   spear_prefab: {fileID: -3757993082484870546, guid: b4af8e8377db109459e916098316a12a, type: 3}
   dualDagger_prefab: {fileID: 7095847318931264071, guid: d7522a75c02fdc247a011ffff348a3f7, type: 3}
   bat_prefab: {fileID: 8910809637167732177, guid: ca2ba4c27253a73469c329663411ac90, type: 3}
+  slime_prefab: {fileID: -2571028523500866911, guid: c963d5b692e70c0499818c63434eb9f2, type: 3}
   player_prefab: {fileID: 5582294997911852815, guid: 5487d89de02b7fe47bf3ae838bee86c2, type: 3}
   isPlayerInput: 
 --- !u!4 &1159375815
@@ -531,7 +532,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c8c1baaa519d349bed5775a7410cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsters: []
+  monsters:
+  - {fileID: 8910809637167732177, guid: ca2ba4c27253a73469c329663411ac90, type: 3}
+  - {fileID: -2571028523500866911, guid: c963d5b692e70c0499818c63434eb9f2, type: 3}
   monstersList: []
 --- !u!1 &1385257606
 GameObject:

@@ -18,7 +18,6 @@ public class QTEManager : MonoBehaviour
     public void ActiveDwindlingCircle(List<float> timing, float duration, Player causer, List<IDamagable> damagableList)
     {
         DwindlingCircle.gameObject.SetActive(true);
-        Debug.Log("InActiveFunc " + DwindlingCircle.gameObject.activeSelf);
         StartCoroutine(DwindlingCircle.Activate(timing, duration, causer, damagableList));
     }
 }

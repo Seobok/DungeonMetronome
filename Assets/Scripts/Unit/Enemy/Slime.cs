@@ -2,26 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bat : Enemy, IDamagable
+public class Slime : Enemy,IDamagable
 {
     private int hp;
 
     private void Awake()
     {
-        hp = 1;
+        hp = 2;
         detactRange = 5;
-        moveMaxCnt = 2;
-        moveCnt = 2;
+        moveMaxCnt = 1;
+        moveCnt = 1;
         attackDamage = 1;
-        rightDirRange = new List<Vector2>() { new Vector2(1, 0) };
+
+        for(int i=0; i<3;i++)
+        {
+            for(int j=0;j<3;j++)
+            {
+                if (i == 1 && j == 1) continue;
+
+                rightDirRange.Add(new Vector2(i - 1, j - 1));
+            }
+        }
     }
 
     public void Damaged(int amount, Unit causer)
     {
-        Debug.Log($"Bat가 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
+        Debug.Log($"Slime이 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
         EffectManager.instance.HitEffect(transform.position);
         hp -= amount;
-        if(hp <= 0)
+        if (hp <= 0)
         {
             hp = 0;
             //죽는 애니메이션 또는 파티클

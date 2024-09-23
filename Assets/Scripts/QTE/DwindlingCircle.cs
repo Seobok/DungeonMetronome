@@ -32,7 +32,6 @@ public class DwindlingCircle : MonoBehaviour
 
     private void OnAction(InputValue inputValue)
     {
-        Debug.Log("OnAction");
         if (curCount >= actionCount) return;
 
         if(actionCircle != null)
@@ -47,7 +46,6 @@ public class DwindlingCircle : MonoBehaviour
                 {
                     //CORRECT
                     go.GetComponent<Image>().color = Color.green;
-                    Debug.Log("Correct");
                     correctCount++;
                 }
             }
@@ -60,7 +58,6 @@ public class DwindlingCircle : MonoBehaviour
 
     public IEnumerator Activate(List<float> timing, float duration, Player causer, List<IDamagable> damagableList)
     {
-        Debug.Log("Activate");
         this.duration = duration;
         if(timerCircle != null)
         {
@@ -83,7 +80,7 @@ public class DwindlingCircle : MonoBehaviour
             }
 
             yield return new WaitForSeconds(WAIT_TIME);
-            //시작 사운드 추가
+            //TODO :: 시작 사운드 추가
             timerCircle.DOScale(0, duration).SetEase(Ease.Linear);
             StartCoroutine(Deactivate(causer, damagableList));
         }
@@ -107,7 +104,7 @@ public class DwindlingCircle : MonoBehaviour
             Destroy(go);
         }
 
-        GameManager.instance.ResultQTE(actionCount == correctCount, causer, damagableList);
+        GameManager.instance.ResultQTE((float)correctCount / actionCount, causer, damagableList);
 
         gameObject.SetActive(false);
     }

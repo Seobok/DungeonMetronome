@@ -3,23 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Enemy 기초 클래스
+/// [초기화 목록]
+/// detectRange : Enemy로 부터 detectRange칸 만큼 떨어진 플레이어를 탐지할 수 있음
+/// moveMaxCnt : 한번 이동할때 몇 칸 이동할수 있는지 나타내는 변수
+/// moveCnt : moveMaxCnt와 값이 같도록 초기화
+/// attackDamage : Enemy가 공격할 때 입히는 피해량
+/// rightDirRange : Enemy가 오른쪽을 보고있다고 가정했을 때의 공격범위
+/// </summary>
 public class Enemy : Unit
 {
+    [Header("EnemyProperty")]
     protected int detactRange = 3;
+    protected int moveMaxCnt = 1;
+    protected int moveCnt = 1;
+    protected int attackDamage = 1;
+
+    [Header("ActFlag")]
     protected bool bIsReadyMove = false;
     protected bool bIsReadyAttack = false;
 
+    [Header("AttackRangeTiles")]
     protected List<Vector2> upDirRange = new List<Vector2>();
     protected List<Vector2> rightDirRange = new List<Vector2>();
     protected List<Vector2> downDirRange = new List<Vector2>();
     protected List<Vector2> leftDirRange = new List<Vector2>();
 
+    [Header("DetactRangeTile")]
     protected List<Vector2> detactTiles = new List<Vector2>();
+
+    [Header("RequireToAct")]
     protected List<Tile> attackTiles = new List<Tile>();
     protected Tile PlayerTile = null;
     protected Tile moveTile = null;
-    protected int moveMaxCnt = 1;
-    protected int moveCnt = 1;
 
     private void Start()
     {
@@ -33,19 +50,18 @@ public class Enemy : Unit
                 detactTiles.Add(new Vector2(i, j));
             }
         }
-
-        //rightDirRange 설정
-        rightDirRange.Add(new Vector2(1, 0));
+        //rightDirRange 설정 -> 초기화를 통해 설정
+        if(rightDirRange.Count == 0)
+        {
+            rightDirRange.Add(new Vector2(1, 0));
+        }
 
         //나머지 공격범위 설정
-        foreach(var rightDir in  rightDirRange)
+        foreach (var rightDir in rightDirRange)
         {
-            Vector2 upDir = new Vector2(rightDir.y, rightDir.x);
-            upDirRange.Add(upDir);
-            Vector2 leftDir = new Vector2(-rightDir.x, rightDir.y);
-            leftDirRange.Add(leftDir);
-            Vector2 downDir = new Vector2(upDir.x, -upDir.y);
-            downDirRange.Add(downDir);
+            upDirRange.Add(new Vector2(rightDir.y, rightDir.x));
+            leftDirRange.Add(new Vector2(-rightDir.x, rightDir.y));
+            downDirRange.Add(new Vector2(rightDir.y, -rightDir.x));
         }
     }
 
@@ -224,9 +240,14 @@ public class Enemy : Unit
 
     public void Attack()
     {
-        Debug.Log("Attack");
-
-        //TODO : ATTACK
+        //일단 그냥 때리는걸로 하고 나중에 방패같은거 생기면 데미지 반감? 이 밸런스 고려했을때 적절할듯
+        foreach(var tile in attackTiles)
+        {
+            if(tile.OnTilePlayer != null)
+            {
+                tile.OnTilePlayer.Damaged(1, this);
+            }
+        }
 
         ReturnAttackTile();
         bIsReadyAttack = false;
@@ -234,8 +255,6 @@ public class Enemy : Unit
 
     public void Move()
     {
-        Debug.Log("Move");
-
         if(moveTile.OnTilePlayer != null)
         {
             //움직이는 대신 공격하기
@@ -250,7 +269,6 @@ public class Enemy : Unit
             return;
         }
 
-        //TODO : MOVE
         GetTile().onTileUnit = null;
 
         curRoom = moveTile.parentRoom;

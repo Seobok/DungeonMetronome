@@ -18,11 +18,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Spear spear_prefab;
     [SerializeField] private DualDagger dualDagger_prefab;
     [SerializeField] private Bat bat_prefab;
+    [SerializeField] private Slime slime_prefab;
     [SerializeField] private Player player_prefab;
 
     public static GameManager instance;
 
     [HideInInspector] public bool[] isPlayerInput;
+
+    private int turnCnt = 0;
 
     private void Awake()
     {
@@ -59,9 +62,11 @@ public class GameManager : MonoBehaviour
     {
         GenerateTrainingBot();
         GenerateDagger();
-        GenerateSpear();
+        //GenerateSpear();
         GenerateDualDagger();
-        GenerateBat();
+        //GenerateBat();
+        //GenerateSlime();
+        MonsterSpawner.instance.SpawnMonster();
     }
 
     public void GenerateTrainingBot()
@@ -131,6 +136,21 @@ public class GameManager : MonoBehaviour
         MonsterSpawner.instance.monstersList.Add(bat);
     }
 
+    public void GenerateSlime()
+    {
+        if (slime_prefab == null) return;
+
+        var slime = Instantiate(slime_prefab);
+        slime.curRoom = DungeonManager.instance.roomList[2];
+        slime.RoomX = (Room.X / 2);
+        slime.RoomY = (Room.Y / 2);
+
+        slime.transform.position = slime.GetTile().transform.position;
+        slime.GetTile().onTileUnit = slime;
+
+        MonsterSpawner.instance.monstersList.Add(slime);
+    }
+
     /// <summary>
     /// 메인 로직이 실행되는 함수
     /// 해당 함수가 끝나면 다시 플레이어 턴
@@ -141,14 +161,12 @@ public class GameManager : MonoBehaviour
         {
             monster.Act();
         }
+        turnCnt++;
     }
 
-    public void ResultQTE(bool success, Player causer, List<IDamagable> damagableList)
+    public void ResultQTE(float damageRate, Player causer, List<IDamagable> damagableList)
     {
-        if(success)
-        {
-            causer.Attack(damagableList);
-        }
+        causer.Attack(damagableList, damageRate);
 
         isPlayerInput[0] = false;
 
