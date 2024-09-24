@@ -66,7 +66,8 @@ public class CenterTap : MonoBehaviour
         correctCount = 0;
 
         yield return new WaitForSeconds(WAIT_TIME);
-        //시작 사운드 추가
+
+        QTEManager.instance.PlaySFXSound(QTEManager.instance.preparePattern);
         timingBar.isMove = true;
         StartCoroutine(Deactivate(causer, damagableList));
     }

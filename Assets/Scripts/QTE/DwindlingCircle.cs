@@ -86,7 +86,8 @@ public class DwindlingCircle : MonoBehaviour
             }
 
             yield return new WaitForSeconds(WAIT_TIME);
-            //TODO :: 시작 사운드 추가
+
+            QTEManager.instance.PlaySFXSound(QTEManager.instance.preparePattern);
             timerCircle.DOScale(0, duration).SetEase(Ease.Linear);
             StartCoroutine(Deactivate(causer, damagableList));
         }
