@@ -1,5 +1,5 @@
 # DungeonMetronome
-2D Dungeon PC Game
+2D Dungeon PC Game<br>
 현재 develop branch에서 작업 중
 ### 진행사항 및 문서
 https://fire-freon-98f.notion.site/053767fd92754e84b42a8f445c3632a3
