@@ -70,7 +70,6 @@ public class Enemy : Unit
     /// </summary>
     public void Act()
     {
-        Debug.Log("InAct");
         if(bIsReadyAttack)
         {
             Attack();

@@ -6,6 +6,7 @@ public class QTEManager : MonoBehaviour
 {
     public static QTEManager instance;
     [SerializeField] private DwindlingCircle DwindlingCircle;
+    [SerializeField] private CenterTap CenterTap;
 
     private void Awake()
     {
@@ -19,5 +20,11 @@ public class QTEManager : MonoBehaviour
     {
         DwindlingCircle.gameObject.SetActive(true);
         StartCoroutine(DwindlingCircle.Activate(timing, duration, causer, damagableList));
+    }
+
+    public void ActiveCenterTap(float barSpeed, Player causer, List<IDamagable> damagableList)
+    {
+        CenterTap.gameObject.SetActive(true);
+        StartCoroutine(CenterTap.Activate(barSpeed, causer, damagableList));
     }
 }

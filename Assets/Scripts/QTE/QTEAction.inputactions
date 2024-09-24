@@ -28,6 +28,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "CenterTap",
+            "id": "bb023899-76a0-4f27-b362-79579293acb6",
+            "actions": [
+                {
+                    "name": "Action",
+                    "type": "Button",
+                    "id": "fce8d275-8ba2-4662-9f97-847e23c7b1c8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b7b3b650-fa9f-4138-92f9-edec2f7adb66",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

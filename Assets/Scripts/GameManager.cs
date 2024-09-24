@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     {
         GenerateTrainingBot();
         GenerateDagger();
-        //GenerateSpear();
+        GenerateSpear();
         GenerateDualDagger();
         //GenerateBat();
         //GenerateSlime();

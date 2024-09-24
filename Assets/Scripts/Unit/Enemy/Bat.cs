@@ -18,6 +18,8 @@ public class Bat : Enemy, IDamagable
 
     public void Damaged(int amount, Unit causer)
     {
+        if (amount <= 0) return;
+
         Debug.Log($"Bat가 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
         EffectManager.instance.HitEffect(transform.position);
         hp -= amount;

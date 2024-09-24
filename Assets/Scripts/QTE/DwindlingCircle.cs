@@ -24,6 +24,8 @@ public class DwindlingCircle : MonoBehaviour
     private const float ERROR_RANGE = 0.05f;
     private float duration = 0;
 
+    private bool isGameStart = false;
+
     private void Awake()
     {
         correctCircleList = new List<GameObject>();
@@ -33,6 +35,7 @@ public class DwindlingCircle : MonoBehaviour
     private void OnAction(InputValue inputValue)
     {
         if (curCount >= actionCount) return;
+        if (!isGameStart) return;
 
         if(actionCircle != null)
         {
@@ -42,7 +45,8 @@ public class DwindlingCircle : MonoBehaviour
             go.transform.localScale = timerCircle.localScale;
             foreach(var correctCircle in correctCircleList)
             {
-                if((correctCircle.transform.localScale.x - ERROR_RANGE <= go.transform.localScale.x)&&(go.transform.localScale.x <= correctCircle.transform.localScale.x + ERROR_RANGE))
+                if((correctCircle.transform.localScale.x - ERROR_RANGE <= go.transform.localScale.x)&&
+                    (go.transform.localScale.x <= correctCircle.transform.localScale.x + ERROR_RANGE))
                 {
                     //CORRECT
                     go.GetComponent<Image>().color = Color.green;
@@ -58,6 +62,8 @@ public class DwindlingCircle : MonoBehaviour
 
     public IEnumerator Activate(List<float> timing, float duration, Player causer, List<IDamagable> damagableList)
     {
+        isGameStart = true;
+
         this.duration = duration;
         if(timerCircle != null)
         {
@@ -89,6 +95,8 @@ public class DwindlingCircle : MonoBehaviour
     public IEnumerator Deactivate(Player causer, List<IDamagable> damagableList)
     {
         yield return new WaitForSeconds(duration + QUIT_TIME);
+
+        isGameStart = false;
 
         while(actionCircleList.Count!=0)
         {

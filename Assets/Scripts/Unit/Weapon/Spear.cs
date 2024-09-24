@@ -19,6 +19,6 @@ public class Spear : Weapon
 
     public override void AttackQTE(Player causer, List<IDamagable> damagableList)
     {
-        throw new System.NotImplementedException();
+        QTEManager.instance.ActiveCenterTap(1, causer, damagableList);
     }
 }
