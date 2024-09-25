@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -198,10 +199,10 @@ public class Enemy : Unit
             return;
         }
 
-        moveTile = path.Pop();
+        moveTile = GetTile();
         while (moveCnt > 0)
         {
-            if (path.Count != 0) break;
+            if (path.Count == 0) break;
             moveTile = path.Pop();
             moveCnt--;
         }
@@ -229,8 +230,11 @@ public class Enemy : Unit
                 if(nextTile.onTileUnit == null)
                     nextTileList.Add(nextTile);
             }
-            moveTile = nextTileList[Random.Range(0, nextTileList.Count)];
-            moveCnt--;
+            if(nextTileList.Count > 0)
+            {
+                moveTile = nextTileList[Random.Range(0, nextTileList.Count)];
+                moveCnt--;
+            }
         }
         moveCnt = moveMaxCnt;
         bIsReadyMove = true;
@@ -260,6 +264,8 @@ public class Enemy : Unit
             //이때는 AttackDamage에 상관없이 1의 피해를 입힘
             moveTile.OnTilePlayer.Damaged(1, this);
 
+            gameObject.transform.DOMove(new Vector3((moveTile.transform.position.x + gameObject.transform.position.x) / 2, (moveTile.transform.position.y + gameObject.transform.position.y) / 2, transform.position.z), 0.1f).SetLoops(2, LoopType.Yoyo);
+
             bIsReadyMove = false;
 
             ReturnMoveTile();
@@ -268,14 +274,19 @@ public class Enemy : Unit
             return;
         }
 
-        GetTile().onTileUnit = null;
+        if(moveTile.onTileUnit == null)
+        {
+            GetTile().onTileUnit = null;
 
-        curRoom = moveTile.parentRoom;
-        RoomX = moveTile.x;
-        RoomY = moveTile.y;
-        gameObject.transform.DOMove(moveTile.transform.position, 0.2f).SetEase(Ease.InOutCubic);
+            curRoom = moveTile.parentRoom;
+            RoomX = moveTile.x;
+            RoomY = moveTile.y;
 
-        GetTile().onTileUnit = this;
+            GetTile().onTileUnit = this;
+        }
+
+        gameObject.transform.DOMoveX(GetTile().transform.position.x, 0.2f).SetEase(Ease.InOutCubic);
+        gameObject.transform.DOMoveY(gameObject.transform.position.y + 0.5f, 0.1f).OnComplete(() => gameObject.transform.DOMoveY(GetTile().transform.position.y, 0.1f));
 
         bIsReadyMove = false;
 

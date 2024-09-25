@@ -6,6 +6,16 @@ public class Player : Unit, IDamagable
 {
     [HideInInspector] public Weapon weapon;
 
+    [Header("Health")]
+    private int maxHP;  //2의 배수
+    private int currentHP;
+
+    private void Awake()
+    {
+        maxHP = 6;
+        currentHP = maxHP;
+    }
+
     /// <summary>
     /// 공격 범위 안에 있는 IDamagable 유닛에게 피해를 입히는 함수
     /// </summary>
@@ -29,6 +39,19 @@ public class Player : Unit, IDamagable
         if (amount <= 0) return;
 
         Debug.Log($"player가 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
+
+        currentHP -= amount;
+
+        if (currentHP < 0)
+        {
+            currentHP = 0;
+        }
+
+        if (InGameUIManager.Instance != null)
+        {
+            InGameUIManager.Instance.SetHealthBar(maxHP, currentHP);
+        }
+
         EffectManager.instance.HitEffect(transform.position);
     }
 }
