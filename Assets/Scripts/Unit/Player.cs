@@ -31,6 +31,10 @@ public class Player : Unit, IDamagable
         foreach(var damagableUnit in inRange)
         {
             damagableUnit.Damaged((int)(weapon.damage * damageRate), this);
+            if((int)(weapon.damage * damageRate) > 0)
+            {
+                StartCoroutine(CameraShake.Shake(0.1f, 0.1f, transform.position));
+            }
         }
     }
 
@@ -39,6 +43,8 @@ public class Player : Unit, IDamagable
         if (amount <= 0) return;
 
         Debug.Log($"player가 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
+
+        StartCoroutine(CameraShake.Shake(0.1f, 0.1f, transform.position));
 
         currentHP -= amount;
 
