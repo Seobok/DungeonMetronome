@@ -4,7 +4,21 @@ using UnityEngine;
 
 public class Player : Unit, IDamagable
 {
-    [HideInInspector] public Weapon weapon;
+    private Weapon _weapon;
+    public Weapon weapon
+    {
+        get { return _weapon; }
+        set 
+        {
+            _weapon = value;
+            if (_weapon == null)
+                InGameUIManager.Instance.SetInventorySlot(0, null);
+            else
+            {
+                InGameUIManager.Instance.SetInventorySlot(0, _weapon.spriteRenderer.sprite);
+            }
+        }
+    }
 
     [Header("Health")]
     private int maxHP;  //2의 배수
