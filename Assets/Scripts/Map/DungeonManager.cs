@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +9,7 @@ public class DungeonManager : MonoBehaviour
     /// GenerateRoom 코드를 사용하면 ROOM_CNT 만큼의 방이 생성됨
     /// </summary>
     [SerializeField] private Room room_prefabs;
+    [SerializeField] private Goal goal_prefabs;
     [HideInInspector] public Room[,] rooms;
     [HideInInspector] public List<Room> roomList;
     int[] dirX = new int[4] { 0, 1, 0, -1 };
@@ -114,10 +115,30 @@ public class DungeonManager : MonoBehaviour
             }
         }
 
+        //마지막으로 생성된 방에 도착점 생성
+        GenerateGoal();
+
         //외벽 매꾸기
         foreach(var room in roomList)
         {
             room.SetBlock();
+        }
+    }
+
+    public void GenerateGoal()
+    {
+        if (goal_prefabs)
+        {
+            //(1,1) ~ (9,5)
+            var rand_x = Random.Range(1, Room.X - 1);
+            var rand_y = Random.Range(1, Room.Y - 1);
+
+            var goal = Instantiate(goal_prefabs);
+            goal.RoomX = rand_x;
+            goal.RoomY = rand_y;
+            goal.curRoom = roomList[ROOM_CNT - 1];
+            goal.transform.position = goal.GetTile().transform.position;
+            goal.GetTile().onTileUnit = goal;
         }
     }
 }

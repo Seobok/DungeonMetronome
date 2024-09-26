@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class Tile : MonoBehaviour
 {
-    [HideInInspector] public int x, y;
+    [SerializeField] public int x, y;
     [SerializeField] protected Sprite sprite;
     protected SpriteRenderer spriteRenderer;
     public Room parentRoom;

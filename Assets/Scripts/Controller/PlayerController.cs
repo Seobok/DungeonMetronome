@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -99,6 +99,15 @@ public class PlayerController : MonoBehaviour
                             player.GetTile().onTileUnit = null;
                         }
                     }
+                }
+
+                Goal goal = Tile.onTileUnit.GetComponent<Goal>();
+                if(goal != null)
+                {
+                    //TODO :: 스테이지 클리어
+                    //TODO :: 화면 페이드 아웃
+                    //TODO :: 맵 체인지
+                    //TODO :: 화면 페이드 인
                 }
             }
             else
