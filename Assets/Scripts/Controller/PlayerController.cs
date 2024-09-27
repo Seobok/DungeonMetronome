@@ -112,7 +112,8 @@ public class PlayerController : MonoBehaviour
                     if(GameManager.instance.stage == 0)
                     {
                         //Lobby To Game
-                        GameManager.instance.Play();
+
+                        StartCoroutine(MoveLobbyToDungeon());
                     }
 
                     //TODO :: 스테이지 클리어
@@ -133,6 +134,15 @@ public class PlayerController : MonoBehaviour
 
         GameManager.instance.ExecuteTurn();
         return;
+    }
+
+    IEnumerator MoveLobbyToDungeon()
+    {
+        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(0, 1, 1));
+
+        GameManager.instance.Play();
+
+        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(1, 0, 1));
     }
 
     public void Move(Vector2 input)

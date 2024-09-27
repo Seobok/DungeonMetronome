@@ -89,7 +89,6 @@ public class GameManager : MonoBehaviour
         foreach (var player in players)
         {
             player.GetComponent<PlayerController>().InitPlayerPosition();
-            player.transform.position = player.GetTile().transform.position;
         }
 
         if (DungeonManager.instance.lobby != null)
