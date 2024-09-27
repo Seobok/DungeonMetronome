@@ -87,7 +87,7 @@ public class DwindlingCircle : MonoBehaviour
 
             yield return new WaitForSeconds(WAIT_TIME);
 
-            QTEManager.instance.PlaySFXSound(QTEManager.instance.preparePattern);
+            SoundManager.instance.PlaySFX("PrepareQTE");
             timerCircle.DOScale(0, duration).SetEase(Ease.Linear);
             StartCoroutine(Deactivate(causer, damagableList));
         }

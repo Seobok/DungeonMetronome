@@ -46,6 +46,8 @@ public class MonsterSpawner : MonoBehaviour
                 enemy.transform.position = spawnTile.transform.position;
                 spawnTile.onTileUnit = enemy;
 
+                enemy.transform.SetParent(enemy.GetTile().transform);
+
                 monstersList.Add(enemy);
             }
         }

@@ -6,7 +6,7 @@ public class TrainingBot : Unit, IDamagable
 {
     public void Damaged(int amount, Unit causer)
     {
-        Debug.Log($"{causer.name}¿¡°Ô {amount}ÀÇ ÇÇÇØ¸¦ ÀÔ¾ú½À´Ï´Ù.");
-        EffectManager.instance.HitEffect(transform.position);
+        Debug.Log($"{causer.name}ì—ê²Œ {amount}ì˜ í”¼í•´ë¥¼ ì…ì—ˆìŠµë‹ˆë‹¤.");
+        EffectManager.instance.PlayParticle("HitEffect", transform.position);
     }
 }

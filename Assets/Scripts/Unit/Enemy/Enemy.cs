@@ -114,7 +114,7 @@ public class Enemy : Unit
         var tiles = curRoom.GetTiles(GetTile(), detactTiles);
         foreach (var tile in tiles)
         {
-            if (tile.OnTilePlayer != null)
+            if (tile.onTilePlayer != null)
             {
                 PlayerTile = tile;
                 return true;
@@ -135,7 +135,7 @@ public class Enemy : Unit
         var tiles = curRoom.GetTiles(GetTile(), rightDirRange);
         foreach (var tile in tiles)
         {
-            if (tile.OnTilePlayer != null)
+            if (tile.onTilePlayer != null)
             {
                 attackTiles = tiles;
                 ShowAttackTile();
@@ -146,7 +146,7 @@ public class Enemy : Unit
         tiles = curRoom.GetTiles(GetTile(), upDirRange);
         foreach (var tile in tiles)
         {
-            if(tile.OnTilePlayer != null)
+            if(tile.onTilePlayer != null)
             {
                 attackTiles = tiles;
                 ShowAttackTile();
@@ -157,7 +157,7 @@ public class Enemy : Unit
         tiles = curRoom.GetTiles(GetTile(), downDirRange);
         foreach (var tile in tiles)
         {
-            if (tile.OnTilePlayer != null)
+            if (tile.onTilePlayer != null)
             {
                 attackTiles = tiles;
                 ShowAttackTile();
@@ -168,7 +168,7 @@ public class Enemy : Unit
         tiles = curRoom.GetTiles(GetTile(), leftDirRange);
         foreach (var tile in tiles)
         {
-            if (tile.OnTilePlayer != null)
+            if (tile.onTilePlayer != null)
             {
                 attackTiles = tiles;
                 ShowAttackTile();
@@ -235,6 +235,11 @@ public class Enemy : Unit
                 moveTile = nextTileList[Random.Range(0, nextTileList.Count)];
                 moveCnt--;
             }
+            else
+            {
+                //이동할 수 있는 칸이 없음
+                break;
+            }
         }
         moveCnt = moveMaxCnt;
         bIsReadyMove = true;
@@ -246,9 +251,9 @@ public class Enemy : Unit
         //일단 그냥 때리는걸로 하고 나중에 방패같은거 생기면 데미지 반감? 이 밸런스 고려했을때 적절할듯
         foreach(var tile in attackTiles)
         {
-            if(tile.OnTilePlayer != null)
+            if(tile.onTilePlayer != null)
             {
-                tile.OnTilePlayer.Damaged(1, this);
+                tile.onTilePlayer.Damaged(1, this);
             }
         }
 
@@ -258,11 +263,11 @@ public class Enemy : Unit
 
     public void Move()
     {
-        if(moveTile.OnTilePlayer != null)
+        if(moveTile.onTilePlayer != null)
         {
             //움직이는 대신 공격하기
             //이때는 AttackDamage에 상관없이 1의 피해를 입힘
-            moveTile.OnTilePlayer.Damaged(1, this);
+            moveTile.onTilePlayer.Damaged(1, this);
 
             gameObject.transform.DOMove(new Vector3((moveTile.transform.position.x + gameObject.transform.position.x) / 2, (moveTile.transform.position.y + gameObject.transform.position.y) / 2, transform.position.z), 0.1f).SetLoops(2, LoopType.Yoyo);
 
@@ -276,13 +281,7 @@ public class Enemy : Unit
 
         if(moveTile.onTileUnit == null)
         {
-            GetTile().onTileUnit = null;
-
-            curRoom = moveTile.parentRoom;
-            RoomX = moveTile.x;
-            RoomY = moveTile.y;
-
-            GetTile().onTileUnit = this;
+            SetTile(moveTile);
         }
 
         gameObject.transform.DOMoveX(GetTile().transform.position.x, 0.2f).SetEase(Ease.InOutCubic);

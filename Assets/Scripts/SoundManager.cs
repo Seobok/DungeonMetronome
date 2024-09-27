@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
@@ -34,13 +35,23 @@ public class SoundManager : MonoBehaviour
         if(instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
 
         InitializeAudioClips();
+    }
+
+    private void Start()
+    {
+        string SceneName = SceneManager.GetActiveScene().name;
+        if(SceneName == "Mainmenu")
+        {
+            PlayBGM("Mainmenu", 1f);
+        }
     }
 
     private void InitializeAudioClips()

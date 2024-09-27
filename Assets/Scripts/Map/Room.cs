@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -49,10 +49,24 @@ public class Room : MonoBehaviour
                 go.parentRoom = this;
                 go.x = i;
                 go.y = j;
+                go.onTilePlayer = null;
+                go.onTileUnit = null;
 
                 tiles[i, j] = go;
 
                 go.transform.localPosition = new Vector3(i, j, 0);
+            }
+        }
+    }
+
+    private void OnEnable()
+    {
+        foreach(var tile in tiles)
+        {
+            if(tile != null)
+            {
+                tile.onTilePlayer = null;
+                tile.onTileUnit = null;
             }
         }
     }
@@ -68,12 +82,9 @@ public class Room : MonoBehaviour
                 if (GetTile(tile.x + dx[i], tile.y + dy[i]) == null)
                 {
                     var blockGo = Instantiate(block_prefab);
-                    blockGo.curRoom = this;
-                    blockGo.RoomX = tile.x;
-                    blockGo.RoomY = tile.y;
-                    
+
+                    blockGo.SetTile(tile);
                     blockGo.transform.position = blockGo.GetTile().transform.position;
-                    blockGo.GetTile().onTileUnit = blockGo;
 
                     break;
                 }

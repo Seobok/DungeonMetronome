@@ -67,7 +67,7 @@ public class CenterTap : MonoBehaviour
 
         yield return new WaitForSeconds(WAIT_TIME);
 
-        QTEManager.instance.PlaySFXSound(QTEManager.instance.preparePattern);
+        SoundManager.instance.PlaySFX("PrepareQTE");
         timingBar.isMove = true;
         StartCoroutine(Deactivate(causer, damagableList));
     }

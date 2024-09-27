@@ -72,6 +72,6 @@ public class Player : Unit, IDamagable
             InGameUIManager.Instance.SetHealthBar(maxHP, currentHP);
         }
 
-        EffectManager.instance.HitEffect(transform.position);
+        EffectManager.instance.PlayParticle("HitEffect", transform.position);
     }
 }

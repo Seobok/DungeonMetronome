@@ -15,6 +15,8 @@ public class DungeonManager : MonoBehaviour
     int[] dirX = new int[4] { 0, 1, 0, -1 };
     int[] dirY = new int[4] { 1, 0, -1, 0 };
 
+    [HideInInspector] public Room lobby;
+
     public static DungeonManager instance = null;
 
     public const int DUNGEON_X = 5;
@@ -40,6 +42,35 @@ public class DungeonManager : MonoBehaviour
     private void Start()
     {
         
+    }
+
+    public void GenerateLobby()
+    {
+        if(lobby == null)
+        {
+            var lobbyRoom = Instantiate(room_prefabs);
+            lobby = lobbyRoom;
+
+            lobby.SetBlock();
+
+            if(goal_prefabs != null)
+            {
+                var goal = Instantiate(goal_prefabs);
+
+                goal.RoomX = 7;
+                goal.RoomY = 3;
+                goal.curRoom = lobby;
+                goal.transform.position = goal.GetTile().transform.position;
+                goal.GetTile().onTileUnit = goal;
+
+                goal.transform.SetParent(goal.GetTile().transform);
+            }
+        }
+    }
+
+    public void DeactiveLobby()
+    {
+        lobby.gameObject.SetActive(false);
     }
 
     public void GenerateRoom()
@@ -82,16 +113,16 @@ public class DungeonManager : MonoBehaviour
                 switch (dir)
                 {
                     case (int)E_Dir.ED_Up:
-                        newRoom.transform.position = curRoom.transform.position + new Vector3(0, 7, 0);
+                        newRoom.transform.position = curRoom.transform.position + new Vector3(0, Room.Y, 0);
                         break;
                     case (int)E_Dir.ED_Right:
-                        newRoom.transform.position = curRoom.transform.position + new Vector3(11, 0, 0);
+                        newRoom.transform.position = curRoom.transform.position + new Vector3(Room.X, 0, 0);
                         break;
                     case (int)E_Dir.ED_Down:
-                        newRoom.transform.position = curRoom.transform.position + new Vector3(0, -7, 0);
+                        newRoom.transform.position = curRoom.transform.position + new Vector3(0, -Room.Y, 0);
                         break;
                     case (int)E_Dir.ED_Left:
-                        newRoom.transform.position = curRoom.transform.position + new Vector3(-11, 0, 0);
+                        newRoom.transform.position = curRoom.transform.position + new Vector3(-Room.X, 0, 0);
                         break;
                 }
 
@@ -107,6 +138,10 @@ public class DungeonManager : MonoBehaviour
                         {
                             adjacentRoom.adjacentRoom[(i + 2) % 4] = newRoom;
                             newRoom.adjacentRoom[i] = adjacentRoom;
+                        }
+                        else
+                        {
+                            newRoom.adjacentRoom[i] = null;
                         }
                     }
                 }
@@ -134,11 +169,14 @@ public class DungeonManager : MonoBehaviour
             var rand_y = Random.Range(1, Room.Y - 1);
 
             var goal = Instantiate(goal_prefabs);
+
             goal.RoomX = rand_x;
             goal.RoomY = rand_y;
             goal.curRoom = roomList[ROOM_CNT - 1];
             goal.transform.position = goal.GetTile().transform.position;
             goal.GetTile().onTileUnit = goal;
+
+            goal.transform.SetParent(goal.GetTile().transform);
         }
     }
 }

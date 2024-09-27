@@ -10,7 +10,7 @@ public class Tile : MonoBehaviour
     protected SpriteRenderer spriteRenderer;
     public Room parentRoom;
     public Unit onTileUnit;
-    public Player OnTilePlayer = null;
+    public Player onTilePlayer = null;
 
     #region AStar
     public int fCost { get { return gCost + hCost; } }

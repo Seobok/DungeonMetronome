@@ -30,7 +30,7 @@ public class Slime : Enemy,IDamagable
         if (amount <= 0) return;
 
         Debug.Log($"Slime이 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
-        EffectManager.instance.HitEffect(transform.position);
+        EffectManager.instance.PlayParticle("HitEffect", transform.position);
         hp -= amount;
         if (hp <= 0)
         {

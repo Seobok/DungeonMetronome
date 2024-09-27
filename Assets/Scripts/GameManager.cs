@@ -23,7 +23,10 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
-    [HideInInspector] public bool[] isPlayerInput;
+    [HideInInspector] public List<bool> isPlayerInput;
+    [HideInInspector] public List<Player> players;
+
+    [HideInInspector] public int stage = 0;
 
     private int turnCnt = 0;
 
@@ -35,27 +38,68 @@ public class GameManager : MonoBehaviour
             Destroy(this);
 
         //일단 싱글게임
-        isPlayerInput = new bool[1];
+        isPlayerInput = new() { false };
 
-        for(int i=0;i<isPlayerInput.Length;i++)
-        {
-            isPlayerInput[i] = false;
-        }
+        players = new List<Player>();
     }
 
 
     public void Start()
     {
-        //DEBUG 맵 생성
+        StartLobby();
+    }
+
+    public void StartLobby()
+    {
+        stage = 0;
+
+        DungeonManager.instance.GenerateLobby();
+
+        if(players.Count == 0 )
+        {
+            var playerGo = Instantiate(player_prefab);
+            players.Add(playerGo);
+            GetComponent<CameraManager>().player = playerGo;
+        }
+
+        foreach( Player player in players )
+        {
+            player.RoomX = Room.X / 2;
+            player.RoomY = Room.Y / 2;
+            player.curRoom = DungeonManager.instance.lobby;
+            player.transform.position = player.GetTile().transform.position;
+            player.GetTile().onTilePlayer = player;
+        }
+    }
+
+    public void Play()
+    {
+        stage = 1;
+
         DungeonManager.instance.GenerateRoom();
 
         //플레이어 생성
-        var playerGo = Instantiate(player_prefab);
-        playerGo.GetComponent<PlayerController>().InitPlayerPosition();
-        GetComponent<CameraManager>().player = playerGo;
+        if(players.Count == 0)
+        {
+            var playerGo = Instantiate(player_prefab);
+            players.Add(playerGo);
+            GetComponent<CameraManager>().player = playerGo;
+        }
+
+        foreach (var player in players)
+        {
+            player.GetComponent<PlayerController>().InitPlayerPosition();
+            player.transform.position = player.GetTile().transform.position;
+        }
+
+        if (DungeonManager.instance.lobby != null)
+        {
+            DungeonManager.instance.DeactiveLobby();
+        }
 
         //테스트용 더미 생성
         GenerateDebugDummy();
+
     }
 
     public void GenerateDebugDummy()
@@ -75,11 +119,14 @@ public class GameManager : MonoBehaviour
             return;
 
         var trainingBot = Instantiate(trainingBot_prefab);
+
         trainingBot.RoomX = (Room.X / 2) + 1;
         trainingBot.RoomY = Room.Y / 2;
         trainingBot.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         trainingBot.transform.position = trainingBot.GetTile().transform.position;
         trainingBot.GetTile().onTileUnit = trainingBot;
+
+        trainingBot.transform.SetParent(trainingBot.GetTile().transform);
     }
 
     public void GenerateDagger()
@@ -93,6 +140,8 @@ public class GameManager : MonoBehaviour
         dagger.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         dagger.transform.position = dagger.GetTile().transform.position;
         dagger.GetTile().onTileUnit = dagger;
+
+        dagger.transform.SetParent(dagger.GetTile().transform);
     }
 
     public void GenerateSpear()
@@ -106,6 +155,8 @@ public class GameManager : MonoBehaviour
         spear.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         spear.transform.position= spear.GetTile().transform.position;
         spear.GetTile().onTileUnit = spear;
+
+        spear.transform.SetParent (spear.GetTile().transform);
     }
 
     public void GenerateDualDagger()
@@ -119,6 +170,8 @@ public class GameManager : MonoBehaviour
         dualDagger.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         dualDagger.transform.position = dualDagger.GetTile().transform.position;
         dualDagger.GetTile().onTileUnit = dualDagger;
+
+        dualDagger.transform.SetParent(dualDagger.GetTile().transform);
     }
 
     public void GenerateBat()

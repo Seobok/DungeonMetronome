@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,6 +52,24 @@ public class Unit : MonoBehaviour
     public Tile GetTile()
     {
         return curRoom.GetTile(RoomX, RoomY);
+    }
+
+    public void SetTile(Tile tile)
+    {
+        if (tile.onTileUnit != null) return;
+
+        if(curRoom != null)
+        {
+            GetTile().onTileUnit = null;
+        }
+
+        curRoom = tile.parentRoom;
+        RoomX = tile.x;
+        RoomY = tile.y;
+
+        GetTile().onTileUnit = this;
+
+        transform.SetParent(tile.transform);
     }
     #endregion
 }
