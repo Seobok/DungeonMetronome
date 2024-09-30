@@ -19,7 +19,11 @@ public class InGameUIManager : MonoBehaviour
     [SerializeField] private Sprite noMarkSlot;             //NoMark : 착용중인 장비와 배경이 겹치는 상황을 막기 위한 빈 배경
 
     [Header("FadeInOut")]
-    [SerializeField] private SpriteRenderer FadeInOutPanel;
+    [SerializeField] private Image fadeInOutPanel;
+
+    [Header("Pause")]
+    [SerializeField] private GameObject pausePanel;
+    [HideInInspector] public bool isPause;
 
     private void Awake()
     {
@@ -27,6 +31,11 @@ public class InGameUIManager : MonoBehaviour
             Instance = this;
         else
             Destroy(this);
+    }
+
+    private void Start()
+    {
+        pausePanel.SetActive(false);
     }
 
     public void SetHealthBar(int maxHP, int currentHP)
@@ -81,7 +90,7 @@ public class InGameUIManager : MonoBehaviour
     {
         float elapsedTime = 0f;
 
-        Color panelColor = FadeInOutPanel.color;    //패널 색상 가져오기
+        Color panelColor = fadeInOutPanel.color;    //패널 색상 가져오기
 
         //페이드 효과 동안 Alpha 값을 점진적으로 변화
         while (elapsedTime < duration)
@@ -90,13 +99,24 @@ public class InGameUIManager : MonoBehaviour
             float newAlpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / duration);
 
             panelColor.a = newAlpha;
-            FadeInOutPanel.color = panelColor;  //패널 색상 업데이트
+            fadeInOutPanel.color = panelColor;  //패널 색상 업데이트
 
             yield return null;  //프레임마다 갱신
         }
 
         //최종적으로 알파 값 설정
         panelColor.a = endAlpha;
-        FadeInOutPanel.color = panelColor;
+        fadeInOutPanel.color = panelColor;
+    }
+
+    public void ActivePause()
+    {
+        pausePanel.SetActive(true);
+        isPause = true;
+    }
+    public void DeactivePause()
+    {
+        pausePanel.SetActive(false);
+        isPause = false;
     }
 }

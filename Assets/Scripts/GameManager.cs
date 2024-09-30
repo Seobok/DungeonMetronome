@@ -46,14 +46,23 @@ public class GameManager : MonoBehaviour
 
     public void Start()
     {
+        GeneragteMap();
+        
         StartLobby();
+    }
+
+    public void GeneragteMap()
+    {
+        DungeonManager.instance.GenerateRoom();
+        DungeonManager.instance.GenerateLobby();
     }
 
     public void StartLobby()
     {
         stage = 0;
 
-        DungeonManager.instance.GenerateLobby();
+        DungeonManager.instance.DeactiveDungeon();
+        DungeonManager.instance.ActiveLobby();
 
         if(players.Count == 0 )
         {
@@ -76,7 +85,8 @@ public class GameManager : MonoBehaviour
     {
         stage = 1;
 
-        DungeonManager.instance.GenerateRoom();
+        DungeonManager.instance.DeactiveLobby();
+        DungeonManager.instance.ActiveDungeon();
 
         //플레이어 생성
         if(players.Count == 0)
@@ -99,6 +109,7 @@ public class GameManager : MonoBehaviour
         //테스트용 더미 생성
         GenerateDebugDummy();
 
+        MonsterSpawner.instance.SpawnMonster();
     }
 
     public void GenerateDebugDummy()
@@ -107,9 +118,6 @@ public class GameManager : MonoBehaviour
         GenerateDagger();
         GenerateSpear();
         GenerateDualDagger();
-        //GenerateBat();
-        //GenerateSlime();
-        MonsterSpawner.instance.SpawnMonster();
     }
 
     public void GenerateTrainingBot()
@@ -209,11 +217,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ExecuteTurn()
     {
-        foreach(var monster in MonsterSpawner.instance.monstersList)
+        if(stage > 0)
         {
-            monster.Act();
+            foreach (var monster in MonsterSpawner.instance.monstersList)
+            {
+                monster.Act();
+            }
+            turnCnt++;
         }
-        turnCnt++;
     }
 
     public void ResultQTE(float damageRate, Player causer, List<IDamagable> damagableList)

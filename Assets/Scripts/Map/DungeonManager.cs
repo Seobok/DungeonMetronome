@@ -49,28 +49,38 @@ public class DungeonManager : MonoBehaviour
         if(lobby == null)
         {
             var lobbyRoom = Instantiate(room_prefabs);
+            lobbyRoom.name = "Lobby";
             lobby = lobbyRoom;
+        }
+    }
 
-            lobby.SetBlock();
+    public void GenenrateLobbyUnit()
+    {
+        //StartGame Goal
+        if (goal_prefabs != null)
+        {
+            var goal = Instantiate(goal_prefabs);
 
-            if(goal_prefabs != null)
-            {
-                var goal = Instantiate(goal_prefabs);
+            goal.RoomX = 7;
+            goal.RoomY = 3;
+            goal.curRoom = lobby;
+            goal.transform.position = goal.GetTile().transform.position;
+            goal.GetTile().onTileUnit = goal;
 
-                goal.RoomX = 7;
-                goal.RoomY = 3;
-                goal.curRoom = lobby;
-                goal.transform.position = goal.GetTile().transform.position;
-                goal.GetTile().onTileUnit = goal;
+            goal.transform.SetParent(goal.GetTile().transform);
 
-                goal.transform.SetParent(goal.GetTile().transform);
-            }
+            goal.SetInfo("Dungeon");
         }
     }
 
     public void DeactiveLobby()
     {
         lobby.gameObject.SetActive(false);
+    }
+    public void ActiveLobby()
+    {
+        lobby.gameObject.SetActive(true);
+        GenenrateLobbyUnit();
     }
 
     public void GenerateRoom()
@@ -149,15 +159,6 @@ public class DungeonManager : MonoBehaviour
                 roomList.Add(newRoom);
             }
         }
-
-        //마지막으로 생성된 방에 도착점 생성
-        GenerateGoal();
-
-        //외벽 매꾸기
-        foreach(var room in roomList)
-        {
-            room.SetBlock();
-        }
     }
 
     public void GenerateGoal()
@@ -177,6 +178,25 @@ public class DungeonManager : MonoBehaviour
             goal.GetTile().onTileUnit = goal;
 
             goal.transform.SetParent(goal.GetTile().transform);
+
+            goal.SetInfo("Next Stage");
         }
+    }
+
+    public void DeactiveDungeon()
+    {
+        foreach(var room in roomList)
+        {
+            room.gameObject.SetActive(false);
+        }
+    }
+    public void ActiveDungeon()
+    {
+        foreach(var room in roomList)
+        {
+            room.gameObject.SetActive(true);
+        }
+
+        GenerateGoal();
     }
 }

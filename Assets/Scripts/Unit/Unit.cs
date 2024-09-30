@@ -10,8 +10,10 @@ public class Unit : MonoBehaviour
     /// 현재 위치하는 방의 정보
     /// 방에서의 X, Y 좌표
     /// </summary>
-    [HideInInspector] public Room curRoom;
-    private int _roomX, _roomY;
+
+    [Header("Position")]
+    public Room curRoom;
+    [SerializeField] private int _roomX, _roomY;
     public int RoomX
     {
         get { return _roomX; }

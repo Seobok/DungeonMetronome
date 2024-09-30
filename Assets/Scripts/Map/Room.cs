@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.Collections.AllocatorManager;
 
 public class Room : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class Room : MonoBehaviour
     [SerializeField] private Block block_prefab;
 
     [HideInInspector] public Room[] adjacentRoom;
+    [HideInInspector] public Block[] blocks;
 
     /// <summary>
     /// 방의 타일과 인접 방 초기화
@@ -30,6 +32,7 @@ public class Room : MonoBehaviour
     /// </summary>
     private void Awake()
     {
+        //Tile 생성
         tiles = new Tile[X, Y];
         adjacentRoom = new Room[4] { null, null, null, null };
 
@@ -57,6 +60,14 @@ public class Room : MonoBehaviour
                 go.transform.localPosition = new Vector3(i, j, 0);
             }
         }
+
+        blocks = new Block[2 * X + 2 * Y - 4];
+        for(int i=0; i < blocks.Length; i++)
+        {
+            var blockGo = Instantiate(block_prefab);
+            blocks[i] = blockGo;
+            blockGo.gameObject.SetActive(false);
+        }
     }
 
     private void OnEnable()
@@ -66,27 +77,96 @@ public class Room : MonoBehaviour
             if(tile != null)
             {
                 tile.onTilePlayer = null;
-                tile.onTileUnit = null;
+
+                if(tile.onTileUnit != null)
+                {
+                    var onTileEnemy = tile.onTileUnit.GetComponent<Enemy>();
+                    var onTileBlock = tile.onTileUnit.GetComponent<Block>();
+                    if (onTileEnemy != null)
+                    {
+                        MonsterSpawner.instance.Die(onTileEnemy);
+                    }
+                    else if (onTileBlock != null)
+                    {
+                        onTileBlock.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        Destroy(tile.onTileUnit);
+                    }
+
+                    tile.onTileUnit = null;
+                }
             }
         }
+
+        SetBlock();
     }
 
     public void SetBlock()
     {
-        int[] dx = { 0, 1, 0, -1 };
-        int[] dy = { 1, 0, -1, 0 };
-        foreach(var tile in tiles)
+        int idx = 0;
+        if (adjacentRoom[0] == null)
         {
-            for(int i=0;i<4;i++)
+            //위
+            for(int i=0;i<X;i++)
             {
-                if (GetTile(tile.x + dx[i], tile.y + dy[i]) == null)
+                if(tiles[i,Y-1].onTileUnit == null)
                 {
-                    var blockGo = Instantiate(block_prefab);
+                    blocks[idx].gameObject.SetActive(true);
 
-                    blockGo.SetTile(tile);
-                    blockGo.transform.position = blockGo.GetTile().transform.position;
+                    blocks[idx].SetTile(tiles[i, Y - 1]);
+                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
 
-                    break;
+                    idx++;
+                }
+            }
+        }
+        if (adjacentRoom[1] == null)
+        {
+            //오른쪽
+            for(int i=0;i<Y;i++)
+            {
+                if (tiles[X-1,i].onTileUnit == null)
+                {
+                    blocks[idx].gameObject.SetActive(true);
+
+                    blocks[idx].SetTile(tiles[X - 1, i]);
+                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                    idx++;
+                }    
+            }
+        }
+        if (adjacentRoom[2] == null)
+        {
+            //아래
+            for(int i=0;i<X;i++)
+            {
+                if (tiles[i,0].onTileUnit == null)
+                {
+                    blocks[idx].gameObject.SetActive(true);
+
+                    blocks[idx].SetTile(tiles[i, 0]);
+                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                    idx++;
+                }
+            }
+        }
+        if (adjacentRoom[3] == null)
+        {
+            //왼쪽
+            for (int i = 0; i < Y; i++)
+            {
+                if (tiles[0, i].onTileUnit == null)
+                {
+                    blocks[idx].gameObject.SetActive(true);
+
+                    blocks[idx].SetTile(tiles[0, i]);
+                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                    idx++;
                 }
             }
         }

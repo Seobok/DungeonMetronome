@@ -19,12 +19,19 @@ public class MainmenuAnim : MonoBehaviour
         foreach(var button in buttons)
         {
             button.gameObject.SetActive(false);
+            button.onClick.AddListener(PlayCllickSound);
         }
     }
 
     private void Start()
     {
         title.DOText("Dungeon Metronome", TYPING_DURATION).OnComplete(() => StartCoroutine(ActiveButtons()));
+
+        var allButtons = GetComponentsInChildren<Button>();
+        foreach(var button in allButtons)
+        {
+            button.onClick.AddListener(PlayCllickSound);
+        }
     }
 
     IEnumerator ActiveButtons()
@@ -34,6 +41,12 @@ public class MainmenuAnim : MonoBehaviour
             button.gameObject.SetActive(true);
             yield return new WaitForSeconds(0.5f);
         }
+    }
+
+    public void StartNewGame()
+    {
+        SoundManager.instance.PlayBGM("Lobby", 0.5f);
+        LoadingAnim.LoadScene("Dungeon");
     }
 
     public void MoveOptionPanel()
@@ -49,6 +62,23 @@ public class MainmenuAnim : MonoBehaviour
         if (Camera.main != null)
         {
             Camera.main.transform.DOMoveX(MenuPanel.transform.position.x, MOVE_DURATION);
+        }
+    }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit(); // 어플리케이션 종료
+#endif
+    }
+
+    public void PlayCllickSound()
+    {
+        if(SoundManager.instance != null)
+        {
+            SoundManager.instance.PlaySFX("ClickButton");
         }
     }
 }

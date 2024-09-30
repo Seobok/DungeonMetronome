@@ -21,8 +21,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnMove(InputValue inputValue)
     {
-        if (GameManager.instance.isPlayerInput[0])
-            return;
+        if (GameManager.instance.isPlayerInput[0]) return;
+        if(InGameUIManager.Instance) { if (InGameUIManager.Instance.isPause) return; }
 
         var input = inputValue.Get<Vector2>() * playerSpeed;
 
@@ -109,11 +109,14 @@ public class PlayerController : MonoBehaviour
                 {
                     Move(input);
 
-                    if(GameManager.instance.stage == 0)
+                    if (GameManager.instance.stage == 0)
                     {
                         //Lobby To Game
-
                         StartCoroutine(MoveLobbyToDungeon());
+                    }
+                    else
+                    {
+                        //Next Stage
                     }
 
                     //TODO :: 스테이지 클리어
@@ -121,7 +124,6 @@ public class PlayerController : MonoBehaviour
                     //TODO :: 맵 체인지
                     //TODO :: 화면 페이드 인
 
-                    GameManager.instance.ExecuteTurn();
                     return;
                 }
             }
@@ -134,6 +136,21 @@ public class PlayerController : MonoBehaviour
 
         GameManager.instance.ExecuteTurn();
         return;
+    }
+    private void OnPause(InputValue inputValue)
+    {
+        //QTE중이라면 실행하지 않음
+        if (GameManager.instance.isPlayerInput[0]) return;
+        if (InGameUIManager.Instance == null) return;
+
+        if(InGameUIManager.Instance.isPause)
+        {
+            InGameUIManager.Instance.DeactivePause();
+        }
+        else
+        {
+            InGameUIManager.Instance.ActivePause();
+        }
     }
 
     IEnumerator MoveLobbyToDungeon()
@@ -171,8 +188,6 @@ public class PlayerController : MonoBehaviour
         player.RoomY = Room.Y / 2;
         player.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         player.transform.position = player.GetTile().transform.position;
-        Debug.Log(player.transform.position);
-        Debug.Log(player.GetTile().transform.position);
         player.GetTile().onTilePlayer = player;
     }
 }

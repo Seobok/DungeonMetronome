@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class Player : Unit, IDamagable
 {
     private Weapon _weapon;
@@ -20,14 +21,20 @@ public class Player : Unit, IDamagable
         }
     }
 
+    private SpriteRenderer _spriteRenderer;
+
     [Header("Health")]
     private int maxHP;  //2의 배수
     private int currentHP;
 
     private void Awake()
     {
+        //Property
         maxHP = 6;
         currentHP = maxHP;
+
+        //Initialize
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     /// <summary>
@@ -72,6 +79,6 @@ public class Player : Unit, IDamagable
             InGameUIManager.Instance.SetHealthBar(maxHP, currentHP);
         }
 
-        EffectManager.instance.PlayParticle("HitEffect", transform.position);
+        EffectManager.instance.PlayParticle("HitEffect", transform.position, _spriteRenderer.sortingOrder + 1);
     }
 }
