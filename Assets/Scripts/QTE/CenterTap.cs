@@ -48,6 +48,12 @@ public class CenterTap : MonoBehaviour
         {
             correctCount++;
             timingBar.ChangeColor(Color.green);
+
+            SoundManager.instance.PlaySFX("Success");
+        }
+        else
+        {
+            SoundManager.instance.PlaySFX("Fail");
         }
     }
 

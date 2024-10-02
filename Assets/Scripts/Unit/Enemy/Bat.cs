@@ -28,6 +28,8 @@ public class Bat : Enemy, IDamagable
             hp = 0;
             //죽는 애니메이션 또는 파티클
             MonsterSpawner.instance.Die(this);
+
+            GameManager.instance.score += 10;
         }
     }
 }

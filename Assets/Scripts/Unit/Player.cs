@@ -80,5 +80,6 @@ public class Player : Unit, IDamagable
         }
 
         EffectManager.instance.PlayParticle("HitEffect", transform.position, _spriteRenderer.sortingOrder + 1);
+        SoundManager.instance.PlaySFX("Damaged");
     }
 }

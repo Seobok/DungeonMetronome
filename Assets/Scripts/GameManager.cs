@@ -28,6 +28,12 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public int stage = 0;
 
+    [Header("Result")]
+    [HideInInspector] public bool isStartGame = false;
+    [HideInInspector] public float playTimer = 0f;
+    [HideInInspector] public int moveCnt = 0;
+    [HideInInspector] public int score = 0;
+
     private int turnCnt = 0;
 
     private void Awake()
@@ -49,6 +55,14 @@ public class GameManager : MonoBehaviour
         GeneragteMap();
         
         StartLobby();
+    }
+
+    private void Update()
+    {
+        if (isStartGame)
+        {
+            playTimer += Time.deltaTime;
+        }
     }
 
     public void GeneragteMap()
@@ -83,6 +97,8 @@ public class GameManager : MonoBehaviour
 
     public void Play()
     {
+        SoundManager.instance.PlayBGM("FirstFloor");
+
         stage = 1;
 
         DungeonManager.instance.DeactiveLobby();
@@ -227,6 +243,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ClearStage()
+    {//TODO :: 스테이지 클리어
+        InGameUIManager.Instance.ActiveResult();
+        //TODO :: 화면 페이드 아웃
+        //TODO :: 맵 체인지
+        //TODO :: 화면 페이드 인
+    }
+
     public void ResultQTE(float damageRate, Player causer, List<IDamagable> damagableList)
     {
         causer.Attack(damagableList, damageRate);
@@ -234,5 +258,36 @@ public class GameManager : MonoBehaviour
         isPlayerInput[0] = false;
 
         ExecuteTurn();
+    }
+
+    public IEnumerator MoveLobbyToDungeon()
+    {
+        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(0, 1, 1));
+
+        Play();
+
+        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(1, 0, 1));
+    }
+
+    public IEnumerator MoveNextStage()
+    {
+        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(0, 1, 1));
+
+        stage++;
+
+        InGameUIManager.Instance.DeactiveResult();
+        DungeonManager.instance.DeactiveDungeon();
+        DungeonManager.instance.GenerateRoom();
+        DungeonManager.instance.DeactiveDungeon();
+        DungeonManager.instance.ActiveDungeon();
+
+        MonsterSpawner.instance.SpawnMonster();
+
+        foreach (var player in players)
+        {
+            player.GetComponent<PlayerController>().InitPlayerPosition();
+        }
+
+        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(1, 0, 1));
     }
 }

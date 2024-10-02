@@ -1,0 +1,62 @@
+{
+    "name": "ResultAction",
+    "maps": [
+        {
+            "name": "PressAnyButton",
+            "id": "334e892f-5f5e-4dfc-a4b9-ca2f7f4b5952",
+            "actions": [
+                {
+                    "name": "Action",
+                    "type": "Button",
+                    "id": "387c56c2-bb05-4a5d-b95a-81ed4b36788f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b9de2410-75cd-4ccd-8fd2-04d731b2e261",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PC",
+                    "action": "Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cd446f8-88f2-42c8-9f0c-4518aa2afbb8",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PC",
+                    "action": "Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "PC",
+            "bindingGroup": "PC",
+            "devices": [
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

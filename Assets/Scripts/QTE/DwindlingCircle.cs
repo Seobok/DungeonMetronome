@@ -51,6 +51,12 @@ public class DwindlingCircle : MonoBehaviour
                     //CORRECT
                     go.GetComponent<Image>().color = Color.green;
                     correctCount++;
+
+                    SoundManager.instance.PlaySFX("Success");
+                }
+                else
+                {
+                    SoundManager.instance.PlaySFX("Fail");
                 }
             }
 

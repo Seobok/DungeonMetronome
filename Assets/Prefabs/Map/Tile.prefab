@@ -50,7 +50,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: aecce8e42b1916d449aba2b7e90fb367, type: 2}
   parentRoom: {fileID: 0}
   onTileUnit: {fileID: 0}
-  OnTilePlayer: {fileID: 0}
+  onTilePlayer: {fileID: 0}
   gCost: 0
   hCost: 0
   astarParent: {fileID: 0}
@@ -94,7 +94,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: aecce8e42b1916d449aba2b7e90fb367, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

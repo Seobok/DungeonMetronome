@@ -39,8 +39,13 @@ public class Enemy : Unit
     protected Tile PlayerTile = null;
     protected Tile moveTile = null;
 
+    [Header("Sprite")]
+    protected SpriteRenderer spriteRenderer;
+
     private void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         //detectRange를 기반으로 탐지가 가능한 범위를 정하는 코드
         for (int i = -detactRange; i <= detactRange; i++)
         {
@@ -58,6 +63,11 @@ public class Enemy : Unit
         }
 
         //나머지 공격범위 설정
+        SetRange();
+    }
+
+    public virtual void SetRange()
+    {
         foreach (var rightDir in rightDirRange)
         {
             upDirRange.Add(new Vector2(rightDir.y, rightDir.x));
@@ -75,6 +85,7 @@ public class Enemy : Unit
         {
             Attack();
 
+            SetAttackAnim(false);
             //만약 공격했다면 이동하지 않음
             bIsReadyMove = false;
 
@@ -94,6 +105,7 @@ public class Enemy : Unit
             if(Range())
             {
                 bIsReadyAttack = true;
+                SetAttackAnim(true);
                 return;
             }
 
@@ -129,7 +141,7 @@ public class Enemy : Unit
     /// 만약 플레이어가 발견되면 해당 방향의 공격 범위를 attackTiles에 넣고 공격을 준비함
     /// </summary>
     /// <returns>플레이어가 있으면 true, 아니면 false를 반환</returns>
-    public bool Range()
+    public virtual bool Range()
     {
         //오른쪽 범위를 확인하기
         var tiles = curRoom.GetTiles(GetTile(), rightDirRange);
@@ -138,6 +150,9 @@ public class Enemy : Unit
             if (tile.onTilePlayer != null)
             {
                 attackTiles = tiles;
+
+                spriteRenderer.flipX = false;
+
                 ShowAttackTile();
                 return true;
             }
@@ -171,6 +186,9 @@ public class Enemy : Unit
             if (tile.onTilePlayer != null)
             {
                 attackTiles = tiles;
+
+                spriteRenderer.flipX = true;
+
                 ShowAttackTile();
                 return true;
             }
@@ -206,6 +224,16 @@ public class Enemy : Unit
             moveTile = path.Pop();
             moveCnt--;
         }
+
+        if (moveTile.transform.position.x < GetTile().transform.position.x)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else
+        {
+            spriteRenderer.flipX = false;
+        }
+
         moveCnt = moveMaxCnt;
 
         bIsReadyMove = true;
@@ -241,12 +269,27 @@ public class Enemy : Unit
                 break;
             }
         }
+
+        if (moveTile.transform.position.x < GetTile().transform.position.x)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else
+        {
+            spriteRenderer.flipX = false;
+        }
+
         moveCnt = moveMaxCnt;
         bIsReadyMove = true;
         ShowMoveTile();
     }
 
-    public void Attack()
+    public virtual void SetAttackAnim(bool b)
+    {
+        
+    }
+
+    public virtual void Attack()
     {
         //일단 그냥 때리는걸로 하고 나중에 방패같은거 생기면 데미지 반감? 이 밸런스 고려했을때 적절할듯
         foreach(var tile in attackTiles)

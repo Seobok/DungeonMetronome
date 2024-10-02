@@ -22,7 +22,17 @@ public class PlayerController : MonoBehaviour
     private void OnMove(InputValue inputValue)
     {
         if (GameManager.instance.isPlayerInput[0]) return;
-        if(InGameUIManager.Instance) { if (InGameUIManager.Instance.isPause) return; }
+        if(InGameUIManager.Instance) { if (!InGameUIManager.Instance.CanControllPlayer()) return; }
+
+        if(!GameManager.instance.isStartGame)
+        {
+            GameManager.instance.playTimer = 0f;
+            GameManager.instance.moveCnt = 0;
+            GameManager.instance.score = 0;
+            GameManager.instance.isStartGame = true;
+        }
+
+        GameManager.instance.moveCnt++;
 
         var input = inputValue.Get<Vector2>() * playerSpeed;
 
@@ -108,22 +118,18 @@ public class PlayerController : MonoBehaviour
                 if(goal != null)
                 {
                     Move(input);
+                    SoundManager.instance.PlaySFX("WalkSound");
 
                     if (GameManager.instance.stage == 0)
                     {
                         //Lobby To Game
-                        StartCoroutine(MoveLobbyToDungeon());
+                        StartCoroutine(GameManager.instance.MoveLobbyToDungeon());
                     }
                     else
                     {
                         //Next Stage
+                        GameManager.instance.ClearStage();
                     }
-
-                    //TODO :: 스테이지 클리어
-                    //TODO :: 화면 페이드 아웃
-                    //TODO :: 맵 체인지
-                    //TODO :: 화면 페이드 인
-
                     return;
                 }
             }
@@ -143,23 +149,7 @@ public class PlayerController : MonoBehaviour
         if (GameManager.instance.isPlayerInput[0]) return;
         if (InGameUIManager.Instance == null) return;
 
-        if(InGameUIManager.Instance.isPause)
-        {
-            InGameUIManager.Instance.DeactivePause();
-        }
-        else
-        {
-            InGameUIManager.Instance.ActivePause();
-        }
-    }
-
-    IEnumerator MoveLobbyToDungeon()
-    {
-        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(0, 1, 1));
-
-        GameManager.instance.Play();
-
-        yield return StartCoroutine(InGameUIManager.Instance.FadeImage(1, 0, 1));
+        InGameUIManager.Instance.TogglePause();
     }
 
     public void Move(Vector2 input)

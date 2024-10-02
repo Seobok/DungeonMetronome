@@ -61,7 +61,7 @@ public class Room : MonoBehaviour
             }
         }
 
-        blocks = new Block[2 * X + 2 * Y - 4];
+        blocks = new Block[2 * X + 2 * Y];
         for(int i=0; i < blocks.Length; i++)
         {
             var blockGo = Instantiate(block_prefab);
@@ -70,15 +70,15 @@ public class Room : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    private void OnDisable()
     {
-        foreach(var tile in tiles)
+        foreach (var tile in tiles)
         {
-            if(tile != null)
+            if (tile != null)
             {
                 tile.onTilePlayer = null;
 
-                if(tile.onTileUnit != null)
+                if (tile.onTileUnit != null)
                 {
                     var onTileEnemy = tile.onTileUnit.GetComponent<Enemy>();
                     var onTileBlock = tile.onTileUnit.GetComponent<Block>();
@@ -92,19 +92,23 @@ public class Room : MonoBehaviour
                     }
                     else
                     {
-                        Destroy(tile.onTileUnit);
+                        Destroy(tile.onTileUnit.gameObject);
                     }
 
                     tile.onTileUnit = null;
                 }
             }
         }
+    }
 
+    private void OnEnable()
+    {
         SetBlock();
     }
 
     public void SetBlock()
     {
+        if (DungeonManager.instance.lobby == this) return;
         int idx = 0;
         if (adjacentRoom[0] == null)
         {
@@ -135,7 +139,7 @@ public class Room : MonoBehaviour
                     blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
 
                     idx++;
-                }    
+                }
             }
         }
         if (adjacentRoom[2] == null)

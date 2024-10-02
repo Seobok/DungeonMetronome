@@ -35,8 +35,6 @@ public class DungeonManager : MonoBehaviour
         {
             Destroy(this);
         }
-
-        rooms = new Room[DUNGEON_X, DUNGEON_Y];
     }
 
     private void Start()
@@ -85,6 +83,8 @@ public class DungeonManager : MonoBehaviour
 
     public void GenerateRoom()
     {
+        rooms = new Room[DUNGEON_X, DUNGEON_Y];
+
         //시작 지점 만들기
         var startRoom = Instantiate(room_prefabs);
         rooms[DUNGEON_X / 2, DUNGEON_Y / 2] = startRoom;
@@ -160,6 +160,90 @@ public class DungeonManager : MonoBehaviour
             }
         }
     }
+
+    //public void ReGenerateRoom()
+    //{
+    //    rooms = new Room[DUNGEON_X, DUNGEON_Y];
+
+    //    foreach(Room room in roomList)
+    //    {
+    //        for(int i=0;i<4;i++)
+    //        {
+    //            room.adjacentRoom[i] = null;
+    //        }
+    //        room.gameObject.SetActive(false);
+    //    }
+
+    //    for (int i=0;i<roomList.Count;i++)
+    //    {
+    //        if (i == 0)
+    //        {
+    //            rooms[DUNGEON_X / 2, DUNGEON_Y / 2] = roomList[0];
+    //            roomList[0].roomX = DUNGEON_X / 2;
+    //            roomList[0].roomY = DUNGEON_Y / 2;
+    //            roomList[0].name = "startRoom";
+
+    //            continue;
+    //        }
+
+    //        var rand = Random.Range(0, i);
+    //        var dir = Random.Range(0, 4);
+
+    //        Room curRoom = roomList[rand];
+    //        int nextRoomX = curRoom.roomX + dirX[dir];
+    //        int nextRoomY = curRoom.roomY + dirY[dir];
+
+    //        if (curRoom.adjacentRoom[dir] == null && nextRoomX >= 0 && nextRoomX < DUNGEON_X && nextRoomY >= 0 && nextRoomY < DUNGEON_Y)
+    //        {
+    //            //방 생성 가능
+    //            roomList[i].name = $"Room {i}";
+
+    //            //배열 설정
+    //            roomList[i].roomX = nextRoomX;
+    //            roomList[i].roomY = nextRoomY;
+
+    //            rooms[roomList[i].roomX, roomList[i].roomY] = roomList[i];
+
+    //            //위치 조정
+    //            roomList[i].transform.SetParent(transform.parent);
+    //            switch (dir)
+    //            {
+    //                case (int)E_Dir.ED_Up:
+    //                    roomList[i].transform.position = curRoom.transform.position + new Vector3(0, Room.Y, 0);
+    //                    break;
+    //                case (int)E_Dir.ED_Right:
+    //                    roomList[i].transform.position = curRoom.transform.position + new Vector3(Room.X, 0, 0);
+    //                    break;
+    //                case (int)E_Dir.ED_Down:
+    //                    roomList[i].transform.position = curRoom.transform.position + new Vector3(0, -Room.Y, 0);
+    //                    break;
+    //                case (int)E_Dir.ED_Left:
+    //                    roomList[i].transform.position = curRoom.transform.position + new Vector3(-Room.X, 0, 0);
+    //                    break;
+    //            }
+
+    //            //방 연결
+    //            for (int j = 0; j < 4; j++)
+    //            {
+    //                int adjacentRoomX = roomList[i].roomX + dirX[j];
+    //                int adjacentRoomY = roomList[i].roomY + dirY[j];
+    //                if (adjacentRoomX >= 0 && adjacentRoomY >= 0 && adjacentRoomX < DUNGEON_X && adjacentRoomY < DUNGEON_Y)
+    //                {
+    //                    var adjacentRoom = rooms[adjacentRoomX, adjacentRoomY];
+    //                    if (adjacentRoom != null)
+    //                    {
+    //                        adjacentRoom.adjacentRoom[(j + 2) % 4] = roomList[i];
+    //                        roomList[i].adjacentRoom[j] = adjacentRoom;
+    //                    }
+    //                    else
+    //                    {
+    //                        roomList[i].adjacentRoom[j] = null;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
     public void GenerateGoal()
     {

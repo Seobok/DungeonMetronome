@@ -23,7 +23,11 @@ public class InGameUIManager : MonoBehaviour
 
     [Header("Pause")]
     [SerializeField] private GameObject pausePanel;
-    [HideInInspector] public bool isPause;
+    private bool isPause = false;
+
+    [Header("Result")]
+    [SerializeField] private GameObject resultPanel;
+    private bool isShowingResult = false;
 
     private void Awake()
     {
@@ -36,6 +40,8 @@ public class InGameUIManager : MonoBehaviour
     private void Start()
     {
         pausePanel.SetActive(false);
+        resultPanel.SetActive(false);
+        fadeInOutPanel.gameObject.SetActive(false);
     }
 
     public void SetHealthBar(int maxHP, int currentHP)
@@ -90,6 +96,8 @@ public class InGameUIManager : MonoBehaviour
     {
         float elapsedTime = 0f;
 
+        fadeInOutPanel.gameObject.SetActive(true);
+
         Color panelColor = fadeInOutPanel.color;    //패널 색상 가져오기
 
         //페이드 효과 동안 Alpha 값을 점진적으로 변화
@@ -107,16 +115,40 @@ public class InGameUIManager : MonoBehaviour
         //최종적으로 알파 값 설정
         panelColor.a = endAlpha;
         fadeInOutPanel.color = panelColor;
+
+        if(endAlpha == 0f)
+        {
+            fadeInOutPanel.gameObject.SetActive(false);
+        }
     }
 
-    public void ActivePause()
+    public bool CanControllPlayer()
     {
-        pausePanel.SetActive(true);
-        isPause = true;
+        return !isPause && !isShowingResult; 
     }
-    public void DeactivePause()
+
+    public void TogglePause()
     {
-        pausePanel.SetActive(false);
-        isPause = false;
+        if(isPause)
+        {
+            pausePanel.SetActive(false);
+            isPause = false;
+        }
+        else
+        {
+            pausePanel.SetActive(true);
+            isPause = true;
+        }
+    }
+
+    public void ActiveResult()
+    {
+        resultPanel.SetActive(true);
+        isShowingResult = true;
+    }
+    public void DeactiveResult()
+    {
+        resultPanel.SetActive(false);
+        isShowingResult = false;
     }
 }

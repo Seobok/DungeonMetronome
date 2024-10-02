@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,11 +12,13 @@ public class MainmenuAnim : MonoBehaviour
     [SerializeField] private GameObject MenuPanel;
     [SerializeField] private GameObject OptionPanel;
 
-    private const float TYPING_DURATION = 5f;
+    private string gameTitle = "Dungeon Metronome";
+    private const float TYPING_DURATION = 3f;
     private const float MOVE_DURATION = 1f;
 
     private void Awake()
     {
+        //메인 메뉴 버튼 4개
         foreach(var button in buttons)
         {
             button.gameObject.SetActive(false);
@@ -25,8 +28,10 @@ public class MainmenuAnim : MonoBehaviour
 
     private void Start()
     {
-        title.DOText("Dungeon Metronome", TYPING_DURATION).OnComplete(() => StartCoroutine(ActiveButtons()));
+        //title.DOText(gameTitle, TYPING_DURATION).OnComplete(() => StartCoroutine(ActiveButtons()));
+        StartCoroutine(TypingText());
 
+        //메인 버튼 4개를 제외한 버튼들
         var allButtons = GetComponentsInChildren<Button>();
         foreach(var button in allButtons)
         {
@@ -34,11 +39,34 @@ public class MainmenuAnim : MonoBehaviour
         }
     }
 
+    IEnumerator TypingText()
+    {
+        yield return new WaitForSeconds(1f);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.Append("");
+        title.text = stringBuilder.ToString();
+
+        int idx = 0;
+
+        while(idx != gameTitle.Length)
+        {
+            stringBuilder.Append(gameTitle[idx]);
+            title.text = stringBuilder.ToString();
+            SoundManager.instance.PlaySFX("TypingSound");
+            idx++;
+            yield return new WaitForSeconds(TYPING_DURATION / gameTitle.Length);
+        }
+
+        StartCoroutine(ActiveButtons());
+    }
+
     IEnumerator ActiveButtons()
     {
         foreach(var button in buttons)
         {
             button.gameObject.SetActive(true);
+            SoundManager.instance.PlaySFX("ButtonGenerate");
             yield return new WaitForSeconds(0.5f);
         }
     }
