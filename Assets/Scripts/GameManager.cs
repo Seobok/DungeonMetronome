@@ -92,6 +92,8 @@ public class GameManager : MonoBehaviour
             player.curRoom = DungeonManager.instance.lobby;
             player.transform.position = player.GetTile().transform.position;
             player.GetTile().onTilePlayer = player;
+
+            player.ShowVisibleTile();
         }
     }
 

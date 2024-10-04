@@ -27,6 +27,11 @@ public class Player : Unit, IDamagable
     private int maxHP;  //2의 배수
     private int currentHP;
 
+    [Header("FogOfWar")]
+    List<Vector2> visibleRange = new List<Vector2>();
+    List<Tile> curVisible = new List<Tile>();
+    const int VISIBLE_DIST = 5;
+
     private void Awake()
     {
         //Property
@@ -35,6 +40,18 @@ public class Player : Unit, IDamagable
 
         //Initialize
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        //FogOfWar
+        //VisibleRange Init
+        for (int i = -VISIBLE_DIST; i <= VISIBLE_DIST; i++)
+        {
+            for (int j = -VISIBLE_DIST; j <= VISIBLE_DIST; j++)
+            {
+                if (Mathf.Abs(i) + Mathf.Abs(j) > VISIBLE_DIST) continue;
+
+                visibleRange.Add(new Vector2(i, j));
+            }
+        }
     }
 
     /// <summary>
@@ -84,5 +101,21 @@ public class Player : Unit, IDamagable
 
         EffectManager.instance.PlayParticle("HitEffect", transform.position, _spriteRenderer.sortingOrder + 1);
         SoundManager.instance.PlaySFX("Damaged");
+    }
+
+    public void ShowVisibleTile()
+    {
+        foreach(var tile in curVisible)
+        {
+            tile.isVisible = false;
+        }
+
+        curVisible.Clear();
+        curVisible = curRoom.GetTiles(GetTile(), visibleRange);
+
+        foreach(var tile in curVisible)
+        {
+            tile.isVisible = true;
+        }
     }
 }

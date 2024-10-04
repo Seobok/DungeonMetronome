@@ -199,7 +199,7 @@ public class Room : MonoBehaviour
         {
             if (adjacentRoom[3] != null)
             {
-                return adjacentRoom[3].GetTile(X - 1, y);
+                return adjacentRoom[3].GetTile(X + x, y);
             }
             return null;
         }
@@ -207,7 +207,7 @@ public class Room : MonoBehaviour
         {
             if (adjacentRoom[2] != null)
             {
-                return adjacentRoom[2].GetTile(x, Y - 1);
+                return adjacentRoom[2].GetTile(x, Y + y);
             }
             return null;
         }
@@ -215,7 +215,7 @@ public class Room : MonoBehaviour
         {
             if (adjacentRoom[1] != null)
             {
-                return adjacentRoom[1].GetTile(0, y);
+                return adjacentRoom[1].GetTile(0 + (x - X), y);
             }
             return null;
         }
@@ -223,7 +223,7 @@ public class Room : MonoBehaviour
         {
             if (adjacentRoom[0] != null)
             {
-                return adjacentRoom[0].GetTile(x, 0);
+                return adjacentRoom[0].GetTile(x, (y - Y));
             }
             return null;
         }

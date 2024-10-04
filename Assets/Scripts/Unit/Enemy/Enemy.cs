@@ -340,7 +340,7 @@ public class Enemy : Unit
     {
         if(moveTile != null)
         {
-            moveTile.GetComponent<SpriteRenderer>().color = Color.green;
+            //moveTile.GetComponent<SpriteRenderer>().color = Color.green;
         }
     }
 
@@ -348,7 +348,7 @@ public class Enemy : Unit
     {
         if(moveTile != null)
         {
-            moveTile.GetComponent<SpriteRenderer>().color = Color.white;
+            //moveTile.GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
 

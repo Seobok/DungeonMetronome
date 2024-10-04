@@ -96,7 +96,6 @@ public class StoneGolem : Enemy, IDamagable
     {
         float animationLength = laserGo.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
         var destoryLaser = laserGo;
-        Debug.Log(animationLength);
 
         yield return new WaitForSeconds(animationLength);
 

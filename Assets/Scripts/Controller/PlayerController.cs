@@ -196,6 +196,8 @@ public class PlayerController : MonoBehaviour
         transform.DOMove(player.GetTile().transform.position, 0.2f).SetEase(Ease.InOutCubic);
 
         player.GetTile().onTilePlayer = player;
+
+        player.ShowVisibleTile();
     }
 
     /// <summary>
@@ -213,5 +215,7 @@ public class PlayerController : MonoBehaviour
         player.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
         player.transform.position = player.GetTile().transform.position;
         player.GetTile().onTilePlayer = player;
+
+        player.ShowVisibleTile();
     }
 }
