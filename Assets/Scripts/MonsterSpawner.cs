@@ -43,15 +43,14 @@ public class MonsterSpawner : MonoBehaviour
         enemy.curRoom = room;
 
         //위치 조정
-        var randX = Random.Range(0, Room.X + 1);
-        var randY = Random.Range(0, Room.Y + 1);
-        var spawnTile = enemy.curRoom.GetTile(randX, randY);
-        while ((spawnTile == null || spawnTile.onTileUnit != null))
+        int randX, randY;
+        Tile spawnTile;
+        do
         {
             randX = Random.Range(0, Room.X + 1);
             randY = Random.Range(0, Room.Y + 1);
             spawnTile = enemy.curRoom.GetTile(randX, randY);
-        }
+        } while ((spawnTile == null || spawnTile.onTileUnit != null)) ;
 
         enemy.RoomX = randX;
         enemy.RoomY = randY;

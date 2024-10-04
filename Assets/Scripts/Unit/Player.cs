@@ -41,7 +41,7 @@ public class Player : Unit, IDamagable
     /// 공격 범위 안에 있는 IDamagable 유닛에게 피해를 입히는 함수
     /// </summary>
     /// <param name="inRange">공격범위 안에 있는 IDamagable 유닛</param>
-    public void Attack(List<IDamagable> inRange, float damageRate)
+    public void Attack(List<IDamagable> inRange, float damageRate, bool isPower)
     {
         if(weapon == null)
         {
@@ -49,9 +49,12 @@ public class Player : Unit, IDamagable
             return;
         }
 
+        float multiple = 1f;
+        if (isPower) multiple = 2f;
+
         foreach(var damagableUnit in inRange)
         {
-            damagableUnit.Damaged((int)(weapon.damage * damageRate), this);
+            damagableUnit.Damaged((int)(weapon.damage * damageRate * multiple), this);
             if((int)(weapon.damage * damageRate) > 0)
             {
                 StartCoroutine(CameraShake.Shake(0.1f, 0.1f, transform.position));

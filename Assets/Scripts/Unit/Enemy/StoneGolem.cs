@@ -6,16 +6,20 @@ public class StoneGolem : Enemy, IDamagable
 {
     private Animator animator;
 
-    private int hp;
+    [Header("StoneGolem Laser")]
+    [SerializeField] private Transform muzzle;
     [SerializeField] private GameObject laser;
+    private int hp;
     private float rightMuzzleXPos;
+
+    private GameObject laserGo;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        rightMuzzleXPos = laser.transform.localPosition.x;
+        rightMuzzleXPos = muzzle.localPosition.x;
 
-        hp = 5;
+        hp = 10;
         detactRange = 7;
         moveMaxCnt = 1;
         moveCnt = 1;
@@ -34,15 +38,28 @@ public class StoneGolem : Enemy, IDamagable
     public override void SetAttackAnim(bool b)
     {
         animator.SetBool("IsAttack", b);
-        if(spriteRenderer.flipX)
+
+        if(b)
         {
-            laser.transform.localPosition = new Vector3(-rightMuzzleXPos, laser.transform.localPosition.y, laser.transform.localPosition.z);
-            laser.GetComponent<SpriteRenderer>().flipX = true;
-        }
-        else
-        {
-            laser.transform.localPosition = new Vector3(rightMuzzleXPos, laser.transform.localPosition.y, laser.transform.localPosition.z);
-            laser.GetComponent<SpriteRenderer>().flipX = false;
+            laserGo = Instantiate(laser);
+
+            var laserSprite = laserGo.GetComponent<SpriteRenderer>();
+
+            //Laser Effect Generate
+            if (spriteRenderer.flipX)
+            {
+                muzzle.transform.localPosition = new Vector3(-rightMuzzleXPos, muzzle.transform.localPosition.y, muzzle.transform.localPosition.z);
+                laserSprite.flipX = true;
+            }
+            else
+            {
+                muzzle.transform.localPosition = new Vector3(rightMuzzleXPos, muzzle.transform.localPosition.y, muzzle.transform.localPosition.z);
+                laserSprite.flipX = false;
+            }
+
+            laserGo.transform.SetParent(muzzle);
+            laserGo.transform.localPosition = Vector3.zero;
+            laserSprite.sortingOrder = spriteRenderer.sortingOrder + 1;
         }
     }
 
@@ -50,6 +67,11 @@ public class StoneGolem : Enemy, IDamagable
     {
         base.Attack();
         //Laser Animation
+        if(laserGo)
+        {
+            laserGo.GetComponent<Animator>().SetBool("IsShot", true);
+            StartCoroutine(DestroyLaser());
+        }
     }
 
     public void Damaged(int amount, Unit causer)
@@ -58,6 +80,7 @@ public class StoneGolem : Enemy, IDamagable
 
         Debug.Log($"StoneGolem이 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
         EffectManager.instance.PlayParticle("HitEffect", transform.position);
+        SoundManager.instance.PlaySFX("MonsterDamaged");
         hp -= amount;
         if (hp <= 0)
         {
@@ -67,5 +90,17 @@ public class StoneGolem : Enemy, IDamagable
 
             GameManager.instance.score += 10;
         }
+    }
+
+    IEnumerator DestroyLaser()
+    {
+        float animationLength = laserGo.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
+        var destoryLaser = laserGo;
+        Debug.Log(animationLength);
+
+        yield return new WaitForSeconds(animationLength);
+
+        Destroy(destoryLaser);
+        SetAttackAnim(false);
     }
 }

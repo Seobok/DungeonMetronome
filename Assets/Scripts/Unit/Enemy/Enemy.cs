@@ -85,7 +85,7 @@ public class Enemy : Unit
         {
             Attack();
 
-            SetAttackAnim(false);
+            //SetAttackAnim(false);
             //만약 공격했다면 이동하지 않음
             bIsReadyMove = false;
 

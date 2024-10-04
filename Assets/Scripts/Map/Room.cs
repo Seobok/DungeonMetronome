@@ -109,21 +109,21 @@ public class Room : MonoBehaviour
     public void SetBlock()
     {
         if (DungeonManager.instance.lobby == this) return;
+
         int idx = 0;
+
         if (adjacentRoom[0] == null)
         {
             //위
             for(int i=0;i<X;i++)
             {
-                if(tiles[i,Y-1].onTileUnit == null)
-                {
-                    blocks[idx].gameObject.SetActive(true);
+                blocks[idx].gameObject.SetActive(true);
 
-                    blocks[idx].SetTile(tiles[i, Y - 1]);
-                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+                InitBlockTile(blocks[idx], tiles[i, Y - 1]);
 
-                    idx++;
-                }
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
             }
         }
         if (adjacentRoom[1] == null)
@@ -131,15 +131,13 @@ public class Room : MonoBehaviour
             //오른쪽
             for(int i=0;i<Y;i++)
             {
-                if (tiles[X-1,i].onTileUnit == null)
-                {
-                    blocks[idx].gameObject.SetActive(true);
+                blocks[idx].gameObject.SetActive(true);
 
-                    blocks[idx].SetTile(tiles[X - 1, i]);
-                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+                InitBlockTile(blocks[idx], tiles[X - 1, i]);
 
-                    idx++;
-                }
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
             }
         }
         if (adjacentRoom[2] == null)
@@ -147,15 +145,13 @@ public class Room : MonoBehaviour
             //아래
             for(int i=0;i<X;i++)
             {
-                if (tiles[i,0].onTileUnit == null)
-                {
-                    blocks[idx].gameObject.SetActive(true);
+                blocks[idx].gameObject.SetActive(true);
 
-                    blocks[idx].SetTile(tiles[i, 0]);
-                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+                InitBlockTile(blocks[idx], tiles[i, 0]);
 
-                    idx++;
-                }
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
             }
         }
         if (adjacentRoom[3] == null)
@@ -163,17 +159,32 @@ public class Room : MonoBehaviour
             //왼쪽
             for (int i = 0; i < Y; i++)
             {
-                if (tiles[0, i].onTileUnit == null)
-                {
-                    blocks[idx].gameObject.SetActive(true);
+                blocks[idx].gameObject.SetActive(true);
 
-                    blocks[idx].SetTile(tiles[0, i]);
-                    blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+                InitBlockTile(blocks[idx], tiles[0, i]);
 
-                    idx++;
-                }
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
             }
         }
+
+        while(idx < blocks.Length)
+        {
+            blocks[idx].gameObject.SetActive(false);
+            idx++;
+        }
+    }
+
+    private void InitBlockTile(Block block, Tile tile)
+    {
+        block.curRoom = tile.parentRoom;
+        block.RoomX = tile.x;
+        block.RoomY = tile.y;
+
+        block.GetTile().onTileUnit = block;
+
+        block.transform.SetParent(tile.transform);
     }
 
     /// <summary>

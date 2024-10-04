@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     private float playerSpeed = 1.0f;
     private SpriteRenderer spriteRenderer;
     private Player player;
+
+    private bool isPower = false;
     
     void Awake()
     {
@@ -72,7 +74,19 @@ public class PlayerController : MonoBehaviour
             if (damagableList.Count > 0)
             {
                 GameManager.instance.isPlayerInput[0] = true;
-                player.weapon.AttackQTE(player, damagableList);
+
+                if(isPower)
+                {
+                    player.weapon.AttackQTE(player, damagableList);
+                }
+                else
+                {
+                    player.Attack(damagableList, 1, false);
+
+                    GameManager.instance.isPlayerInput[0] = false;
+
+                    GameManager.instance.ExecuteTurn();
+                }
                 return;
             }
         }
@@ -132,6 +146,14 @@ public class PlayerController : MonoBehaviour
                     }
                     return;
                 }
+
+                Block block = Tile.onTileUnit.GetComponent<Block>();
+                if(block != null)
+                {
+                    //Block으로 이동하려는 행위는 할 수 없음
+                    //Turn도 지나지 않음
+                    return;
+                }
             }
             else
             {
@@ -151,7 +173,19 @@ public class PlayerController : MonoBehaviour
 
         InGameUIManager.Instance.TogglePause();
     }
-
+    private void OnPower(InputValue inputValue)
+    {
+        if(isPower)
+        {
+            isPower = false;
+            InGameUIManager.Instance.SetWeaponPower(Color.white);
+        }
+        else
+        {
+            isPower = true;
+            InGameUIManager.Instance.SetWeaponPower(Color.green);
+        }
+    }
     public void Move(Vector2 input)
     {
         player.GetTile().onTilePlayer = null;

@@ -253,7 +253,7 @@ public class GameManager : MonoBehaviour
 
     public void ResultQTE(float damageRate, Player causer, List<IDamagable> damagableList)
     {
-        causer.Attack(damagableList, damageRate);
+        causer.Attack(damagableList, damageRate, true);
 
         isPlayerInput[0] = false;
 

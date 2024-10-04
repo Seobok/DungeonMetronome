@@ -6,7 +6,7 @@ public class DualDagger : Weapon
 {
     private void Awake()
     {
-        damage = 3;
+        damage = 2;
     }
     public override void AttackQTE(Player causer, List<IDamagable> damagableList)
     {

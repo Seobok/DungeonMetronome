@@ -11,6 +11,7 @@ public class MainmenuAnim : MonoBehaviour
     [SerializeField] private Button[] buttons;
     [SerializeField] private GameObject MenuPanel;
     [SerializeField] private GameObject OptionPanel;
+    [SerializeField] private GameObject HelpPanel;
 
     private string gameTitle = "Dungeon Metronome";
     private const float TYPING_DURATION = 3f;
@@ -90,6 +91,13 @@ public class MainmenuAnim : MonoBehaviour
         if (Camera.main != null)
         {
             Camera.main.transform.DOMoveX(MenuPanel.transform.position.x, MOVE_DURATION);
+        }
+    }
+    public void MoveHelpPanel()
+    {
+        if (Camera.main != null)
+        {
+            Camera.main.transform.DOMoveX(HelpPanel.transform.position.x, MOVE_DURATION);
         }
     }
 

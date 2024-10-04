@@ -8,7 +8,7 @@ public class Slime : Enemy,IDamagable
 
     private void Awake()
     {
-        hp = 2;
+        hp = 4;
         detactRange = 5;
         moveMaxCnt = 1;
         moveCnt = 1;
@@ -31,7 +31,9 @@ public class Slime : Enemy,IDamagable
 
         Debug.Log($"Slime이 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
         EffectManager.instance.PlayParticle("HitEffect", transform.position);
+        SoundManager.instance.PlaySFX("MonsterDamaged");
         hp -= amount;
+
         if (hp <= 0)
         {
             hp = 0;

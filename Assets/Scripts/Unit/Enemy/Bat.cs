@@ -8,7 +8,7 @@ public class Bat : Enemy, IDamagable
 
     private void Awake()
     {
-        hp = 1;
+        hp = 2;
         detactRange = 5;
         moveMaxCnt = 2;
         moveCnt = 2;
@@ -22,7 +22,9 @@ public class Bat : Enemy, IDamagable
 
         Debug.Log($"Bat가 {causer.name}에 의해 {amount}의 피해를 입었습니다.");
         EffectManager.instance.PlayParticle("HitEffect", transform.position);
+        SoundManager.instance.PlaySFX("MonsterDamaged");
         hp -= amount;
+
         if(hp <= 0)
         {
             hp = 0;

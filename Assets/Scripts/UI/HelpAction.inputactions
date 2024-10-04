@@ -1,0 +1,46 @@
+{
+    "name": "HelpAction",
+    "maps": [
+        {
+            "name": "New action map",
+            "id": "bc0fd8bb-d279-4d71-a9f6-30516aa7475e",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "00f7adde-93e6-4ed6-b203-0ff8f5e280d8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c1eeac0a-2721-4dd8-b105-7ab717470682",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PC",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "PC",
+            "bindingGroup": "PC",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

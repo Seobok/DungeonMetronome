@@ -92,6 +92,11 @@ public class InGameUIManager : MonoBehaviour
         }
     }
 
+    public void SetWeaponPower(Color color)
+    {
+        inventorySlots[0].color = color;
+    }
+
     public IEnumerator FadeImage(float startAlpha, float endAlpha, float duration)
     {
         float elapsedTime = 0f;

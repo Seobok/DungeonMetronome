@@ -71,6 +71,8 @@ MonoBehaviour:
   - name: Fail
     clip: {fileID: 8300000, guid: eabc0501949c93e458faabbbf2bfe18f, type: 3}
   - name: Damaged
+    clip: {fileID: 8300000, guid: 1bed7d87838fb594eb1c7d3e4c601b89, type: 3}
+  - name: MonsterDamaged
     clip: {fileID: 8300000, guid: 10db900fcbb807849b88d13b9946d7f6, type: 3}
   BGMVolume: 1
   SFXVolume: 1
