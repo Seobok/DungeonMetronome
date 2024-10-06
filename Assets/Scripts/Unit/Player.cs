@@ -89,9 +89,10 @@ public class Player : Unit, IDamagable
 
         currentHP -= amount;
 
-        if (currentHP < 0)
+        if (currentHP <= 0)
         {
             currentHP = 0;
+            InGameUIManager.Instance.ActiveGameOver(causer.name);
         }
 
         if (InGameUIManager.Instance != null)

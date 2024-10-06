@@ -29,6 +29,9 @@ public class InGameUIManager : MonoBehaviour
     [SerializeField] private GameObject resultPanel;
     private bool isShowingResult = false;
 
+    [Header("GameOver")]
+    [SerializeField] private GameObject gameOverPanel;
+
     private void Awake()
     {
         if (Instance == null)
@@ -42,6 +45,7 @@ public class InGameUIManager : MonoBehaviour
         pausePanel.SetActive(false);
         resultPanel.SetActive(false);
         fadeInOutPanel.gameObject.SetActive(false);
+        gameOverPanel.gameObject.SetActive(false);
     }
 
     public void SetHealthBar(int maxHP, int currentHP)
@@ -154,6 +158,18 @@ public class InGameUIManager : MonoBehaviour
     public void DeactiveResult()
     {
         resultPanel.SetActive(false);
+        isShowingResult = false;
+    }
+
+    public void ActiveGameOver(string causer)
+    {
+        gameOverPanel.GetComponent<GameOver>().causerName = causer.Replace("(Clone)", "");
+        gameOverPanel.SetActive(true);
+        isShowingResult = true;
+    }
+    public void DeactiveGameOver()
+    {
+        gameOverPanel.SetActive(false);
         isShowingResult = false;
     }
 }

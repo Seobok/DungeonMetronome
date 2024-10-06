@@ -32,7 +32,17 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool isStartGame = false;
     [HideInInspector] public float playTimer = 0f;
     [HideInInspector] public int moveCnt = 0;
-    [HideInInspector] public int score = 0;
+    private int _score = 0;
+    [HideInInspector] public int score
+    {
+        get { return _score; }
+        set 
+        {
+            totalScore += (value - _score);
+            _score = value;
+        }
+    }
+    [HideInInspector] public int totalScore = 0;
 
     private int turnCnt = 0;
 
