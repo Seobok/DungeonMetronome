@@ -29,4 +29,10 @@ public class Pause : MonoBehaviour
     {
         SoundManager.instance.SetSFXVolume(value);
     }
+
+    public void Quit()
+    {
+        SoundManager.instance.PlayBGM("Mainmenu");
+        LoadingAnim.LoadScene("Mainmenu");
+    }
 }

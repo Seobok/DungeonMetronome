@@ -63,8 +63,24 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         GeneragteMap();
+
+        if (SaveManager.instance.isSaved)
+        {
+            Play();
+
+            MonsterSpawner.instance.ReSpawn();
+
+            totalScore = SaveManager.instance.totalScore;
+            //players[0].weapon
+            players[0].maxHP = SaveManager.instance.maxHP;
+            players[0].currentHP = SaveManager.instance.curHP;
+            stage = SaveManager.instance.stage;
+        }
+        else
+        {
+            StartLobby();
+        }
         
-        StartLobby();
     }
 
     private void Update()
@@ -111,8 +127,6 @@ public class GameManager : MonoBehaviour
     {
         SoundManager.instance.PlayBGM("FirstFloor");
 
-        stage = 1;
-
         DungeonManager.instance.DeactiveLobby();
         DungeonManager.instance.ActiveDungeon();
 
@@ -127,11 +141,6 @@ public class GameManager : MonoBehaviour
         foreach (var player in players)
         {
             player.GetComponent<PlayerController>().InitPlayerPosition();
-        }
-
-        if (DungeonManager.instance.lobby != null)
-        {
-            DungeonManager.instance.DeactiveLobby();
         }
 
         //테스트용 더미 생성
@@ -274,6 +283,10 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator MoveLobbyToDungeon()
     {
+        score = 0;
+        playTimer = 0;
+        moveCnt = 0;
+
         yield return StartCoroutine(InGameUIManager.Instance.FadeImage(0, 1, 1));
 
         Play();
@@ -295,10 +308,22 @@ public class GameManager : MonoBehaviour
 
         MonsterSpawner.instance.SpawnMonster();
 
+        //여기서 세이브
         foreach (var player in players)
         {
             player.GetComponent<PlayerController>().InitPlayerPosition();
+            if(player.weapon != null)
+            {
+                SaveManager.instance.equipedWeapon = player.weapon;
+            }
+            SaveManager.instance.maxHP = player.maxHP;
+            SaveManager.instance.curHP = player.currentHP;
         }
+
+        SaveManager.instance.totalScore = totalScore;
+        SaveManager.instance.stage = stage;
+
+        SaveManager.instance.isSaved = true;
 
         yield return StartCoroutine(InGameUIManager.Instance.FadeImage(1, 0, 1));
     }

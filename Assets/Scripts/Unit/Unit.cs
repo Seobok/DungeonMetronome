@@ -53,6 +53,9 @@ public class Unit : MonoBehaviour
 
     public Tile GetTile()
     {
+        if (curRoom == null)
+            return null;
+
         return curRoom.GetTile(RoomX, RoomY);
     }
 
