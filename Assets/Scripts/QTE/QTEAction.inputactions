@@ -1,0 +1,74 @@
+{
+    "name": "QTEAction",
+    "maps": [
+        {
+            "name": "DwindlingCircle",
+            "id": "7e87a81b-8018-445c-84df-4f6750f4a6dd",
+            "actions": [
+                {
+                    "name": "Action",
+                    "type": "Button",
+                    "id": "6094c33b-082b-4315-805e-8fffb87826fc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "55b98b31-a7a8-42db-be9e-26e49a34f9ed",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PC",
+                    "action": "Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "CenterTap",
+            "id": "bb023899-76a0-4f27-b362-79579293acb6",
+            "actions": [
+                {
+                    "name": "Action",
+                    "type": "Button",
+                    "id": "fce8d275-8ba2-4662-9f97-847e23c7b1c8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b7b3b650-fa9f-4138-92f9-edec2f7adb66",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "PC",
+            "bindingGroup": "PC",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

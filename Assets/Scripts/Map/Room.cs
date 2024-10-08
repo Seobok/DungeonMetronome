@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.Collections.AllocatorManager;
 
 public class Room : MonoBehaviour
 {
@@ -16,48 +17,43 @@ public class Room : MonoBehaviour
     [HideInInspector] public int roomX;
     [HideInInspector] public int roomY;
 
-    [SerializeField] private Floor floor_prefab;
-    [SerializeField] private Wall wall_prefab;
     [SerializeField] private Room room_prefab;
+    [SerializeField] private Tile tile_prefab;
+    [SerializeField] private Block block_prefab;
 
     [HideInInspector] public Room[] adjacentRoom;
+    [HideInInspector] public Block[] blocks;
 
+    /// <summary>
+    /// 방의 타일과 인접 방 초기화
+    /// 생성해야할 방 관련 프리팹 예외처리
+    /// 타일 생성
+    /// 이미지 생성 (벽 이미지문제로 인한 후 처리)
+    /// </summary>
     private void Awake()
     {
+        //Tile 생성
         tiles = new Tile[X, Y];
         adjacentRoom = new Room[4] { null, null, null, null };
-    }
 
-    private void Start()
-    {
-        if(floor_prefab == null || wall_prefab == null || room_prefab == null)
+        if (room_prefab == null)
         {
             Debug.LogError("Tile Prefab Is Empty");
         }
-        
-        for(int i=0; i< tiles.GetLength(0); i++)
-        {
-            for(int j = 0;j< tiles.GetLength(1); j++)
-            {
-                //문 위치
-                if ((i == 0 && j == Y / 2) || (i == X - 1 && j == Y / 2) || (i == X / 2 && j == 0) || (i == X / 2 && j == Y - 1))
-                    continue;
 
+        for (int i = 0; i < tiles.GetLength(0); i++)
+        {
+            for (int j = 0; j < tiles.GetLength(1); j++)
+            {
                 Tile go;
-                //벽 위치
-                if (i == 0 || j == 0 || i == X - 1 || j == Y - 1)
-                {
-                    go = Instantiate(wall_prefab);
-                }
-                else
-                {
-                    go = Instantiate(floor_prefab);
-                }
+                go = Instantiate(tile_prefab);
 
                 go.transform.SetParent(transform);
                 go.parentRoom = this;
                 go.x = i;
                 go.y = j;
+                go.onTilePlayer = null;
+                go.onTileUnit = null;
 
                 tiles[i, j] = go;
 
@@ -65,27 +61,145 @@ public class Room : MonoBehaviour
             }
         }
 
-        //타일이 전체 생성된 이후 sprite 다시 생성
-        for(int i=0;i< tiles.GetLength(0);i++)
+        blocks = new Block[2 * X + 2 * Y];
+        for(int i=0; i < blocks.Length; i++)
         {
-            for(int j=0;j<tiles.GetLength(1);j++)
+            var blockGo = Instantiate(block_prefab);
+            blocks[i] = blockGo;
+            blockGo.gameObject.SetActive(false);
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var tile in tiles)
+        {
+            if (tile != null)
             {
-                if (tiles[i,j] == null)
-                    continue;
-                Wall go = tiles[i, j].GetComponent<Wall>();
-                if(go != null)
-                    go.SetWallSprite();
+                tile.onTilePlayer = null;
+
+                if (tile.onTileUnit != null)
+                {
+                    var onTileEnemy = tile.onTileUnit.GetComponent<Enemy>();
+                    var onTileBlock = tile.onTileUnit.GetComponent<Block>();
+                    if (onTileEnemy != null)
+                    {
+                        MonsterSpawner.instance.Die(onTileEnemy);
+                    }
+                    else if (onTileBlock != null)
+                    {
+                        onTileBlock.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        Destroy(tile.onTileUnit.gameObject);
+                    }
+
+                    tile.onTileUnit = null;
+                }
             }
         }
     }
 
+    private void OnEnable()
+    {
+        SetBlock();
+    }
+
+    public void SetBlock()
+    {
+        if (DungeonManager.instance.lobby == this) return;
+
+        int idx = 0;
+
+        if (adjacentRoom[0] == null)
+        {
+            //위
+            for(int i=0;i<X;i++)
+            {
+                blocks[idx].gameObject.SetActive(true);
+
+                InitBlockTile(blocks[idx], tiles[i, Y - 1]);
+
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
+            }
+        }
+        if (adjacentRoom[1] == null)
+        {
+            //오른쪽
+            for(int i=0;i<Y;i++)
+            {
+                blocks[idx].gameObject.SetActive(true);
+
+                InitBlockTile(blocks[idx], tiles[X - 1, i]);
+
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
+            }
+        }
+        if (adjacentRoom[2] == null)
+        {
+            //아래
+            for(int i=0;i<X;i++)
+            {
+                blocks[idx].gameObject.SetActive(true);
+
+                InitBlockTile(blocks[idx], tiles[i, 0]);
+
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
+            }
+        }
+        if (adjacentRoom[3] == null)
+        {
+            //왼쪽
+            for (int i = 0; i < Y; i++)
+            {
+                blocks[idx].gameObject.SetActive(true);
+
+                InitBlockTile(blocks[idx], tiles[0, i]);
+
+                blocks[idx].transform.position = blocks[idx].GetTile().transform.position;
+
+                idx++;
+            }
+        }
+
+        while(idx < blocks.Length)
+        {
+            blocks[idx].gameObject.SetActive(false);
+            idx++;
+        }
+    }
+
+    private void InitBlockTile(Block block, Tile tile)
+    {
+        block.curRoom = tile.parentRoom;
+        block.RoomX = tile.x;
+        block.RoomY = tile.y;
+
+        block.GetTile().onTileUnit = block;
+
+        block.transform.SetParent(tile.transform);
+    }
+
+    /// <summary>
+    /// 해당 방에서의 x, y 값을 기점으로 해당 타일을 가져오는 함수
+    /// </summary>
+    /// <param name="x">해당 방의 x값</param>
+    /// <param name="y">해당 방의 y값</param>
+    /// <returns>방의 범위를 넘어가도 타일을 가져오며, 방이없을 경우 null을 리턴</returns>
     public Tile GetTile(int x, int y)
     {
         if(x < 0)
         {
             if (adjacentRoom[3] != null)
             {
-                return adjacentRoom[3].GetTile(X - 1, y);
+                return adjacentRoom[3].GetTile(X + x, y);
             }
             return null;
         }
@@ -93,7 +207,7 @@ public class Room : MonoBehaviour
         {
             if (adjacentRoom[2] != null)
             {
-                return adjacentRoom[2].GetTile(x, Y - 1);
+                return adjacentRoom[2].GetTile(x, Y + y);
             }
             return null;
         }
@@ -101,7 +215,7 @@ public class Room : MonoBehaviour
         {
             if (adjacentRoom[1] != null)
             {
-                return adjacentRoom[1].GetTile(0, y);
+                return adjacentRoom[1].GetTile(0 + (x - X), y);
             }
             return null;
         }
@@ -109,7 +223,7 @@ public class Room : MonoBehaviour
         {
             if (adjacentRoom[0] != null)
             {
-                return adjacentRoom[0].GetTile(x, 0);
+                return adjacentRoom[0].GetTile(x, (y - Y));
             }
             return null;
         }
@@ -117,49 +231,24 @@ public class Room : MonoBehaviour
         return tiles[x, y];
     }
 
-    public void SetWall()
+    /// <summary>
+    /// 타일과 그 타일로부터의 위치정보를 기반으로 해당 범위의 타일을 가져오는 함수
+    /// </summary>
+    /// <param name="curTile">범위의 기점이 되는 타일</param>
+    /// <param name="range">curTile로 부터 받아와야할 범위를 나타낼 타일 리스트</param>
+    /// <returns>curTile로부터 range만큼 떨어진 타일의 List</returns>
+    public List<Tile> GetTiles(Tile curTile, List<Vector2> range)
     {
-        for (int i = 0; i < 4; i++)
+        List<Tile> Range = new List<Tile>();
+        foreach(Vector2 pos in range)
         {
-            int door_x = 0, door_y = 0;
-            switch (i)
+            var tile = GetTile(curTile.x + (int)pos.x, curTile.y + (int)pos.y);
+            if(tile != null)
             {
-                case (int)E_Dir.ED_Up:
-                    door_x = X / 2;
-                    door_y = Y - 1;
-                    break;
-                case (int)E_Dir.ED_Right:
-                    door_x = X - 1;
-                    door_y = Y / 2;
-                    break;
-                case (int)E_Dir.ED_Down:
-                    door_x = X / 2;
-                    door_y = 0;
-                    break;
-                case (int)E_Dir.ED_Left:
-                    door_x = 0;
-                    door_y = Y / 2;
-                    break;
+                Range.Add(tile);
             }
-            Tile tile;
-            if (adjacentRoom[i] == null)
-            {
-                //벽으로 문 막기
-                tile = Instantiate(wall_prefab);
-            }
-            else
-            {
-                //문 달기
-                tile = Instantiate(floor_prefab);
-            }
-            tile.transform.SetParent(transform);
-            tile.parentRoom = this;
-            tile.x = door_x;
-            tile.y = door_y;
-
-            tiles[door_x, door_y] = tile;
-
-            tile.transform.localPosition = new Vector3(door_x, door_y, 0);
         }
+
+        return Range;
     }
 }

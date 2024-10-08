@@ -1,112 +1,222 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 [RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
     private float playerSpeed = 1.0f;
     private SpriteRenderer spriteRenderer;
+    private Player player;
 
-    #region PlayerPosition
-    /// <summary>
-    /// PlayerÀÇ À§Ä¡ Á¤º¸¿¡ °üÇÑ º¯¼ö
-    /// ÇöÀç À§Ä¡ÇÏ´Â ¹æÀÇ Á¤º¸
-    /// ¹æ¿¡¼­ÀÇ X, Y ÁÂÇ¥
-    /// </summary>
-    private Room curRoom;
-    private int room_x, room_y;
-    public int Room_X
-    {
-        get { return room_x; }
-        set 
-        {
-            if(value >= Room.X)
-            {
-                value -= Room.X;
-                curRoom = curRoom.adjacentRoom[1];
-                Debug.Log(curRoom.name);
-            }
-            if(value < 0)
-            {
-                value += Room.X;
-                curRoom = curRoom.adjacentRoom[3];
-                Debug.Log(curRoom.name);
-            }
-            room_x = value; 
-        }
-    }
-    public int Room_Y
-    {
-        get { return room_y; }
-        set
-        {
-            if (value >= Room.Y)
-            {
-                value -= Room.Y;
-                curRoom = curRoom.adjacentRoom[0];
-                Debug.Log(curRoom.name);
-            }
-            if (value < 0)
-            {
-                value += Room.Y;
-                curRoom = curRoom.adjacentRoom[2];
-                Debug.Log(curRoom.name);
-            }
-            room_y = value;
-        }
-    }
-    #endregion
+    private bool isPower = false;
     
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        player = GetComponent<Player>();
     }
 
     private void OnMove(InputValue inputValue)
     {
-        //ÀÓ½Ã ÄÚµå
-        if(curRoom == null)
+        if (GameManager.instance.isPlayerInput[0]) return;
+        if(InGameUIManager.Instance) { if (!InGameUIManager.Instance.CanControllPlayer()) return; }
+
+        if(!GameManager.instance.isStartGame)
         {
-            InitPlayerPosition();
-            return;
+            GameManager.instance.playTimer = 0f;
+            GameManager.instance.moveCnt = 0;
+            GameManager.instance.score = 0;
+            GameManager.instance.isStartGame = true;
         }
-        var input = inputValue.Get<Vector2>();
 
-        int nextXPos = Room_X + (int)input.x;
-        int nextYPos = Room_Y + (int)input.y;
+        GameManager.instance.moveCnt++;
 
-        var floorTile = curRoom.GetTile(nextXPos, nextYPos).GetComponent<Floor>();
+        var input = inputValue.Get<Vector2>() * playerSpeed;
 
-        if (floorTile)
+        //ì…ë ¥ë°›ì€ ë°©í–¥ìœ¼ë¡œ ì •ë©´ ì „í™˜
+        if (input.x > 0)
         {
-            //Tile¿¡ Object°¡ ÀÖÀ¸¸é »óÈ£ÀÛ¿ë
-            {
+            spriteRenderer.flipX = false;
+        }
+        else if (input.x < 0)
+        {
+            spriteRenderer.flipX = true;
+        }
 
-            }
-            //ÀÌµ¿
-            transform.Translate(input.x, input.y, 0);
-            Room_X = nextXPos;
-            Room_Y = nextYPos;
+        int nextXPos = player.RoomX + (int)input.x;
+        int nextYPos = player.RoomY + (int)input.y;
+        var nextTile = player.curRoom.GetTile(nextXPos, nextYPos);
 
-            if (input.x > 0)
+        //ê³µê²©ê°€ëŠ¥í•œ ëŒ€ìƒì´ ìˆëŠ”ì§€ í™•ì¸
+        if(player.weapon != null)
+        {
+            var rangeTiles = player.weapon.GetRange(nextTile, input);
+            List<IDamagable> damagableList = new List<IDamagable>();
+            foreach (var rangeTile in rangeTiles)
             {
-                spriteRenderer.flipX = false;
+                if (rangeTile == null) continue;
+
+                if (rangeTile.onTileUnit != null)
+                {
+                    var damagableTile = rangeTile.onTileUnit.GetComponent<IDamagable>();
+                    if (damagableTile != null)
+                    {
+                        damagableList.Add(damagableTile);
+                    }
+                }
             }
-            else if (input.x < 0)
+                
+            if (damagableList.Count > 0)
             {
-                spriteRenderer.flipX = true;
+                GameManager.instance.isPlayerInput[0] = true;
+
+                if(isPower)
+                {
+                    player.weapon.AttackQTE(player, damagableList);
+                }
+                else
+                {
+                    player.Attack(damagableList, 1, false);
+
+                    GameManager.instance.isPlayerInput[0] = false;
+
+                    GameManager.instance.ExecuteTurn();
+                }
+                return;
             }
         }
         
+        var Tile = nextTile.GetComponent<Tile>();
+        if (Tile)
+        {
+            //Tileì— Objectê°€ ìˆìœ¼ë©´ ìƒí˜¸ì‘ìš©
+            if(Tile.onTileUnit != null)
+            {
+                Item item = Tile.onTileUnit.GetComponent<Item>();
+                if(item != null)
+                {
+                    Move(input);
+
+                    Weapon weapon = item.GetComponent<Weapon>();
+                    if(weapon != null)
+                    {
+                        if (player.weapon != null)
+                        {
+                            //ê°€ì§€ê³  ìˆë˜ ë¬´ê¸° ë²„ë¦¬ê¸°
+                            player.weapon.ToggleSprite();
+                            player.weapon.transform.SetParent(null);
+                            player.weapon.transform.position = player.GetTile().transform.position;
+                            player.GetTile().onTileUnit = player.weapon;
+                            player.weapon = null;
+                        }
+                        //ì¤ê¸°
+                        player.weapon = weapon;
+                        player.weapon.ToggleSprite();
+                        player.weapon.transform.SetParent(player.transform);
+                        if(player.weapon == player.GetTile().onTileUnit)
+                        {
+                            player.GetTile().onTileUnit = null;
+                        }
+                    }
+
+                    GameManager.instance.ExecuteTurn();
+                    return;
+                }
+
+                Goal goal = Tile.onTileUnit.GetComponent<Goal>();
+                if(goal != null)
+                {
+                    Move(input);
+                    SoundManager.instance.PlaySFX("WalkSound");
+
+                    if (GameManager.instance.stage == 0)
+                    {
+                        //Lobby To Game
+                        GameManager.instance.stage = 1;
+                        StartCoroutine(GameManager.instance.MoveLobbyToDungeon());
+                    }
+                    else
+                    {
+                        //Next Stage
+                        GameManager.instance.ClearStage();
+                    }
+                    return;
+                }
+
+                Block block = Tile.onTileUnit.GetComponent<Block>();
+                if(block != null)
+                {
+                    //Blockìœ¼ë¡œ ì´ë™í•˜ë ¤ëŠ” í–‰ìœ„ëŠ” í•  ìˆ˜ ì—†ìŒ
+                    //Turnë„ ì§€ë‚˜ì§€ ì•ŠìŒ
+                    return;
+                }
+            }
+            else
+            {
+                //ì´ë™
+                Move(input);
+            }
+        }
+
+        GameManager.instance.ExecuteTurn();
+        return;
+    }
+    private void OnPause(InputValue inputValue)
+    {
+        //QTEì¤‘ì´ë¼ë©´ ì‹¤í–‰í•˜ì§€ ì•ŠìŒ
+        if (GameManager.instance.isPlayerInput[0]) return;
+        if (InGameUIManager.Instance == null) return;
+
+        InGameUIManager.Instance.TogglePause();
+    }
+    private void OnPower(InputValue inputValue)
+    {
+        if(isPower)
+        {
+            isPower = false;
+            InGameUIManager.Instance.SetWeaponPower(Color.white);
+        }
+        else
+        {
+            isPower = true;
+            InGameUIManager.Instance.SetWeaponPower(Color.green);
+        }
+    }
+    public void Move(Vector2 input)
+    {
+        player.GetTile().onTilePlayer = null;
+
+        player.RoomX = player.RoomX + (int)(input.x);
+        player.RoomY = player.RoomY + (int)(input.y);
+
+        transform.DOMove(player.GetTile().transform.position, 0.2f).SetEase(Ease.InOutCubic);
+
+        player.GetTile().onTilePlayer = player;
+
+        player.ShowVisibleTile();
     }
 
+    /// <summary>
+    /// DEBUG í•„ìš”í•œ ì„  ì²˜ë¦¬ ì‘ì—…
+    /// </summary>
     public void InitPlayerPosition()
     {
-        Room_X = Room.X / 2;
-        Room_Y = Room.Y / 2;
-        curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
-        transform.position = curRoom.GetTile(Room_X, Room_Y).transform.position;
+        //í”Œë ˆì´ì–´ ìœ„ì¹˜ ì¡°ì •
+        if(player.GetTile())
+        {
+            player.GetTile().onTilePlayer = null;
+        }
+        player.RoomX = Room.X / 2;
+        player.RoomY = Room.Y / 2;
+        player.curRoom = DungeonManager.instance.rooms[DungeonManager.DUNGEON_X / 2, DungeonManager.DUNGEON_Y / 2];
+        player.transform.position = player.GetTile().transform.position;
+        player.GetTile().onTilePlayer = player;
+
+        player.ShowVisibleTile();
     }
 }
