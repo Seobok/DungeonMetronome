@@ -122,6 +122,9 @@ public class PlayerController : MonoBehaviour
                         {
                             player.GetTile().onTileUnit = null;
                         }
+
+                        isPower = true;
+                        InGameUIManager.Instance.SetWeaponPower(Color.green);
                     }
 
                     GameManager.instance.ExecuteTurn();
