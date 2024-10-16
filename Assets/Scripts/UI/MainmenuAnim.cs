@@ -38,6 +38,15 @@ public class MainmenuAnim : MonoBehaviour
         {
             button.onClick.AddListener(PlayCllickSound);
         }
+
+        if(SaveManager.instance.isSaved)
+        {
+            buttons[1].interactable = true;
+        }
+        else
+        {
+            buttons[1].interactable = false;
+        }
     }
 
     IEnumerator TypingText()
@@ -73,6 +82,13 @@ public class MainmenuAnim : MonoBehaviour
     }
 
     public void StartNewGame()
+    {
+        SaveManager.instance.isSaved = false;
+        SoundManager.instance.PlayBGM("Lobby", 0.5f);
+        LoadingAnim.LoadScene("Dungeon");
+    }
+
+    public void ContinueGame()
     {
         SoundManager.instance.PlayBGM("Lobby", 0.5f);
         LoadingAnim.LoadScene("Dungeon");

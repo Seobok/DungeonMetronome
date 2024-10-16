@@ -137,6 +137,7 @@ public class PlayerController : MonoBehaviour
                     if (GameManager.instance.stage == 0)
                     {
                         //Lobby To Game
+                        GameManager.instance.stage = 1;
                         StartCoroutine(GameManager.instance.MoveLobbyToDungeon());
                     }
                     else

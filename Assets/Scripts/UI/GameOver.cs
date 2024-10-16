@@ -14,10 +14,12 @@ public class GameOver : MonoBehaviour
         if (GameManager.instance == null) return;
         scoreText.text = GameManager.instance.totalScore.ToString();
         causerText.text = causerName;
+        SaveManager.instance.isSaved = false;
     }
 
     public void OnAction(InputValue inputValue)
     {
+        SoundManager.instance.PlayBGM("Mainmenu");
         LoadingAnim.LoadScene("Mainmenu");
     }
 }

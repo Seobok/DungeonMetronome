@@ -24,8 +24,8 @@ public class Player : Unit, IDamagable
     private SpriteRenderer _spriteRenderer;
 
     [Header("Health")]
-    private int maxHP;  //2의 배수
-    private int currentHP;
+    [HideInInspector] public int maxHP;  //2의 배수
+    [HideInInspector] public int currentHP;
 
     [Header("FogOfWar")]
     List<Vector2> visibleRange = new List<Vector2>();
