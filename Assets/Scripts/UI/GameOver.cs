@@ -18,7 +18,6 @@ public class GameOver : MonoBehaviour
 
     public void OnAction(InputValue inputValue)
     {
-        Debug.Log("메인화면으로 이동");
         LoadingAnim.LoadScene("Mainmenu");
     }
 }
