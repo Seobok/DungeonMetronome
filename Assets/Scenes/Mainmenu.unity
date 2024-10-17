@@ -1487,7 +1487,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '- enter the ''Poewr'' mode to left ctrl.
+  m_Text: '- enter the ''Power'' mode to left ctrl.
 
     - if you attack in ''Power''
     mode, you will attack with double the damage.

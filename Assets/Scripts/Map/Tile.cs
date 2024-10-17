@@ -16,6 +16,8 @@ public class Tile : MonoBehaviour
         set 
         {
             _onTileUnit = value;
+
+            //FogOfWar 관련 처리
             if(_onTileUnit != null)
             {
                 if(!isVisible)

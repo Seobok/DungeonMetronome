@@ -291,6 +291,11 @@ public class GameManager : MonoBehaviour
 
         Play();
 
+        for(int i=0;i<isPlayerInput.Count;i++)
+        {
+            isPlayerInput[i] = false;
+        }
+
         yield return StartCoroutine(InGameUIManager.Instance.FadeImage(1, 0, 1));
     }
 
