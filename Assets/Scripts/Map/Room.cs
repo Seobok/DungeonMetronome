@@ -10,10 +10,14 @@ namespace Map
     /// </summary>
     public class Room : MonoBehaviour
     {
+        public int X { get; set; }
+        public int Y { get; set; }
+        
+        
         private Tile[,] _tiles;
         public const int X_LENGTH = 11;
         public const int Y_LENGTH = 7;
-        
+
         private Tile _tilePrefab;
 
         
@@ -30,13 +34,13 @@ namespace Map
             {
                 for (int j = 0; j < _tiles.GetLength(1); j++)
                 {
-                    Tile go = Instantiate(_tilePrefab, transform, true);
+                    Tile go = Instantiate(_tilePrefab, transform);
 
                     _tiles[i, j] = go;
                     go.name = "Tile_" + i + "_" + j;
                     go.X = i;
                     go.Y = j;
-                    go.transform.localPosition = new Vector3(i - X_LENGTH/2, j - Y_LENGTH/2, 0);
+                    go.transform.localPosition = new Vector3(i - X_LENGTH / 2, j - Y_LENGTH / 2, 0);
                 }
             }
         }

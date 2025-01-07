@@ -1,30 +1,31 @@
 using System;
 using System.Collections;
+using Map;
 using UnityEngine;
 
 namespace Workflows
 {
     public class DungeonSceneWorkflow : MonoBehaviour
     {
+        private Dungeon _dungeon;
+
         private void Start()
         {
+            Init();
+            
             StartCoroutine(C_Workflow());
         }
 
+        private void Init()
+        {
+            GameObject dungeonObject = new GameObject("Dungeon");
+            _dungeon = dungeonObject.AddComponent<Dungeon>();
+        }
+        
         private IEnumerator C_Workflow()
         {
-            CreateRoom();
+            _dungeon.GenerateDungeon(7);
             yield return null;
-        }
-
-        private void CreateRoom()
-        {
-            Instantiate(Resources.Load<GameObject>("Prefabs/Map/Room"), Vector3.zero, Quaternion.identity);
-        }
-
-        private void SpawnPlayer()
-        {
-            
         }
     }
 }
