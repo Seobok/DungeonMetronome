@@ -9,10 +9,11 @@ namespace Map
     {
         public Room[,] Rooms { get; private set; } = new Room[DUNGEON_X, DUNGEON_Y];
         public int RoomCount { get; private set; }
+        public Room StartRoom { get; private set; }
 
 
-        private const int DUNGEON_X = 5;
-        private const int DUNGEON_Y = 5;
+        public const int DUNGEON_X = 5;
+        public const int DUNGEON_Y = 5;
         private const int MAX_ROOM_COUNT = 20;
 
         private List<Room> _roomPool;
@@ -40,6 +41,7 @@ namespace Map
                 if (i == 0)
                 {
                     newRoom.name = "startRoom";
+                    StartRoom = newRoom;
                 }
                 else
                 {
@@ -65,10 +67,9 @@ namespace Map
             RoomCount = roomCount;
             
             //첫 방은 가운데 고정
-            Room startRoom = _roomPool[0];
+            Room startRoom = StartRoom;
             startRoom.X = DUNGEON_X / 2;
             startRoom.Y = DUNGEON_Y / 2;
-            startRoom.name = "startRoom";
             Rooms[startRoom.X, startRoom.Y] = startRoom;
             
             int setCount = 1;   //위치가 설정된 방의 갯수

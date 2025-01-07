@@ -12,9 +12,9 @@ namespace Map
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public Tile[,] Tiles { get; private set; }
         
         
-        private Tile[,] _tiles;
         public const int X_LENGTH = 11;
         public const int Y_LENGTH = 7;
 
@@ -23,20 +23,20 @@ namespace Map
         
         private void Awake()
         {
-            _tiles = new Tile[X_LENGTH, Y_LENGTH];
+            Tiles = new Tile[X_LENGTH, Y_LENGTH];
             
             if (!_tilePrefab)
             {
                 _tilePrefab = Resources.Load<Tile>("Prefabs/Map/Tile");
             }
             
-            for (int i = 0; i < _tiles.GetLength(0); i++)
+            for (int i = 0; i < Tiles.GetLength(0); i++)
             {
-                for (int j = 0; j < _tiles.GetLength(1); j++)
+                for (int j = 0; j < Tiles.GetLength(1); j++)
                 {
                     Tile go = Instantiate(_tilePrefab, transform);
 
-                    _tiles[i, j] = go;
+                    Tiles[i, j] = go;
                     go.name = "Tile_" + i + "_" + j;
                     go.X = i;
                     go.Y = j;
