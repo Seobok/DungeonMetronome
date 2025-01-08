@@ -32,8 +32,11 @@ namespace Workflows
         
         private IEnumerator C_Workflow()
         {
-            _dungeon.GenerateDungeon(7);
-            _knight.transform.position = _dungeon.StartRoom.Tiles[Room.X_LENGTH/2, Room.Y_LENGTH/2].transform.position;
+            _dungeon.ActivateDungeon(7);
+            _knight.transform.position = _dungeon.StartRoom.GetTile(Room.X_LENGTH/2, Room.Y_LENGTH/2).transform.position;
+            _knight.CurRoom = _dungeon.StartRoom;
+            _knight.PosX = Room.X_LENGTH/2;
+            _knight.PosY = Room.Y_LENGTH/2;
             yield return null;
         }
     }

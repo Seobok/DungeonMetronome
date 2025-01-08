@@ -47,6 +47,7 @@ namespace Map
                 {
                     newRoom.name = $"Room{i}";
                 }
+                newRoom.Dungeon = this;
                 
                 _roomPool.Add(newRoom);
                 newRoom.transform.SetParent(transform);
@@ -59,7 +60,7 @@ namespace Map
         /// </summary>
         /// <param name="roomCount"> 처리해야하는 방 갯수 </param>
         /// <exception cref="ArgumentException"> 정상적이지 않은 방 갯수가 입력됨 </exception>
-        public void GenerateDungeon(int roomCount)
+        public void ActivateDungeon(int roomCount)
         {
             if (roomCount > MAX_ROOM_COUNT || roomCount < 1)
                 throw new ArgumentException();
@@ -104,6 +105,14 @@ namespace Map
             {
                 _roomPool[i].gameObject.SetActive(true);
             }
+        }
+
+        /// <summary>
+        /// 다시 방 풀로 되돌리기
+        /// </summary>
+        public void DeactivateDungeon()
+        {
+            //Rooms 초기화
         }
     }
 }

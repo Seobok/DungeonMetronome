@@ -1,4 +1,6 @@
-using System;
+using DG.Tweening;
+using Map;
+using Unit.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +13,7 @@ namespace Controller
     {
         private InputActions _inputActions;
         private SpriteRenderer _spriteRenderer;
+        private Knight _knight;
 
         
         private void Awake()
@@ -22,6 +25,9 @@ namespace Controller
             
             //Player Sprite
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            
+            //Character
+            _knight = GetComponent<Knight>();
         }
 
         
@@ -37,12 +43,23 @@ namespace Controller
             if (movement.x > 0)
             {
                 _spriteRenderer.flipX = false;
-                movement.y = 0;
             }
             else if (movement.x < 0)
             {
                 _spriteRenderer.flipX = true;
-                movement.y = 0;
+            }
+            
+            int nextXPos = _knight.PosX + (int)movement.x;
+            int nextYPos = _knight.PosY + (int)movement.y;
+            Tile nextTile = _knight.CurRoom.GetTile(nextXPos, nextYPos);
+
+            if (nextTile)
+            {
+                _knight.PosX = nextTile.X;
+                _knight.PosY = nextTile.Y;
+                _knight.CurRoom = nextTile.Room;
+                transform.DOMove(nextTile.transform.position, 0.2f).SetEase(Ease.InOutCubic);
+                
             }
         }
     }
