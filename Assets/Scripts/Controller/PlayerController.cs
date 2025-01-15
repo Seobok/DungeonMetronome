@@ -28,6 +28,8 @@ namespace Controller
             
             //Character
             _knight = GetComponent<Knight>();
+
+            if (Camera.main) Camera.main.transform.SetParent(transform);
         }
 
         
