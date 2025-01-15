@@ -12,5 +12,6 @@ namespace Unit
         public Room CurRoom { get; set; }
         public int PosX { get; set; }
         public int PosY { get; set; }
+        public Tile CurTile => CurRoom.GetTile(PosX, PosY);
     }
 }
