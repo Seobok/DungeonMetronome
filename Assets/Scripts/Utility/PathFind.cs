@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Utility
 {
-    public class PathFind
+    public static class PathFind
     {
         private static readonly Vector2[] Dir = new Vector2[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
         
@@ -123,9 +123,9 @@ namespace Utility
             return closedSet.ToList();
         }
         
-        private static int GetDistance(Tile start, Tile end)
+        public static int GetDistance(Tile start, Tile end)
         {
-            return Mathf.Abs(start.X - end.X) + Mathf.Abs(start.Y - end.Y);
+            return (int)Mathf.Abs(start.transform.position.x - end.transform.position.x) + (int)Mathf.Abs(start.transform.position.y - end.transform.position.y);
         }
     }
 }

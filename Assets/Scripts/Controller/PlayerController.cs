@@ -11,9 +11,11 @@ namespace Controller
     /// </summary>
     public class PlayerController : MonoBehaviour
     {
+        public Knight Knight { get; set; }
+        
+        
         private InputActions _inputActions;
         private SpriteRenderer _spriteRenderer;
-        private Knight _knight;
 
         
         private void Awake()
@@ -27,7 +29,7 @@ namespace Controller
             _spriteRenderer = GetComponent<SpriteRenderer>();
             
             //Character
-            _knight = GetComponent<Knight>();
+            Knight = GetComponent<Knight>();
 
             if (Camera.main) Camera.main.transform.SetParent(transform);
         }
@@ -51,15 +53,15 @@ namespace Controller
                 _spriteRenderer.flipX = true;
             }
             
-            int nextXPos = _knight.PosX + (int)movement.x;
-            int nextYPos = _knight.PosY + (int)movement.y;
-            Tile nextTile = _knight.CurRoom.GetTile(nextXPos, nextYPos);
+            int nextXPos = Knight.PosX + (int)movement.x;
+            int nextYPos = Knight.PosY + (int)movement.y;
+            Tile nextTile = Knight.CurRoom.GetTile(nextXPos, nextYPos);
 
             if (nextTile)
             {
-                _knight.PosX = nextTile.X;
-                _knight.PosY = nextTile.Y;
-                _knight.CurRoom = nextTile.Room;
+                Knight.PosX = nextTile.X;
+                Knight.PosY = nextTile.Y;
+                Knight.CurRoom = nextTile.Room;
                 transform.DOMove(nextTile.transform.position, 0.2f).SetEase(Ease.InOutCubic);
                 
             }

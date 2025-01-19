@@ -8,5 +8,7 @@ namespace Unit.Enemy
         public int _hp;
         public int _detectRange;
         public int _attackDamage;
+        public int _moveSpeed;
+        public Sprite _sprite;
     }
 }
