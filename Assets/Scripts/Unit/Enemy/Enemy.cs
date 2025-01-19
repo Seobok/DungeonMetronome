@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Controller;
 using Map;
 using Utility;
 
@@ -10,6 +11,7 @@ namespace Unit.Enemy
         
         
         private EnemySpec _enemySpec;
+        private PlayerController _targetPlayer;
 
 
         public void SetEnemySpec(EnemySpec enemySpec)
@@ -25,6 +27,7 @@ namespace Unit.Enemy
             {
                 if (tile.OnTilePlayer)
                 {
+                    _targetPlayer = tile.OnTilePlayer;
                     return true;
                 }
             }
