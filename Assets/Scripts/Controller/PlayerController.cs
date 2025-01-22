@@ -4,6 +4,7 @@ using Map;
 using Unit.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Workflows;
 
 namespace Controller
 {
@@ -13,6 +14,7 @@ namespace Controller
     public class PlayerController : MonoBehaviour
     {
         public Knight Knight { get; private set; }
+        public DungeonSceneWorkflow Workflow { get; set; }
         
         
         private InputActions _inputActions;
@@ -68,6 +70,8 @@ namespace Controller
                 Knight.CurRoom = nextTile.Room;
                 transform.DOMove(nextTile.Position, 0.2f).SetEase(Ease.InOutCubic);
             }
+            
+            Workflow.NextTurn();
         }
     }
 }

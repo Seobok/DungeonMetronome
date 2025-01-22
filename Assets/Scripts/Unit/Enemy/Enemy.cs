@@ -8,30 +8,36 @@ using Utility;
 
 namespace Unit.Enemy
 {
-    public class Enemy : UnitBase
+    public abstract class Enemy : UnitBase
     {
-        public int Hp { get; private set; }
-        private Tile PlayerTile => _targetPlayer ? _targetPlayer.Knight.CurTile : null;
-
-
-        private readonly Vector2[] _direction = new Vector2[4] { Vector2.up, Vector2.right, Vector2.down, Vector2.down };
-        private const float MOVE_TIME = 0.2f;
-        private EnemySpec _enemySpec;
-        private PlayerController _targetPlayer;
-        private SpriteRenderer _spriteRenderer;
-        private int _moveSpeed;
-        private Tile _nextMoveTile;
-        private GameObject _enemy;
-        
-
-        
         public Enemy()
         {
             GameObject enemyPrefab = Resources.Load<GameObject>("Prefabs/Enemy/Enemy");
             _enemy = GameObject.Instantiate(enemyPrefab);
+            _spriteRenderer = _enemy.GetComponent<SpriteRenderer>();
         }
+        
+        
+        public int Hp { get; private set; }
+        private Tile PlayerTile => _targetPlayer ? _targetPlayer.Knight.CurTile : null;
+        
 
-        public void SetEnemySpec(EnemySpec enemySpec)
+
+        private readonly SpriteRenderer _spriteRenderer;
+        //BehaviourTree용 변수
+        private readonly Vector2[] _direction = new Vector2[4] { Vector2.up, Vector2.right, Vector2.down, Vector2.down };
+        private const float MOVE_TIME = 0.2f;
+        private EnemySpec _enemySpec;
+        private PlayerController _targetPlayer;
+        private int _moveSpeed;
+        private Tile _nextMoveTile;
+        private readonly GameObject _enemy;
+        protected BehaviourTree BehaviourTree;
+
+
+        public abstract void Act();
+
+        protected void SetEnemySpec(EnemySpec enemySpec)
         {
             _enemySpec = enemySpec;
             Hp = enemySpec._hp;
@@ -39,25 +45,39 @@ namespace Unit.Enemy
             _moveSpeed = enemySpec._moveSpeed;
         }
 
-        public void Move()
+        public void InitPosition(Tile tile)
         {
-            if (_nextMoveTile == null) return;
-            
-            if (_nextMoveTile.OnTilePlayer)
+            _enemy.transform.position = tile.Position;
+            CurRoom = tile.Room;
+            PosX = tile.X;
+            PosY = tile.Y;
+            CurTile.OnTileUnit = this;
+        }
+
+        private void Move(Tile nextMoveTile)
+        {
+            if (nextMoveTile == null || nextMoveTile.OnTileUnit != null)
+            {
+                //제자리 점프
+                _enemy.transform.DOMoveY(_enemy.transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
+                return;
+            }
+
+            if (nextMoveTile.OnTilePlayer)
             {
                 // 1데미지
 
                 // 플레이어에게 박치기 후 다시 돌아오기
-                _enemy.transform.DOMove(new Vector3((_nextMoveTile.Position.x + _enemy.transform.position.x) / 2,
-                    (_nextMoveTile.Position.y + _enemy.transform.position.y) / 2,
+                _enemy.transform.DOMove(new Vector3((nextMoveTile.Position.x + _enemy.transform.position.x) / 2,
+                    (nextMoveTile.Position.y + _enemy.transform.position.y) / 2,
                     _enemy.transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             else
             {
                 // 실제 타일 이동 X
                 CurTile.OnTileUnit = null;
-                PosX = _nextMoveTile.X;
-                PosY = _nextMoveTile.Y;
+                PosX = nextMoveTile.X;
+                PosY = nextMoveTile.Y;
                 CurTile.OnTileUnit = this;
             
                 // 실제 타일 이동
@@ -69,12 +89,14 @@ namespace Unit.Enemy
             _nextMoveTile = null;
         }
 
-        public Result HasTargetPlayer()
+        //TODO :: 추후 개별 클래스로 제작
+        #region BT
+         protected Result HasTargetPlayer()
         {
             return _targetPlayer ? Result.Success : Result.Failure;
         }
-        
-        public Result DetectTargetPlayer()
+
+        protected Result DetectTargetPlayer()
         {
             List<Tile> detectTiles = PathFind.GetTilesInDistance(CurTile, _enemySpec._detectRange, true);
             foreach (Tile tile in detectTiles)
@@ -88,21 +110,21 @@ namespace Unit.Enemy
             return Result.Failure;
         }
 
-        public Result CheckTooFar()
+        protected Result CheckTooFar()
         {
             int distance = PathFind.GetDistance(CurTile, PlayerTile);
             
             return distance > _enemySpec._detectRange ? Result.Success : Result.Failure;
         }
 
-        public Result RemoveTarget()
+        protected Result RemoveTarget()
         {
             _targetPlayer = null;
 
             return Result.Success;
         }
 
-        public Result CanAttack()
+        protected Result CanAttack()
         {
             //공격 범위 안에 있으면 Success
             //아니면 Failure
@@ -110,17 +132,17 @@ namespace Unit.Enemy
             return Result.Failure;
         }
 
-        public Result Attack()
+        protected Result Attack()
         {
             return Result.Success;
         }
 
-        public Result MoveToTarget()
+        protected Result MoveToTarget()
         {
             if (_nextMoveTile != null)
             {
                 //실제로 움직이는 부분
-                Move();
+                Move(_nextMoveTile);
                 return Result.Success;
             }
             
@@ -152,11 +174,11 @@ namespace Unit.Enemy
         /// 다음에 이동할 칸을 랜덤으로 정하는 함수
         /// </summary>
         /// <returns> 이동할 수 있는 칸이 없으면 false, 이동할 수 있는 칸이 있으면 true </returns>
-        public Result MoveRandomly()
+        protected Result MoveRandomly()
         {
             if (_nextMoveTile != null)
             {
-                Move();
+                Move(_nextMoveTile);
                 return Result.Success;
             }
             
@@ -195,5 +217,7 @@ namespace Unit.Enemy
 
             return Result.Running;
         }
+        #endregion
+       
     }
 }
