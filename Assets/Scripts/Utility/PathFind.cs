@@ -54,7 +54,7 @@ namespace Utility
                         // 1. 타일이 존재하지 않거나, 타일위에 다른 대상이 있어 지나갈수 없는 경우 갈 수 없음
                         // 2. 이미 한번 지난 타일은 갈 수 없음
                         // 3. 한번 거리를 측정한 적이 있는데 해당 측정한 경우가 더 짧은 경우
-                        if (!neighbor || neighbor.OnTileUnit) continue;
+                        if (neighbor == null || neighbor.OnTileUnit) continue;
                         if (closedSet.Contains(neighbor)) continue;
                         if (openSet.Contains(neighbor) && currentTile.GCost + GetDistance(currentTile, neighbor) >= neighbor.GCost) continue;
 
@@ -111,7 +111,7 @@ namespace Utility
                 for (int i = 0; i < 4; i++)
                 {
                     Tile nextTile = visitTile.Room.GetTile(visitTile.X + (int)Dir[i].x, visitTile.Y + (int)Dir[i].y);
-                    if(!nextTile) continue;
+                    if(nextTile == null) continue;
                     if (!isThroughUnit && nextTile.OnTileUnit) continue;
                     if(closedSet.Contains(nextTile)) continue;
                     
@@ -125,7 +125,7 @@ namespace Utility
         
         public static int GetDistance(Tile start, Tile end)
         {
-            return (int)Mathf.Abs(start.transform.position.x - end.transform.position.x) + (int)Mathf.Abs(start.transform.position.y - end.transform.position.y);
+            return (int)Mathf.Abs(start.Position.x - end.Position.x) + (int)Mathf.Abs(start.Position.y - end.Position.y);
         }
     }
 }

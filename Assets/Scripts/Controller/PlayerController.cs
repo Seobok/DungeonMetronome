@@ -57,12 +57,12 @@ namespace Controller
             int nextYPos = Knight.PosY + (int)movement.y;
             Tile nextTile = Knight.CurRoom.GetTile(nextXPos, nextYPos);
 
-            if (nextTile)
+            if (nextTile != null)
             {
                 Knight.PosX = nextTile.X;
                 Knight.PosY = nextTile.Y;
                 Knight.CurRoom = nextTile.Room;
-                transform.DOMove(nextTile.transform.position, 0.2f).SetEase(Ease.InOutCubic);
+                transform.DOMove(nextTile.Position, 0.2f).SetEase(Ease.InOutCubic);
                 
             }
         }

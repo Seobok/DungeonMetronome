@@ -39,15 +39,15 @@ namespace Unit.Enemy
 
         public void Move()
         {
-            if (!_nextMoveTile) return;
+            if (_nextMoveTile == null) return;
             
             if (_nextMoveTile.OnTilePlayer)
             {
                 // 1데미지
 
                 // 플레이어에게 박치기 후 다시 돌아오기
-                transform.DOMove(new Vector3((_nextMoveTile.transform.position.x + transform.position.x) / 2,
-                    (_nextMoveTile.transform.position.y + transform.position.y) / 2,
+                transform.DOMove(new Vector3((_nextMoveTile.Position.x + transform.position.x) / 2,
+                    (_nextMoveTile.Position.y + transform.position.y) / 2,
                     transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             else
@@ -57,12 +57,11 @@ namespace Unit.Enemy
                 PosX = _nextMoveTile.X;
                 PosY = _nextMoveTile.Y;
                 CurTile.OnTileUnit = this;
-                transform.SetParent(CurTile.transform);
             
                 // 실제 타일 이동
-                transform.DOMoveX(CurTile.transform.position.x, MOVE_TIME).SetEase(Ease.InOutCubic);
+                transform.DOMoveX(CurTile.Position.x, MOVE_TIME).SetEase(Ease.InOutCubic);
                 transform.DOMoveY(transform.position.y + 0.5f, MOVE_TIME / 2).OnComplete(() => 
-                    transform.DOMoveY(CurTile.transform.position.y, MOVE_TIME / 2));
+                    transform.DOMoveY(CurTile.Position.y, MOVE_TIME / 2));
             }
 
             _nextMoveTile = null;
@@ -116,14 +115,14 @@ namespace Unit.Enemy
 
         public Result MoveToTarget()
         {
-            if (_nextMoveTile)
+            if (_nextMoveTile != null)
             {
                 //실제로 움직이는 부분
                 Move();
                 return Result.Success;
             }
             
-            if(!_targetPlayer || !PlayerTile)
+            if(_targetPlayer == null || PlayerTile == null)
                 return Result.Failure;
             
             Stack<Tile> path = PathFind.FindPath(CurTile, PlayerTile);
@@ -139,7 +138,7 @@ namespace Unit.Enemy
                 moveCnt--;
             }
             
-            if(_nextMoveTile.transform.position.x < CurTile.transform.position.x)
+            if(_nextMoveTile.Position.x < CurTile.Position.x)
                 _spriteRenderer.flipX = true;
             else
                 _spriteRenderer.flipX = false;
@@ -153,7 +152,7 @@ namespace Unit.Enemy
         /// <returns> 이동할 수 있는 칸이 없으면 false, 이동할 수 있는 칸이 있으면 true </returns>
         public Result MoveRandomly()
         {
-            if (_nextMoveTile)
+            if (_nextMoveTile != null)
             {
                 Move();
                 return Result.Success;
@@ -168,7 +167,7 @@ namespace Unit.Enemy
                 for (int i = 0; i < _direction.Length; i++)
                 {
                     Tile nextTile = _nextMoveTile.Room.GetTile(_nextMoveTile.X + (int)_direction[i].x, _nextMoveTile.Y + (int)_direction[i].y);
-                    if(!nextTile)
+                    if(nextTile == null)
                         continue;
                     
                     if(!nextTile.OnTileUnit)
@@ -187,7 +186,7 @@ namespace Unit.Enemy
                 }
             }
             
-            if(_nextMoveTile.transform.position.x < CurTile.transform.position.x)
+            if(_nextMoveTile.Position.x < CurTile.Position.x)
                 _spriteRenderer.flipX = true;
             else
                 _spriteRenderer.flipX = false;

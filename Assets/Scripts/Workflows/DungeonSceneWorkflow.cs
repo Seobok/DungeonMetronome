@@ -22,8 +22,7 @@ namespace Workflows
 
         private void Init()
         {
-            GameObject dungeonObject = new GameObject("Dungeon");
-            _dungeon = dungeonObject.AddComponent<Dungeon>();
+            _dungeon = new Dungeon();
 
             if (!_knightPrefab)
                 _knightPrefab = Resources.Load<Knight>("Prefabs/Character/Knight");
@@ -33,7 +32,7 @@ namespace Workflows
         private IEnumerator C_Workflow()
         {
             _dungeon.ActivateDungeon(7);
-            _knight.transform.position = _dungeon.StartRoom.GetTile(Room.X_LENGTH/2, Room.Y_LENGTH/2).transform.position;
+            _knight.transform.position = _dungeon.StartRoom.GetTile(Room.X_LENGTH/2, Room.Y_LENGTH/2).Position;
             _knight.CurRoom = _dungeon.StartRoom;
             _knight.PosX = Room.X_LENGTH/2;
             _knight.PosY = Room.Y_LENGTH/2;
