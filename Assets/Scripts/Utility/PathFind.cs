@@ -14,7 +14,7 @@ namespace Utility
             bool pathSuccess = false;
             Stack<Tile> path= new Stack<Tile>();
 
-            if(!end.OnTileUnit)
+            if(end.OnTileUnit == null)
             {
                 List<Tile> openSet = new List<Tile>();
                 HashSet<Tile> closedSet = new HashSet<Tile>();
@@ -54,7 +54,7 @@ namespace Utility
                         // 1. 타일이 존재하지 않거나, 타일위에 다른 대상이 있어 지나갈수 없는 경우 갈 수 없음
                         // 2. 이미 한번 지난 타일은 갈 수 없음
                         // 3. 한번 거리를 측정한 적이 있는데 해당 측정한 경우가 더 짧은 경우
-                        if (neighbor == null || neighbor.OnTileUnit) continue;
+                        if (neighbor == null || neighbor.OnTileUnit != null) continue;
                         if (closedSet.Contains(neighbor)) continue;
                         if (openSet.Contains(neighbor) && currentTile.GCost + GetDistance(currentTile, neighbor) >= neighbor.GCost) continue;
 
@@ -112,7 +112,7 @@ namespace Utility
                 {
                     Tile nextTile = visitTile.Room.GetTile(visitTile.X + (int)Dir[i].x, visitTile.Y + (int)Dir[i].y);
                     if(nextTile == null) continue;
-                    if (!isThroughUnit && nextTile.OnTileUnit) continue;
+                    if (!isThroughUnit && nextTile.OnTileUnit != null) continue;
                     if(closedSet.Contains(nextTile)) continue;
                     
                     nextTile.GCost = visitTile.GCost + GetDistance(nextTile, visitTile);

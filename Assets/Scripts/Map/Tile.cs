@@ -10,12 +10,12 @@ namespace Map
         public int Y { get; set; }
         public Vector2 Position 
         {
-            get => _tileGo ? new Vector2(_tileGo.transform.position.x, _tileGo.transform.position.y) : Vector2.zero;
+            get => _tile ? new Vector2(_tile.transform.position.x, _tile.transform.position.y) : Vector2.zero;
             set
             {
-                if(_tileGo != null)
+                if(_tile)
                 {
-                    _tileGo.transform.position = value;
+                    _tile.transform.position = value;
                 }
             }
         }
@@ -28,14 +28,13 @@ namespace Map
         public Tile AStarParent { get; set; }
 
 
-        private SpriteRenderer _tilePrefab;
-        private SpriteRenderer _tileGo;
+        private GameObject _tile;
 
 
         public Tile()
         {
-            _tilePrefab = Resources.Load<SpriteRenderer>("Prefabs/Map/Tile");
-            _tileGo = GameObject.Instantiate(_tilePrefab);
+            GameObject tilePrefab = Resources.Load<GameObject>("Prefabs/Map/Tile");
+            _tile = GameObject.Instantiate(tilePrefab);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Map;
 using Unit.Player;
@@ -11,7 +12,7 @@ namespace Controller
     /// </summary>
     public class PlayerController : MonoBehaviour
     {
-        public Knight Knight { get; set; }
+        public Knight Knight { get; private set; }
         
         
         private InputActions _inputActions;
@@ -28,13 +29,16 @@ namespace Controller
             //Player Sprite
             _spriteRenderer = GetComponent<SpriteRenderer>();
             
-            //Character
-            Knight = GetComponent<Knight>();
+            Knight = new Knight();
 
             if (Camera.main) Camera.main.transform.SetParent(transform);
         }
 
-        
+        private void OnDestroy()
+        {
+            _inputActions.Disable();
+        }
+
         /// <summary>
         /// Player Move Input을 처리하는 스크립트
         /// </summary>
@@ -63,7 +67,6 @@ namespace Controller
                 Knight.PosY = nextTile.Y;
                 Knight.CurRoom = nextTile.Room;
                 transform.DOMove(nextTile.Position, 0.2f).SetEase(Ease.InOutCubic);
-                
             }
         }
     }

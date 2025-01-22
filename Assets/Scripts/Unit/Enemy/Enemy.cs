@@ -8,7 +8,6 @@ using Utility;
 
 namespace Unit.Enemy
 {
-    [RequireComponent(typeof(SpriteRenderer))]
     public class Enemy : UnitBase
     {
         public int Hp { get; private set; }
@@ -22,11 +21,14 @@ namespace Unit.Enemy
         private SpriteRenderer _spriteRenderer;
         private int _moveSpeed;
         private Tile _nextMoveTile;
+        private GameObject _enemy;
+        
 
-
-        private void Awake()
+        
+        public Enemy()
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            GameObject enemyPrefab = Resources.Load<GameObject>("Prefabs/Enemy/Enemy");
+            _enemy = GameObject.Instantiate(enemyPrefab);
         }
 
         public void SetEnemySpec(EnemySpec enemySpec)
@@ -46,9 +48,9 @@ namespace Unit.Enemy
                 // 1데미지
 
                 // 플레이어에게 박치기 후 다시 돌아오기
-                transform.DOMove(new Vector3((_nextMoveTile.Position.x + transform.position.x) / 2,
-                    (_nextMoveTile.Position.y + transform.position.y) / 2,
-                    transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
+                _enemy.transform.DOMove(new Vector3((_nextMoveTile.Position.x + _enemy.transform.position.x) / 2,
+                    (_nextMoveTile.Position.y + _enemy.transform.position.y) / 2,
+                    _enemy.transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             else
             {
@@ -59,9 +61,9 @@ namespace Unit.Enemy
                 CurTile.OnTileUnit = this;
             
                 // 실제 타일 이동
-                transform.DOMoveX(CurTile.Position.x, MOVE_TIME).SetEase(Ease.InOutCubic);
-                transform.DOMoveY(transform.position.y + 0.5f, MOVE_TIME / 2).OnComplete(() => 
-                    transform.DOMoveY(CurTile.Position.y, MOVE_TIME / 2));
+                _enemy.transform.DOMoveX(CurTile.Position.x, MOVE_TIME).SetEase(Ease.InOutCubic);
+                _enemy.transform.DOMoveY(_enemy.transform.position.y + 0.5f, MOVE_TIME / 2).OnComplete(() => 
+                    _enemy.transform.DOMoveY(CurTile.Position.y, MOVE_TIME / 2));
             }
 
             _nextMoveTile = null;
@@ -170,7 +172,7 @@ namespace Unit.Enemy
                     if(nextTile == null)
                         continue;
                     
-                    if(!nextTile.OnTileUnit)
+                    if(nextTile.OnTileUnit == null)
                         nextTileList.Add(nextTile);
                 }
 
