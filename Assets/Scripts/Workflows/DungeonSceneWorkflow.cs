@@ -1,6 +1,7 @@
 using System.Collections;
 using Controller;
 using Map;
+using Unit;
 using Unit.Enemy;
 using Unit.Player;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Workflows
     public class DungeonSceneWorkflow : MonoBehaviour
     {
         private Dungeon _dungeon;
+        private UnitManager _unitManager;
         private PlayerController _playerController;
         private Bat _bat;
 
@@ -24,6 +26,7 @@ namespace Workflows
         private void Init()
         {
             _dungeon = new Dungeon();
+            _unitManager = new UnitManager(_dungeon);
             
             PlayerController playerControllerPrefab = Resources.Load<PlayerController>("Prefabs/Character/Knight");
             _playerController = Instantiate(playerControllerPrefab);
@@ -36,12 +39,12 @@ namespace Workflows
         {
             _dungeon.ActivateDungeon(7);
             
-            _playerController.transform.position = _dungeon.StartRoom.GetTile(Room.X_LENGTH/2, Room.Y_LENGTH/2).Position;
-            _playerController.Knight.CurRoom = _dungeon.StartRoom;
-            _playerController.Knight.PosX = Room.X_LENGTH/2;
-            _playerController.Knight.PosY = Room.Y_LENGTH/2;
-            
-            _bat.InitPosition(_dungeon.StartRoom.GetTile(Room.X_LENGTH/2 + 3, Room.Y_LENGTH/2 + 3));
+            // _playerController.transform.position = _dungeon.StartRoom.GetTile(Room.X_LENGTH/2, Room.Y_LENGTH/2).Position;
+            // _playerController.Knight.CurRoom = _dungeon.StartRoom;
+            // _playerController.Knight.X = Room.X_LENGTH/2;
+            // _playerController.Knight.Y = Room.Y_LENGTH/2;
+            //
+            // _bat.InitPosition(_dungeon.StartRoom.GetTile(Room.X_LENGTH/2 + 3, Room.Y_LENGTH/2 + 3));
             yield return null;
         }
 

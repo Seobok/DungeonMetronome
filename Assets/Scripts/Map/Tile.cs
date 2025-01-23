@@ -1,40 +1,44 @@
+using System;
 using Controller;
 using Unit;
 using UnityEngine;
 
 namespace Map
 {
-    public class Tile
+    [Flags]
+    public enum StatusFlag : uint
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public Vector2 Position 
+        None = 0,
+        Empty = 1<<0,
+        Blocked = 1<<1,
+        Unit = 1<<2,
+    }
+    
+    public struct Tile : IEquatable<Tile>
+    {
+        public Coord Coord;
+        public StatusFlag Status;
+
+        
+        public static bool operator==(Tile a, Tile b) =>
+            (a.Coord == b.Coord) && (a.Coord == b.Coord);
+        public static bool operator!=(Tile a, Tile b) =>
+            !(a == b);
+        
+        
+        public bool Equals(Tile other)
         {
-            get => _tile ? new Vector2(_tile.transform.position.x, _tile.transform.position.y) : Vector2.zero;
-            set
-            {
-                if(_tile)
-                {
-                    _tile.transform.position = value;
-                }
-            }
+            return Coord.Equals(other.Coord) && Status == other.Status;
         }
-        public Room Room { get; set; }
-        public UnitBase OnTileUnit { get; set; }
-        public PlayerController OnTilePlayer { get; set; }
-        public int FCost => GCost + HCost;
-        public int GCost { get; set; }
-        public int HCost { get; set; }
-        public Tile AStarParent { get; set; }
 
-
-        private GameObject _tile;
-
-
-        public Tile()
+        public override bool Equals(object obj)
         {
-            GameObject tilePrefab = Resources.Load<GameObject>("Prefabs/Map/Tile");
-            _tile = GameObject.Instantiate(tilePrefab);
+            return obj is Tile other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Coord, (int)Status);
         }
     }
 }

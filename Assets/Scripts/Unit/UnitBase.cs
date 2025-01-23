@@ -9,9 +9,16 @@ namespace Unit
     /// </summary>
     public abstract class UnitBase
     {
-        public Room CurRoom { get; set; }
-        public int PosX { get; set; }
-        public int PosY { get; set; }
-        public Tile CurTile => CurRoom.GetTile(PosX, PosY);
+        //public Room CurRoom { get; set; }
+        public UnitManager Manager { get; set; }
+        public abstract Coord Position { get; set; }
+        public Tile CurTile
+        {
+            get
+            {
+                Manager.Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
+                return tile;
+            }
+        }
     }
 }

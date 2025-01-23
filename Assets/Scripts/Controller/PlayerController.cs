@@ -13,7 +13,7 @@ namespace Controller
     /// </summary>
     public class PlayerController : MonoBehaviour
     {
-        public Knight Knight { get; private set; }
+        public Knight Knight { get; set; }
         public DungeonSceneWorkflow Workflow { get; set; }
         
         
@@ -30,8 +30,6 @@ namespace Controller
             
             //Player Sprite
             _spriteRenderer = GetComponent<SpriteRenderer>();
-            
-            Knight = new Knight();
 
             if (Camera.main) Camera.main.transform.SetParent(transform);
         }
@@ -59,16 +57,14 @@ namespace Controller
                 _spriteRenderer.flipX = true;
             }
             
-            int nextXPos = Knight.PosX + (int)movement.x;
-            int nextYPos = Knight.PosY + (int)movement.y;
-            Tile nextTile = Knight.CurRoom.GetTile(nextXPos, nextYPos);
-
-            if (nextTile != null)
+            int nextXPos = Knight.Position.X + (int)movement.x;
+            int nextYPos = Knight.Position.Y + (int)movement.y;
+            Knight.Manager.Dungeon.GetTile(nextXPos, nextYPos, out Tile tile);
+            
+            if ((tile.Status & StatusFlag.Empty) > 0)
             {
-                Knight.PosX = nextTile.X;
-                Knight.PosY = nextTile.Y;
-                Knight.CurRoom = nextTile.Room;
-                transform.DOMove(nextTile.Position, 0.2f).SetEase(Ease.InOutCubic);
+                Knight.Position = tile.Coord;
+                transform.DOMove(new Vector2(tile.Coord.X, tile.Coord.Y), 0.2f).SetEase(Ease.InOutCubic);
             }
             
             Workflow.NextTurn();

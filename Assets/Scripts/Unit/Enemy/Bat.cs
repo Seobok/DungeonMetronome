@@ -28,11 +28,13 @@ namespace Unit.Enemy
                     .CloseComposite()
                 .CloseComposite()
                 .Execution(MoveRandomly);
-
-            //SetSpec
-            EnemySpec batSpec = Resources.Load<EnemySpec>("Prefabs/Enemy/Bat");
-            SetEnemySpec(batSpec);
         }
+
+
+        public override int Hp { get; set; } = 2;
+        public override int DetectRange { get; set; } = 5;
+        public override int MoveSpeed { get; set; } = 4;
+
         
         public override void Act()
         {

@@ -7,43 +7,59 @@ namespace Map
 {
     public class Dungeon
     {
-        public Room[,] Rooms { get; private set; } = new Room[DUNGEON_X, DUNGEON_Y];
-        public int RoomCount { get; private set; }
-        public Room StartRoom { get; private set; }
+        public Dungeon()
+        {
+            //tile 프리팹 받아오기
+            _tilePrefab = Resources.Load<GameObject>("Prefabs/Map/Tile");
+            
+            //rooms 배열 초기화
+            for (int i = 0; i < DUNGEON_X; i++)
+            {
+                _rooms[i] = new Room[DUNGEON_Y];
+            }
+
+            //Tiles 배열 초기화
+            for (int i = 0; i < DUNGEON_X * Room.X_LENGTH; i++)
+            {
+                Tiles[i] = new Tile[DUNGEON_Y * Room.Y_LENGTH];
+            }
+            
+            InitializeRooms();
+        }
+        
+        
+        public Tile[][] Tiles { get; private set; } = new Tile[DUNGEON_X * Room.X_LENGTH][];
 
 
         public const int DUNGEON_X = 15;
         public const int DUNGEON_Y = 15;
         private const int MAX_ROOM_COUNT = 150;
 
+        private Room _startRoom;
         private List<Room> _roomPool;
-        private readonly Vector2[] _directions = new Vector2[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
-
+        private readonly Coord[] _directions = new Coord[] { new Coord(0, 1), new Coord(1, 0), new Coord(0, -1), new Coord(0, -1) };
+        private readonly Room[][] _rooms = new Room[DUNGEON_X][];
+        private Dictionary<Coord, GameObject> _ = new Dictionary<Coord, GameObject>(1000);
+        private GameObject _tilePrefab;
         
-        public Dungeon()
-        {
-            InitializeRooms();
-        }
-
+        
         /// <summary>
         /// 방을 생성해서 풀링
         /// </summary>
         private void InitializeRooms()
         {
             _roomPool = new List<Room>(MAX_ROOM_COUNT);
-            
+
             //특정 갯수의 방이 만들어 질때까지 반복
             for (int i = 0; i < MAX_ROOM_COUNT; i++)
             {
                 //방 생성 가능
-                Room newRoom = new Room();
+                Room newRoom = new Room(this);
                 if (i == 0)
                 {
-                    StartRoom = newRoom;
+                    _startRoom = newRoom;
                 }
 
-                newRoom.Dungeon = this;
-                
                 _roomPool.Add(newRoom);
             }
         }
@@ -57,35 +73,33 @@ namespace Map
         {
             if (roomCount > MAX_ROOM_COUNT || roomCount < 1)
                 throw new ArgumentException();
-
-            RoomCount = roomCount;
             
             //첫 방은 가운데 고정
-            Room startRoom = StartRoom;
-            startRoom.X = DUNGEON_X / 2;
-            startRoom.Y = DUNGEON_Y / 2;
-            Rooms[startRoom.X, startRoom.Y] = startRoom;
+            Room startRoom = _startRoom;
+            startRoom.XInDungeon = DUNGEON_X / 2;
+            startRoom.YInDungeon = DUNGEON_Y / 2;
+            _rooms[startRoom.XInDungeon][startRoom.YInDungeon] = startRoom;
             startRoom.SpawnTiles();
             
             int setCount = 1;   //위치가 설정된 방의 갯수
             while (setCount < roomCount)
             {
                 Room room = _roomPool[Random.Range(0, setCount)];
-                Vector2 direction = _directions[Random.Range(0, _directions.Length)];
+                Coord direction = _directions[Random.Range(0, _directions.Length)];
                 
-                int nextRoomX = room.X + (int)direction.x;
-                int nextRoomY = room.Y + (int)direction.y;
+                int nextRoomX = room.XInDungeon + (int)direction.X;
+                int nextRoomY = room.YInDungeon + (int)direction.Y;
 
                 //Rooms의 배열 범위에 들어가는지 확인
                 if (nextRoomX >= 0 && nextRoomY >= 0 && nextRoomX < DUNGEON_X && nextRoomY < DUNGEON_Y)
                 {
-                    if (Rooms[nextRoomX, nextRoomY] == null)
+                    if (_rooms[nextRoomX][nextRoomY] == null)
                     {
-                        _roomPool[setCount].X = nextRoomX;
-                        _roomPool[setCount].Y = nextRoomY;
-                        Rooms[nextRoomX, nextRoomY] = _roomPool[setCount];
+                        _roomPool[setCount].XInDungeon = nextRoomX;
+                        _roomPool[setCount].YInDungeon = nextRoomY;
+                        _rooms[nextRoomX][nextRoomY] = _roomPool[setCount];
 
-                        _roomPool[setCount].CenterPos = room.CenterPos + new Vector2(direction.x * Room.X_LENGTH, direction.y * Room.Y_LENGTH);
+                        _roomPool[setCount].CenterPos = room.CenterPos + new Coord(direction.X * Room.X_LENGTH, direction.Y * Room.Y_LENGTH);
                         _roomPool[setCount].SpawnTiles();
                         
                         setCount++;
@@ -100,6 +114,24 @@ namespace Map
         public void DeactivateDungeon()
         {
             //Rooms 초기화
+        }
+
+        public void RegisterTile(Tile tile)
+        {
+            GameObject tileGo = GameObject.Instantiate(_tilePrefab);
+            tileGo.transform.position = new Vector3(tile.Coord.X, tile.Coord.Y, 0);
+
+            Tiles[tile.Coord.X][tile.Coord.Y] = tile;
+        }
+
+        public void GetTile(int x, int y, out Tile tile)
+        {
+            tile = default;
+
+            if (x < 0 || y < 0 || x >= DUNGEON_X * Room.X_LENGTH || y >= DUNGEON_Y * Room.Y_LENGTH)
+                return;
+
+            tile = Tiles[x][y];
         }
     }
 }
