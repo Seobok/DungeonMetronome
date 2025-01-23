@@ -13,9 +13,9 @@ namespace Unit
         {
             Dungeon = dungeon;
 
-            for (int i = 0; i < Dungeon.DUNGEON_X; i++)
+            for (int i = 0; i < Dungeon.DUNGEON_X * Room.X_LENGTH; i++)
             {
-                Enemies[i] = new Enemy.Enemy[Dungeon.DUNGEON_Y];
+                Enemies[i] = new Enemy.Enemy[Dungeon.DUNGEON_Y * Room.Y_LENGTH];
             }
 
             _batPrefab = Resources.Load<GameObject>("Prefabs/Enemy/Bat");
@@ -24,12 +24,15 @@ namespace Unit
         
         public Dungeon Dungeon { get; private set; }
         public GameObject KnightGameObject { get; private set; }
-        public Dictionary<Coord, GameObject> EnemyObjects { get; private set; }
-        public Enemy.Enemy[][] Enemies { get; set; } = new Enemy.Enemy[Dungeon.DUNGEON_X][];
-        public Knight Knight { get; private set; }
+
+        public Dictionary<Enemy.Enemy, GameObject> EnemyObjects { get; private set; } =
+            new Dictionary<Enemy.Enemy, GameObject>();
+        public Enemy.Enemy[][] Enemies { get; set; } = new Enemy.Enemy[Dungeon.DUNGEON_X * Room.X_LENGTH][];
+        
+        public Knight Knight { get; set; }
         
         
-        private GameObject _batPrefab;
+        private readonly GameObject _batPrefab;
         
         
         /// <summary>
@@ -41,12 +44,12 @@ namespace Unit
             KnightGameObject = GameObject.Instantiate(knightPrefab);
             KnightGameObject.transform.position = new Vector2(x, y);
             
-            Knight knight = new Knight
+            Knight = new Knight
             {
                 Manager = this,
             };
             
-            return knight;
+            return Knight;
         }
 
         public Enemy.Enemy SpawnEnemy(Type type, int x, int y)
@@ -64,6 +67,7 @@ namespace Unit
                 GameObject bat = GameObject.Instantiate(_batPrefab);
                 bat.transform.position = new Vector2(x, y);
                 Enemies[x][y] = enemy;
+                EnemyObjects.Add(enemy, bat);
             }
 
             return enemy;

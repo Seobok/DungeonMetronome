@@ -127,18 +127,23 @@ namespace Utility
         {
             List<Tile> tiles = new List<Tile>();
             
-            Queue<(Tile tile, int distance)> queue = new Queue<(Tile tile, int distance)>();
-            queue.Enqueue((currentTile, 0));
-
+            Queue<Tile> queue = new Queue<Tile>();
+            queue.Enqueue(currentTile);
+            tiles.Add(currentTile);
+            
             while (queue.Count > 0)
             {
-                (Tile tile, int distance) curTile = queue.Dequeue();
+                Tile curTile = queue.Dequeue();
+                
                 for (int i = 0; i < 4; i++)
                 {
-                    dungeon.GetTile(curTile.tile.Coord.X + (int)Dir[i].x, curTile.tile.Coord.Y + (int)Dir[i].y, out Tile nextTile);
-                    int dist = curTile.distance + 1;
+                    dungeon.GetTile(curTile.Coord.X + (int)Dir[i].x, curTile.Coord.Y + (int)Dir[i].y, out Tile nextTile);
+                    if (tiles.Contains(nextTile)) continue;
+                    if (nextTile.Status != StatusFlag.Empty) continue;
+                    if (GetDistance(currentTile,nextTile) > distance) continue;
                     
-                    //TODO :: BFS
+                    tiles.Add(nextTile);
+                    queue.Enqueue(nextTile);
                 }
             }
 

@@ -121,12 +121,15 @@ namespace Map
             GameObject tileGo = GameObject.Instantiate(_tilePrefab);
             tileGo.transform.position = new Vector3(tile.Coord.X, tile.Coord.Y, 0);
 
-            Tiles[tile.Coord.X][tile.Coord.Y] = tile;
+            Tiles[tile.Coord.X + DUNGEON_X * Room.X_LENGTH / 2][tile.Coord.Y + DUNGEON_Y * Room.Y_LENGTH / 2] = tile;
         }
 
         public void GetTile(int x, int y, out Tile tile)
         {
             tile = default;
+
+            x += DUNGEON_X * Room.X_LENGTH / 2;
+            y += DUNGEON_Y * Room.Y_LENGTH / 2;
 
             if (x < 0 || y < 0 || x >= DUNGEON_X * Room.X_LENGTH || y >= DUNGEON_Y * Room.Y_LENGTH)
                 return;

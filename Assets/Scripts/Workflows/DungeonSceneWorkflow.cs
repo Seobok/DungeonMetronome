@@ -12,7 +12,7 @@ namespace Workflows
     {
         private Dungeon _dungeon;
         private UnitManager _unitManager;
-        private PlayerController _playerController;
+
         private Bat _bat;
 
         
@@ -20,32 +20,20 @@ namespace Workflows
         {
             Init();
             
-            StartCoroutine(C_Workflow());
+            _dungeon.ActivateDungeon(7);
+
+            Knight knight = _unitManager.SpawnKnight(0, 0);
+            PlayerController playerController = _unitManager.KnightGameObject.GetComponent<PlayerController>();
+            playerController.Workflow = this;
+            playerController.Knight = knight;
+
+            _bat = (Bat)_unitManager.SpawnEnemy(typeof(Bat), 3, 3);
         }
 
         private void Init()
         {
             _dungeon = new Dungeon();
             _unitManager = new UnitManager(_dungeon);
-            
-            PlayerController playerControllerPrefab = Resources.Load<PlayerController>("Prefabs/Character/Knight");
-            _playerController = Instantiate(playerControllerPrefab);
-            _playerController.Workflow = this;
-
-            _bat = new Bat();
-        }
-        
-        private IEnumerator C_Workflow()
-        {
-            _dungeon.ActivateDungeon(7);
-            
-            // _playerController.transform.position = _dungeon.StartRoom.GetTile(Room.X_LENGTH/2, Room.Y_LENGTH/2).Position;
-            // _playerController.Knight.CurRoom = _dungeon.StartRoom;
-            // _playerController.Knight.X = Room.X_LENGTH/2;
-            // _playerController.Knight.Y = Room.Y_LENGTH/2;
-            //
-            // _bat.InitPosition(_dungeon.StartRoom.GetTile(Room.X_LENGTH/2 + 3, Room.Y_LENGTH/2 + 3));
-            yield return null;
         }
 
         public void NextTurn()

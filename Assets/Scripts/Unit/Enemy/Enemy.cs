@@ -24,7 +24,6 @@ namespace Unit.Enemy
         private const float MOVE_TIME = 0.2f;
         private Knight _targetPlayer;
         private Tile _nextMoveTile;
-        private readonly GameObject _enemy;
         protected BehaviourTree BehaviourTree;
 
 
@@ -36,7 +35,7 @@ namespace Unit.Enemy
             if (nextMoveTile.Status != StatusFlag.Empty)
             {
                 //제자리 점프
-                _enemy.transform.DOMoveY(_enemy.transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
+                Manager.EnemyObjects[this].transform.DOMoveY(Manager.EnemyObjects[this].transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             // 플레이어가 있는 위치인 경우
             else if (nextMoveTile.Coord == Manager.Knight.Position)
@@ -44,30 +43,30 @@ namespace Unit.Enemy
                 // 1데미지
 
                 // 플레이어에게 박치기 후 다시 돌아오기
-                _enemy.transform.DOMove(new Vector3((nextMoveTile.Coord.X + _enemy.transform.position.x) / 2,
-                    (nextMoveTile.Coord.Y + _enemy.transform.position.y) / 2,
-                    _enemy.transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
+                Manager.EnemyObjects[this].transform.DOMove(new Vector3((nextMoveTile.Coord.X + Manager.EnemyObjects[this].transform.position.x) / 2,
+                    (nextMoveTile.Coord.Y + Manager.EnemyObjects[this].transform.position.y) / 2,
+                    Manager.EnemyObjects[this].transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             // 갈 수 있는 경우
             else
             {
                 // 실제 타일 이동 X
-                Manager.Enemies[CurTile.Coord.X][CurTile.Coord.Y] = null;
+                Manager.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = null;
                 Manager.Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
                 tile.Status |= StatusFlag.Empty;
                 tile.Status &= ~StatusFlag.Unit;
                 
                 Position = nextMoveTile.Coord;
                 
-                Manager.Enemies[CurTile.Coord.X][CurTile.Coord.Y] = this;
+                Manager.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = this;
                 Manager.Dungeon.GetTile(Position.X, Position.Y , out tile);
                 tile.Status &= ~StatusFlag.Empty;
                 tile.Status |= StatusFlag.Unit;
             
                 // 실제 타일 이동
-                _enemy.transform.DOMoveX(CurTile.Coord.X, MOVE_TIME).SetEase(Ease.InOutCubic);
-                _enemy.transform.DOMoveY(_enemy.transform.position.y + 0.5f, MOVE_TIME / 2).OnComplete(() => 
-                    _enemy.transform.DOMoveY(CurTile.Coord.Y, MOVE_TIME / 2));
+                Manager.EnemyObjects[this].transform.DOMoveX(CurTile.Coord.X, MOVE_TIME).SetEase(Ease.InOutCubic);
+                Manager.EnemyObjects[this].transform.DOMoveY(Manager.EnemyObjects[this].transform.position.y + 0.5f, MOVE_TIME / 2).OnComplete(() => 
+                    Manager.EnemyObjects[this].transform.DOMoveY(CurTile.Coord.Y, MOVE_TIME / 2));
             }
 
             _nextMoveTile = default;
@@ -126,6 +125,7 @@ namespace Unit.Enemy
             if (_nextMoveTile.Status == StatusFlag.Empty)
             {
                 //실제로 움직이는 부분
+                Debug.Log($"[{CurTile.Coord.X},{CurTile.Coord.Y}] => [{_nextMoveTile.Coord.X},{_nextMoveTile.Coord.Y}]");
                 Move(_nextMoveTile);
                 return Result.Success;
             }
@@ -141,15 +141,15 @@ namespace Unit.Enemy
             _nextMoveTile = CurTile;
             while (moveCnt > 0)
             {
-                if (path.Count > 0) break;
+                if (path.Count == 0) break;
                 _nextMoveTile = path.Pop();
                 moveCnt--;
             }
             
             if(_nextMoveTile.Coord.X < CurTile.Coord.X)
-                Manager.EnemyObjects[Position].GetComponent<SpriteRenderer>().flipX = true;
+                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = true;
             else
-                Manager.EnemyObjects[Position].GetComponent<SpriteRenderer>().flipX = false;
+                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = false;
 
             return Result.Running;
         }
@@ -162,6 +162,7 @@ namespace Unit.Enemy
         {
             if (_nextMoveTile.Status == StatusFlag.Empty)
             {
+                Debug.Log($"[{CurTile.Coord.X},{CurTile.Coord.Y}] => [{_nextMoveTile.Coord.X},{_nextMoveTile.Coord.Y}]");
                 Move(_nextMoveTile);
                 return Result.Success;
             }
@@ -195,9 +196,9 @@ namespace Unit.Enemy
             }
             
             if(_nextMoveTile.Coord.X < CurTile.Coord.X)
-                Manager.EnemyObjects[Position].GetComponent<SpriteRenderer>().flipX = true;
+                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = true;
             else
-                Manager.EnemyObjects[Position].GetComponent<SpriteRenderer>().flipX = false;
+                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = false;
 
             return Result.Running;
         }
