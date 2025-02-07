@@ -6,17 +6,21 @@ using Unit.Enemy.BT;
 using Unit.Player;
 using UnityEngine;
 using Utility;
+using VContainer;
 
 namespace Unit.Enemy
 {
     public abstract class Enemy : UnitBase
     {
-        public override Coord Position { get; set; }
+        public Enemy(Dungeon dungeon) : base(dungeon)
+        {
+            
+        }
+        
+        
         public abstract int Hp { get; set; }
         public abstract int DetectRange { get; set; }
         public abstract int MoveSpeed { get; set; }
-
-        private Tile PlayerTile => _targetPlayer != null ? Manager.Knight.CurTile : default;
 
 
         //BehaviourTree용 변수
@@ -35,38 +39,38 @@ namespace Unit.Enemy
             if (nextMoveTile.Status != StatusFlag.Empty)
             {
                 //제자리 점프
-                Manager.EnemyObjects[this].transform.DOMoveY(Manager.EnemyObjects[this].transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
+                Transform.DOMoveY(Transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             // 플레이어가 있는 위치인 경우
-            else if (nextMoveTile.Coord == Manager.Knight.Position)
+            else if (nextMoveTile.Coord == _unitManager.Knight.Position)
             {
                 // 1데미지
 
                 // 플레이어에게 박치기 후 다시 돌아오기
-                Manager.EnemyObjects[this].transform.DOMove(new Vector3((nextMoveTile.Coord.X + Manager.EnemyObjects[this].transform.position.x) / 2,
-                    (nextMoveTile.Coord.Y + Manager.EnemyObjects[this].transform.position.y) / 2,
-                    Manager.EnemyObjects[this].transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
+                Transform.DOMove(new Vector3((nextMoveTile.Coord.X + Transform.position.x) / 2,
+                    (nextMoveTile.Coord.Y + Transform.position.y) / 2,
+                    Transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             // 갈 수 있는 경우
             else
             {
                 // 실제 타일 이동 X
-                Manager.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = null;
-                Manager.Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
+                Dungeon.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = null;
+                Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
                 tile.Status |= StatusFlag.Empty;
                 tile.Status &= ~StatusFlag.Unit;
                 
                 Position = nextMoveTile.Coord;
                 
-                Manager.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = this;
-                Manager.Dungeon.GetTile(Position.X, Position.Y , out tile);
+                _unitManager.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = this;
+                Dungeon.GetTile(Position.X, Position.Y , out tile);
                 tile.Status &= ~StatusFlag.Empty;
                 tile.Status |= StatusFlag.Unit;
             
                 // 실제 타일 이동
-                Manager.EnemyObjects[this].transform.DOMoveX(CurTile.Coord.X, MOVE_TIME).SetEase(Ease.InOutCubic);
-                Manager.EnemyObjects[this].transform.DOMoveY(Manager.EnemyObjects[this].transform.position.y + 0.5f, MOVE_TIME / 2).OnComplete(() => 
-                    Manager.EnemyObjects[this].transform.DOMoveY(CurTile.Coord.Y, MOVE_TIME / 2));
+                Transform.DOMoveX(CurTile.Coord.X, MOVE_TIME).SetEase(Ease.InOutCubic);
+                Transform.DOMoveY(Transform.position.y + 0.5f, MOVE_TIME / 2).OnComplete(() => 
+                    Transform.DOMoveY(CurTile.Coord.Y, MOVE_TIME / 2));
             }
 
             _nextMoveTile = default;
@@ -81,12 +85,12 @@ namespace Unit.Enemy
 
         protected Result DetectTargetPlayer()
         {
-            List<Tile> detectTiles = Manager.Dungeon.GetTilesInDistance(CurTile, DetectRange);
+            List<Tile> detectTiles = Dungeon.GetTilesInDistance(CurTile, DetectRange);
             foreach (Tile tile in detectTiles)
             {
-                if (Manager.Knight.Position == tile.Coord)
+                if (_unitManager.Knight.Position == tile.Coord)
                 {
-                    _targetPlayer = Manager.Knight;
+                    _targetPlayer = _unitManager.Knight;
                     return Result.Success;
                 }
             }
@@ -133,7 +137,7 @@ namespace Unit.Enemy
             if(_targetPlayer == null || PlayerTile.Status != StatusFlag.Empty)
                 return Result.Failure;
             
-            Stack<Tile> path = Manager.Dungeon.FindPath(CurTile, PlayerTile);
+            Stack<Tile> path = Dungeon.FindPath(CurTile, PlayerTile);
             if (path == null)
                 return Result.Failure;
             
@@ -147,9 +151,9 @@ namespace Unit.Enemy
             }
             
             if(_nextMoveTile.Coord.X < CurTile.Coord.X)
-                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = true;
+                FlipX = true;
             else
-                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = false;
+                FlipX = false;
 
             return Result.Running;
         }
@@ -175,11 +179,11 @@ namespace Unit.Enemy
                 List<Tile> nextTileList = new List<Tile>(4);
                 for (int i = 0; i < _direction.Length; i++)
                 {
-                    Manager.Dungeon.GetTile(_nextMoveTile.Coord.X + (int)_direction[i].x, _nextMoveTile.Coord.Y + (int)_direction[i].y, out Tile nextTile);
+                    Dungeon.GetTile(_nextMoveTile.Coord.X + (int)_direction[i].x, _nextMoveTile.Coord.Y + (int)_direction[i].y, out Tile nextTile);
                     if(nextTile.Status != StatusFlag.Empty)
                         continue;
                     
-                    if(Manager.Enemies[nextTile.Coord.X][nextTile.Coord.Y] == null)
+                    if(Dungeon.Enemies[nextTile.Coord.X][nextTile.Coord.Y] == null)
                         nextTileList.Add(nextTile);
                 }
 
@@ -196,9 +200,9 @@ namespace Unit.Enemy
             }
             
             if(_nextMoveTile.Coord.X < CurTile.Coord.X)
-                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = true;
+                FlipX = true;
             else
-                Manager.EnemyObjects[this].GetComponent<SpriteRenderer>().flipX = false;
+                FlipX = false;
 
             return Result.Running;
         }

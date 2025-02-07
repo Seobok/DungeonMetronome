@@ -1,5 +1,6 @@
 using Map;
 using UnityEngine;
+using VContainer;
 
 namespace Unit
 {
@@ -9,16 +10,34 @@ namespace Unit
     /// </summary>
     public abstract class UnitBase
     {
-        //public Room CurRoom { get; set; }
-        public UnitManager Manager { get; set; }
-        public abstract Coord Position { get; set; }
+        protected UnitBase(Dungeon dungeon)
+        {
+            GameObject = new GameObject();
+            Renderer = GameObject.AddComponent<SpriteRenderer>();
+            Dungeon = dungeon;
+        }
+
+        public bool FlipX
+        {
+            get => Renderer.flipX;
+            set => Renderer.flipX = value;
+        }
+
+        public Coord Position { get; set; }
+        
+        public Transform Transform => GameObject.transform;
+        
         public Tile CurTile
         {
             get
             {
-                Manager.Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
+                Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
                 return tile;
             }
         }
+
+        public Dungeon Dungeon { get; private set; }
+        protected readonly GameObject GameObject;
+        protected readonly SpriteRenderer Renderer;
     }
 }

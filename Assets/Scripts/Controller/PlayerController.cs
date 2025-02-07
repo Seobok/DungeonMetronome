@@ -4,6 +4,7 @@ using Map;
 using Unit.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using VContainer;
 using Workflows;
 
 namespace Controller
@@ -11,33 +12,28 @@ namespace Controller
     /// <summary>
     /// Player의 Input을 처리하는 스크립트
     /// </summary>
-    public class PlayerController : MonoBehaviour
+    public class PlayerController
     {
-        public Knight Knight { get; set; }
-        public DungeonSceneWorkflow Workflow { get; set; }
-        
-        
-        private InputActions _inputActions;
-        private SpriteRenderer _spriteRenderer;
-
-        
-        private void Awake()
+        public PlayerController(Knight knight)
         {
-            //Player Input 활성화 및 바인딩
+            _knight = knight;
+            
             _inputActions = new InputActions();
             _inputActions.Enable();
             _inputActions.Player.Move.performed += MoveOnPerformed;
             
-            //Player Sprite
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-
-            if (Camera.main) Camera.main.transform.SetParent(transform);
+            if (Camera.main) Camera.main.transform.SetParent(_knight.Transform);
         }
 
-        private void OnDestroy()
+        ~PlayerController()
         {
             _inputActions.Disable();
         }
+
+
+        public Action NextTurn;
+        private readonly Knight _knight;
+        private readonly InputActions _inputActions;
 
         /// <summary>
         /// Player Move Input을 처리하는 스크립트
@@ -50,24 +46,25 @@ namespace Controller
             //입력받은 방향으로 정면 전환
             if (movement.x > 0)
             {
-                _spriteRenderer.flipX = false;
+                _knight.FlipX = false;
             }
             else if (movement.x < 0)
             {
-                _spriteRenderer.flipX = true;
+                _knight.FlipX = true;
             }
             
-            int nextXPos = Knight.Position.X + (int)movement.x;
-            int nextYPos = Knight.Position.Y + (int)movement.y;
-            Knight.Manager.Dungeon.GetTile(nextXPos, nextYPos, out Tile tile);
+            int nextXPos = _knight.Position.X + (int)movement.x;
+            int nextYPos = _knight.Position.Y + (int)movement.y;
+            
+            _knight.Dungeon.GetTile(nextXPos, nextYPos, out Tile tile);
             
             if ((tile.Status & StatusFlag.Empty) > 0)
             {
-                Knight.Position = tile.Coord;
-                transform.DOMove(new Vector2(tile.Coord.X, tile.Coord.Y), 0.2f).SetEase(Ease.InOutCubic);
+                _knight.Position = tile.Coord;
+                _knight.Transform.DOMove(new Vector2(tile.Coord.X, tile.Coord.Y), 0.2f).SetEase(Ease.InOutCubic);
             }
             
-            Workflow.NextTurn();
+            NextTurn?.Invoke();
         }
     }
 }

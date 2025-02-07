@@ -1,12 +1,16 @@
-﻿using Unit.Enemy.BT;
+﻿using Map;
+using Unit.Enemy.BT;
 using UnityEngine;
+using VContainer;
 
 namespace Unit.Enemy
 {
     public class Bat : Enemy
     {
-        public Bat()
+        public Bat(Dungeon dungeon) : base(dungeon)
         {
+            Renderer.sprite = Resources.Load<Sprite>("Sprites/Bat/Bat");
+            
             //BT
             BehaviourTree = new BehaviourTree();
             // BehaviourTree.SetRoot(new Selector())
@@ -31,7 +35,6 @@ namespace Unit.Enemy
             BehaviourTree.SetRoot(new Sequence())
                 .Execution(DetectTargetPlayer)
                 .Execution(MoveToTarget);
-
         }
 
 

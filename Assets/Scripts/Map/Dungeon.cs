@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unit.Enemy;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -24,11 +25,18 @@ namespace Map
                 Tiles[i] = new Tile[DUNGEON_Y * Room.Y_LENGTH];
             }
             
+            //Enemy 배열 초기화
+            for (int i = 0; i < DUNGEON_X * Room.X_LENGTH; i++)
+            {
+                Enemies[i] = new Enemy[DUNGEON_Y * Room.Y_LENGTH];
+            }
+            
             InitializeRooms();
         }
         
         
         public Tile[][] Tiles { get; private set; } = new Tile[DUNGEON_X * Room.X_LENGTH][];
+        public Enemy[][] Enemies { get; set; } = new Enemy[Dungeon.DUNGEON_X * Room.X_LENGTH][];
 
 
         public const int DUNGEON_X = 15;
@@ -40,7 +48,7 @@ namespace Map
         private readonly Coord[] _directions = new Coord[] { new Coord(0, 1), new Coord(1, 0), new Coord(0, -1), new Coord(0, -1) };
         private readonly Room[][] _rooms = new Room[DUNGEON_X][];
         private Dictionary<Coord, GameObject> _ = new Dictionary<Coord, GameObject>(1000);
-        private GameObject _tilePrefab;
+        private readonly GameObject _tilePrefab;
         
         
         /// <summary>

@@ -1,7 +1,4 @@
 using System;
-using Controller;
-using Unit;
-using UnityEngine;
 
 namespace Map
 {
