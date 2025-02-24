@@ -7,34 +7,35 @@ namespace Unit.Enemy
 {
     public class Bat : Enemy
     {
-        public Bat(Dungeon dungeon) : base(dungeon)
+        public Bat(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
         {
             Renderer.sprite = Resources.Load<Sprite>("Sprites/Bat/Bat");
             
             //BT
             BehaviourTree = new BehaviourTree();
-            // BehaviourTree.SetRoot(new Selector())
-            //     .Sequence()
-            //         .Selector()
-            //             .Execution(HasTargetPlayer)
-            //             .Execution(DetectTargetPlayer)
-            //         .CloseComposite()
-            //         .Selector()
-            //             .Sequence()
-            //                 .Execution(CheckTooFar)
-            //                 .Execution(RemoveTarget)
-            //             .CloseComposite()
-            //             .Sequence()
-            //                 .Execution(CanAttack)
-            //                 .Execution(Attack)
-            //             .CloseComposite()
-            //             .Execution(MoveToTarget)
-            //         .CloseComposite()
-            //     .CloseComposite()
-            //     .Execution(MoveRandomly);
-            BehaviourTree.SetRoot(new Sequence())
-                .Execution(DetectTargetPlayer)
-                .Execution(MoveToTarget);
+            BehaviourTree.SetRoot(new Selector())
+                .Sequence()
+                    .Selector()
+                        .Execution(HasTargetPlayer)
+                        .Execution(DetectTargetPlayer)
+                    .CloseComposite()
+                    .Selector()
+                        .Sequence()
+                            .Execution(CheckTooFar)
+                            .Execution(RemoveTarget)
+                        .CloseComposite()
+                        .Sequence()
+                            .Execution(CanAttack)
+                            .Execution(Attack)
+                        .CloseComposite()
+                        .Execution(MoveToTarget)
+                    .CloseComposite()
+                .CloseComposite()
+                .Execution(MoveRandomly);
+            
+            // BehaviourTree.SetRoot(new Sequence())
+            //     .Execution(DetectTargetPlayer)
+            //     .Execution(MoveToTarget);
         }
 
 

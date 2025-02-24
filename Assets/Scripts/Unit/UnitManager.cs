@@ -20,8 +20,8 @@ namespace Unit
         /// </summary>
         public Knight SpawnKnight(int x, int y)
         {
-            Knight = new Knight(_dungeon);
-            Knight.Transform.position = new Vector3(x, y, 0);
+            Knight = new Knight(_dungeon, this);
+            Knight.Transform.position = new Vector3(x, y, -1);
             
             return Knight;
         }
@@ -32,7 +32,7 @@ namespace Unit
             
             if (type == typeof(Bat))
             {
-                enemy = new Bat(_dungeon)
+                enemy = new Bat(_dungeon, this)
                 {
                     Position = new Coord(x, y),
                 };
@@ -43,7 +43,7 @@ namespace Unit
                 throw new Exception($"[{nameof(SpawnEnemy)}] Invalid type");
             }
 
-            enemy.Transform.position = new Vector3(x, y, 0);
+            enemy.Transform.position = new Vector3(x, y, -1);
             _dungeon.Enemies[x][y] = enemy;
             return enemy;
         }

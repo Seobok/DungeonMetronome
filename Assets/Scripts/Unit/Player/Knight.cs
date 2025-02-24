@@ -7,7 +7,7 @@ namespace Unit.Player
 {
     public class Knight : UnitBase
     {
-        public Knight(Dungeon dungeon) : base(dungeon)
+        public Knight(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
         {
             GameObject.name = "Knight";
             PlayerController = new PlayerController(this);

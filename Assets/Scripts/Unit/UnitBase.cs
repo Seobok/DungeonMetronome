@@ -10,11 +10,12 @@ namespace Unit
     /// </summary>
     public abstract class UnitBase
     {
-        protected UnitBase(Dungeon dungeon)
+        protected UnitBase(Dungeon dungeon, UnitManager unitManager)
         {
             GameObject = new GameObject();
             Renderer = GameObject.AddComponent<SpriteRenderer>();
             Dungeon = dungeon;
+            UnitManager = unitManager;
         }
 
         public bool FlipX
@@ -37,6 +38,7 @@ namespace Unit
         }
 
         public Dungeon Dungeon { get; private set; }
+        protected UnitManager UnitManager { get; private set; }
         protected readonly GameObject GameObject;
         protected readonly SpriteRenderer Renderer;
     }

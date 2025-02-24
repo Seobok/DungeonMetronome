@@ -12,7 +12,7 @@ namespace Unit.Enemy
 {
     public abstract class Enemy : UnitBase
     {
-        public Enemy(Dungeon dungeon) : base(dungeon)
+        public Enemy(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
         {
             
         }
@@ -42,7 +42,7 @@ namespace Unit.Enemy
                 Transform.DOMoveY(Transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
             // 플레이어가 있는 위치인 경우
-            else if (nextMoveTile.Coord == _unitManager.Knight.Position)
+            else if (nextMoveTile.Coord == UnitManager.Knight.Position)
             {
                 // 1데미지
 
@@ -62,7 +62,7 @@ namespace Unit.Enemy
                 
                 Position = nextMoveTile.Coord;
                 
-                _unitManager.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = this;
+                Dungeon.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = this;
                 Dungeon.GetTile(Position.X, Position.Y , out tile);
                 tile.Status &= ~StatusFlag.Empty;
                 tile.Status |= StatusFlag.Unit;
@@ -88,9 +88,9 @@ namespace Unit.Enemy
             List<Tile> detectTiles = Dungeon.GetTilesInDistance(CurTile, DetectRange);
             foreach (Tile tile in detectTiles)
             {
-                if (_unitManager.Knight.Position == tile.Coord)
+                if (UnitManager.Knight.Position == tile.Coord)
                 {
-                    _targetPlayer = _unitManager.Knight;
+                    _targetPlayer = UnitManager.Knight;
                     return Result.Success;
                 }
             }
@@ -99,7 +99,7 @@ namespace Unit.Enemy
 
         protected Result CheckTooFar()
         {
-            int distance = PathFind.GetDistance(CurTile, PlayerTile);
+            int distance = PathFind.GetDistance(CurTile, _targetPlayer.CurTile);
             
             return distance > DetectRange ? Result.Success : Result.Failure;
         }
@@ -129,15 +129,14 @@ namespace Unit.Enemy
             if (_nextMoveTile.Status == StatusFlag.Empty)
             {
                 //실제로 움직이는 부분
-                Debug.Log($"[{CurTile.Coord.X},{CurTile.Coord.Y}] => [{_nextMoveTile.Coord.X},{_nextMoveTile.Coord.Y}]");
                 Move(_nextMoveTile);
                 return Result.Success;
             }
             
-            if(_targetPlayer == null || PlayerTile.Status != StatusFlag.Empty)
+            if(_targetPlayer == null || _targetPlayer.CurTile.Status != StatusFlag.Empty)
                 return Result.Failure;
             
-            Stack<Tile> path = Dungeon.FindPath(CurTile, PlayerTile);
+            Stack<Tile> path = Dungeon.FindPath(CurTile, _targetPlayer.CurTile);
             if (path == null)
                 return Result.Failure;
             
@@ -166,7 +165,6 @@ namespace Unit.Enemy
         {
             if (_nextMoveTile.Status == StatusFlag.Empty)
             {
-                Debug.Log($"[{CurTile.Coord.X},{CurTile.Coord.Y}] => [{_nextMoveTile.Coord.X},{_nextMoveTile.Coord.Y}]");
                 Move(_nextMoveTile);
                 return Result.Success;
             }
