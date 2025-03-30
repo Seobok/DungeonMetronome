@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Controller;
 using DG.Tweening;
@@ -7,9 +8,19 @@ using Unit.Player;
 using UnityEngine;
 using Utility;
 using VContainer;
+using Random = UnityEngine.Random;
 
 namespace Unit.Enemy
 {
+    public struct EnemyData
+    {
+        public UInt16 Id;
+        public string Name;
+        public int Hp;
+        public int DetectRange;
+        public int MoveSpeed;
+    }
+    
     public abstract class Enemy : UnitBase
     {
         public Enemy(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
@@ -31,6 +42,9 @@ namespace Unit.Enemy
         protected BehaviourTree BehaviourTree;
 
 
+        /// <summary>
+        /// 턴이 종료될 때 마다 실행될 함수
+        /// </summary>
         public abstract void Act();
 
         private void Move(Tile nextMoveTile)
@@ -55,17 +69,17 @@ namespace Unit.Enemy
             else
             {
                 // 실제 타일 이동 X
-                Dungeon.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = null;
                 Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
                 tile.Status |= StatusFlag.Empty;
                 tile.Status &= ~StatusFlag.Unit;
+                tile.Unit = null;
                 
                 Position = nextMoveTile.Coord;
                 
-                Dungeon.Enemies[CurTile.Coord.X + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][CurTile.Coord.Y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2] = this;
                 Dungeon.GetTile(Position.X, Position.Y , out tile);
                 tile.Status &= ~StatusFlag.Empty;
                 tile.Status |= StatusFlag.Unit;
+                tile.Unit = this;
             
                 // 실제 타일 이동
                 Transform.DOMoveX(CurTile.Coord.X, MOVE_TIME).SetEase(Ease.InOutCubic);
@@ -73,7 +87,21 @@ namespace Unit.Enemy
                     Transform.DOMoveY(CurTile.Coord.Y, MOVE_TIME / 2));
             }
 
-            _nextMoveTile = default;
+            ClearNextMoveTile();
+        }
+
+        public void TakeDamage(int damage)
+        {
+            Hp -= damage;
+            if (Hp <= 0)
+            {
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            
         }
 
         //TODO :: 추후 개별 클래스로 제작
@@ -111,19 +139,6 @@ namespace Unit.Enemy
             return Result.Success;
         }
 
-        protected Result CanAttack()
-        {
-            //공격 범위 안에 있으면 Success
-            //아니면 Failure
-
-            return Result.Failure;
-        }
-
-        protected Result Attack()
-        {
-            return Result.Success;
-        }
-
         protected Result MoveToTarget()
         {
             if (_nextMoveTile.Status == StatusFlag.Empty)
@@ -141,18 +156,15 @@ namespace Unit.Enemy
                 return Result.Failure;
             
             int moveCnt = MoveSpeed;
-            _nextMoveTile = CurTile;
+            Tile nextMoveTile = CurTile;
             while (moveCnt > 0)
             {
                 if (path.Count == 0) break;
-                _nextMoveTile = path.Pop();
+                nextMoveTile = path.Pop();
                 moveCnt--;
             }
             
-            if(_nextMoveTile.Coord.X < CurTile.Coord.X)
-                FlipX = true;
-            else
-                FlipX = false;
+            SetNextMoveTile(nextMoveTile);
 
             return Result.Running;
         }
@@ -169,7 +181,7 @@ namespace Unit.Enemy
                 return Result.Success;
             }
             
-            _nextMoveTile = CurTile;
+            Tile nextMoveTile = CurTile;
             int moveCnt = MoveSpeed;
 
             while (moveCnt > 0)
@@ -177,17 +189,17 @@ namespace Unit.Enemy
                 List<Tile> nextTileList = new List<Tile>(4);
                 for (int i = 0; i < _direction.Length; i++)
                 {
-                    Dungeon.GetTile(_nextMoveTile.Coord.X + (int)_direction[i].x, _nextMoveTile.Coord.Y + (int)_direction[i].y, out Tile nextTile);
+                    Dungeon.GetTile(nextMoveTile.Coord.X + (int)_direction[i].x, nextMoveTile.Coord.Y + (int)_direction[i].y, out Tile nextTile);
                     if(nextTile.Status != StatusFlag.Empty)
                         continue;
                     
-                    if(Dungeon.Enemies[nextTile.Coord.X][nextTile.Coord.Y] == null)
+                    if(nextMoveTile.Unit == null)
                         nextTileList.Add(nextTile);
                 }
 
                 if (nextTileList.Count > 0)
                 {
-                    _nextMoveTile = nextTileList[Random.Range(0, nextTileList.Count)];
+                    nextMoveTile = nextTileList[Random.Range(0, nextTileList.Count)];
                     moveCnt--;
                 }
                 else
@@ -197,14 +209,32 @@ namespace Unit.Enemy
                 }
             }
             
-            if(_nextMoveTile.Coord.X < CurTile.Coord.X)
-                FlipX = true;
-            else
-                FlipX = false;
+            SetNextMoveTile(nextMoveTile);
 
             return Result.Running;
         }
         #endregion
-       
+
+        private void SetNextMoveTile(Tile nextMoveTile)
+        {
+            _nextMoveTile = nextMoveTile;
+            
+            //이동할 타일은 초록색
+            Dungeon.TileObjects[nextMoveTile.Coord].GetComponent<SpriteRenderer>().color = Color.green;
+            
+            //이동할 방향을 바라봄
+            if(nextMoveTile.Coord.X < CurTile.Coord.X)
+                FlipX = true;
+            else
+                FlipX = false;
+        }
+
+        private void ClearNextMoveTile()
+        {
+            //이동한 타일에 대한 색 초기화
+            Dungeon.TileObjects[_nextMoveTile.Coord].GetComponent<SpriteRenderer>().color = Color.white;
+            
+            _nextMoveTile = default;
+        }
     }
 }

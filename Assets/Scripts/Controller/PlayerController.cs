@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Map;
+using Unit.Enemy;
 using Unit.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -61,7 +62,18 @@ namespace Controller
             if ((tile.Status & StatusFlag.Empty) > 0)
             {
                 _knight.Position = tile.Coord;
-                _knight.Transform.DOMove(new Vector2(tile.Coord.X, tile.Coord.Y), 0.2f).SetEase(Ease.InOutCubic);
+                _knight.Transform.DOMove(new Vector3(tile.Coord.X, tile.Coord.Y, _knight.Transform.position.z), 0.2f)
+                    .SetEase(Ease.InOutCubic);
+            }
+            else if ((tile.Status & StatusFlag.Unit) > 0)
+            {
+                //해당 유닛이 아이템이면
+                
+                //해당 유닛이 Enemy이면
+                if (tile.Unit is Enemy enemy)
+                {
+                    enemy.TakeDamage(1);
+                }
             }
             
             NextTurn?.Invoke();

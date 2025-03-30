@@ -1,6 +1,7 @@
 ﻿using Map;
 using Unit.Enemy.BT;
 using UnityEngine;
+using Utility;
 using VContainer;
 
 namespace Unit.Enemy
@@ -24,24 +25,20 @@ namespace Unit.Enemy
                             .Execution(CheckTooFar)
                             .Execution(RemoveTarget)
                         .CloseComposite()
-                        .Sequence()
-                            .Execution(CanAttack)
-                            .Execution(Attack)
-                        .CloseComposite()
                         .Execution(MoveToTarget)
                     .CloseComposite()
                 .CloseComposite()
                 .Execution(MoveRandomly);
-            
-            // BehaviourTree.SetRoot(new Sequence())
-            //     .Execution(DetectTargetPlayer)
-            //     .Execution(MoveToTarget);
+
+            Hp = CsvReader.EnemyData[nameof(Bat)].Hp;
+            DetectRange = CsvReader.EnemyData[nameof(Bat)].DetectRange;
+            MoveSpeed = CsvReader.EnemyData[nameof(Bat)].MoveSpeed;
         }
 
 
-        public override int Hp { get; set; } = 1;
-        public override int DetectRange { get; set; } = 5;
-        public override int MoveSpeed { get; set; } = 2;
+        public override int Hp { get; set; }
+        public override int DetectRange { get; set; }
+        public override int MoveSpeed { get; set; }
 
         
         public override void Act()

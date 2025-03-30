@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Map;
 using Unit.Enemy;
 using Unit.Player;
@@ -9,9 +10,9 @@ namespace Unit
 {
     public class UnitManager
     {
-        public Knight Knight { get; set; }
-        
-        
+        public Knight Knight { get; private set; }
+
+
         [Inject] private Dungeon _dungeon;
         
         
@@ -36,7 +37,6 @@ namespace Unit
                 {
                     Position = new Coord(x, y),
                 };
-                
             }
             else
             {
@@ -44,7 +44,7 @@ namespace Unit
             }
 
             enemy.Transform.position = new Vector3(x, y, -1);
-            _dungeon.Enemies[x][y] = enemy;
+            _dungeon.Tiles[x][y].Unit = enemy;
             return enemy;
         }
     }

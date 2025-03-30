@@ -25,18 +25,12 @@ namespace Map
                 Tiles[i] = new Tile[DUNGEON_Y * Room.Y_LENGTH];
             }
             
-            //Enemy 배열 초기화
-            for (int i = 0; i < DUNGEON_X * Room.X_LENGTH; i++)
-            {
-                Enemies[i] = new Enemy[DUNGEON_Y * Room.Y_LENGTH];
-            }
-            
             InitializeRooms();
         }
         
         
         public Tile[][] Tiles { get; private set; } = new Tile[DUNGEON_X * Room.X_LENGTH][];
-        public Enemy[][] Enemies { get; set; } = new Enemy[Dungeon.DUNGEON_X * Room.X_LENGTH][];
+        public Dictionary<Coord, GameObject> TileObjects { get; set; } = new Dictionary<Coord, GameObject>(1000);
 
 
         public const int DUNGEON_X = 15;
@@ -47,7 +41,6 @@ namespace Map
         private List<Room> _roomPool;
         private readonly Coord[] _directions = new Coord[] { new Coord(0, 1), new Coord(1, 0), new Coord(0, -1), new Coord(0, -1) };
         private readonly Room[][] _rooms = new Room[DUNGEON_X][];
-        private Dictionary<Coord, GameObject> _ = new Dictionary<Coord, GameObject>(1000);
         private readonly GameObject _tilePrefab;
         
         
@@ -130,6 +123,7 @@ namespace Map
             tileGo.transform.position = new Vector3(tile.Coord.X, tile.Coord.Y, 0);
 
             Tiles[tile.Coord.X + DUNGEON_X * Room.X_LENGTH / 2][tile.Coord.Y + DUNGEON_Y * Room.Y_LENGTH / 2] = tile;
+            TileObjects.Add(tile.Coord, tileGo);
         }
 
         public void GetTile(int x, int y, out Tile tile)

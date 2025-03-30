@@ -1,4 +1,5 @@
 using System;
+using Unit;
 
 namespace Map
 {
@@ -15,6 +16,7 @@ namespace Map
     {
         public Coord Coord;
         public StatusFlag Status;
+        public UnitBase Unit;
 
         
         public static bool operator==(Tile a, Tile b) =>
