@@ -69,17 +69,17 @@ namespace Unit.Enemy
             else
             {
                 // 실제 타일 이동 X
-                Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
-                tile.Status |= StatusFlag.Empty;
-                tile.Status &= ~StatusFlag.Unit;
+                Tile tile = Dungeon.GetTile(Position.X, Position.Y);
+                tile.Status = StatusFlag.Empty;
                 tile.Unit = null;
+                Dungeon.SetTile(Position.X, Position.Y, tile);
                 
                 Position = nextMoveTile.Coord;
                 
-                Dungeon.GetTile(Position.X, Position.Y , out tile);
-                tile.Status &= ~StatusFlag.Empty;
-                tile.Status |= StatusFlag.Unit;
+                tile = Dungeon.GetTile(Position.X, Position.Y);
+                tile.Status = StatusFlag.Unit;
                 tile.Unit = this;
+                Dungeon.SetTile(Position.X, Position.Y, tile);
             
                 // 실제 타일 이동
                 Transform.DOMoveX(CurTile.Coord.X, MOVE_TIME).SetEase(Ease.InOutCubic);
@@ -189,7 +189,7 @@ namespace Unit.Enemy
                 List<Tile> nextTileList = new List<Tile>(4);
                 for (int i = 0; i < _direction.Length; i++)
                 {
-                    Dungeon.GetTile(nextMoveTile.Coord.X + (int)_direction[i].x, nextMoveTile.Coord.Y + (int)_direction[i].y, out Tile nextTile);
+                    Tile nextTile = Dungeon.GetTile(nextMoveTile.Coord.X + (int)_direction[i].x, nextMoveTile.Coord.Y + (int)_direction[i].y);
                     if(nextTile.Status != StatusFlag.Empty)
                         continue;
                     

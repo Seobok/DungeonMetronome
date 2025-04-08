@@ -57,7 +57,7 @@ namespace Controller
             int nextXPos = _knight.Position.X + (int)movement.x;
             int nextYPos = _knight.Position.Y + (int)movement.y;
             
-            _knight.Dungeon.GetTile(nextXPos, nextYPos, out Tile tile);
+            Tile tile = _knight.Dungeon.GetTile(nextXPos, nextYPos);
             
             if ((tile.Status & StatusFlag.Empty) > 0)
             {

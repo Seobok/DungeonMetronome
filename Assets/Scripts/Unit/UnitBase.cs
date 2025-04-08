@@ -28,14 +28,7 @@ namespace Unit
         
         public Transform Transform => GameObject.transform;
         
-        public Tile CurTile
-        {
-            get
-            {
-                Dungeon.GetTile(Position.X, Position.Y , out Tile tile);
-                return tile;
-            }
-        }
+        public Tile CurTile => Dungeon.GetTile(Position.X, Position.Y);
 
         public Dungeon Dungeon { get; private set; }
         protected UnitManager UnitManager { get; private set; }

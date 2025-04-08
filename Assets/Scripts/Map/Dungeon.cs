@@ -126,17 +126,22 @@ namespace Map
             TileObjects.Add(tile.Coord, tileGo);
         }
 
-        public void GetTile(int x, int y, out Tile tile)
+        public Tile GetTile(int x, int y)
         {
-            tile = default;
-
             x += DUNGEON_X * Room.X_LENGTH / 2;
             y += DUNGEON_Y * Room.Y_LENGTH / 2;
 
             if (x < 0 || y < 0 || x >= DUNGEON_X * Room.X_LENGTH || y >= DUNGEON_Y * Room.Y_LENGTH)
-                return;
+                return default;
 
-            tile = Tiles[x][y];
+            Tile tile = Tiles[x][y];
+
+            return tile;
+        }
+
+        public void SetTile(int x, int y, Tile tile)
+        {
+            Tiles[x + DUNGEON_X * Room.X_LENGTH / 2][y + DUNGEON_Y * Room.Y_LENGTH / 2] = tile;
         }
     }
 }

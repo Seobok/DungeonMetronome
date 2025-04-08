@@ -79,7 +79,7 @@ namespace Utility
                     // 선정된 타일에 대해 4방향의 타일을 검사
                     for(int i=0;i<4;i++)
                     {
-                        dungeon.GetTile(currentTile.Coord.X + (int)Dir[i].x, currentTile.Coord.Y + (int)Dir[i].y, out Tile neighbor);
+                        Tile neighbor = dungeon.GetTile(currentTile.Coord.X + (int)Dir[i].x, currentTile.Coord.Y + (int)Dir[i].y);
                         // 이웃에 대한 검사
                         // 1. 타일이 존재하지 않거나, 타일위에 다른 대상이 있어 지나갈수 없는 경우 갈 수 없음
                         // 2. 이미 한번 지난 타일은 갈 수 없음
@@ -137,7 +137,7 @@ namespace Utility
                 
                 for (int i = 0; i < 4; i++)
                 {
-                    dungeon.GetTile(curTile.Coord.X + (int)Dir[i].x, curTile.Coord.Y + (int)Dir[i].y, out Tile nextTile);
+                    Tile nextTile = dungeon.GetTile(curTile.Coord.X + (int)Dir[i].x, curTile.Coord.Y + (int)Dir[i].y);
                     if (tiles.Contains(nextTile)) continue;
                     if (nextTile.Status != StatusFlag.Empty) continue;
                     if (GetDistance(currentTile,nextTile) > distance) continue;
