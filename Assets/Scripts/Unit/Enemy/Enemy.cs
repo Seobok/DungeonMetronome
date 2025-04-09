@@ -47,8 +47,9 @@ namespace Unit.Enemy
         /// </summary>
         public abstract void Act();
 
-        private void Move(Tile nextMoveTile)
+        private void Move(Tile cachedTile)
         {
+            Tile nextMoveTile = Dungeon.GetTile(cachedTile.Coord.X, cachedTile.Coord.Y);
             // 갈 수 없으면 (플레이어가 있는지는 확인 X)
             if (nextMoveTile.Status != StatusFlag.Empty)
             {
@@ -101,7 +102,19 @@ namespace Unit.Enemy
 
         private void Die()
         {
+            ClearNextMoveTile();
             
+            //현재 좌표 기반으로 타일 정보 초기화
+            Tile tile = Dungeon.GetTile(Position.X, Position.Y); // 현재 적이 위치한 타일 가져오기
+
+            tile.Status = StatusFlag.Empty; // 타일 상태를 빈 상태로 초기화
+            tile.Unit = null;               // 유닛 정보 제거
+
+            Dungeon.SetTile(Position.X, Position.Y, tile); // 초기화된 타일 정보 반영
+            
+            UnitManager.RemoveEnemy(this); // 적 관리 리스트에서 제거
+            // 적 객체 소멸 등 다른 작업
+            GameObject.Destroy(GameObject);
         }
 
         //TODO :: 추후 개별 클래스로 제작
