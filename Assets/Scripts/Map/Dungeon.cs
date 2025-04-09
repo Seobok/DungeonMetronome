@@ -116,6 +116,26 @@ namespace Map
         {
             //Rooms 초기화
         }
+        
+        /// <summary>
+        /// 활성화된 방 중 랜덤으로 선택
+        /// </summary>
+        /// <returns>랜덤 Room 객체</returns>
+        private Room GetRandomActiveRoom()
+        {
+            // 활성화된 방들만 필터링
+            List<Room> activeRooms = new List<Room>();
+            foreach (var roomRow in _rooms)
+            {
+                foreach (var room in roomRow)
+                {
+                    if (room != null) activeRooms.Add(room); // 비어 있지 않은 방만 추가
+                }
+            }
+
+            if (activeRooms.Count == 0) return null; // 활성화된 방이 없으면 null 반환
+            return activeRooms[Random.Range(0, activeRooms.Count)]; // 랜덤 방 반환
+        }
 
         public void RegisterTile(Tile tile)
         {
@@ -142,6 +162,39 @@ namespace Map
         public void SetTile(int x, int y, Tile tile)
         {
             Tiles[x + DUNGEON_X * Room.X_LENGTH / 2][y + DUNGEON_Y * Room.Y_LENGTH / 2] = tile;
+        }
+        
+        /// <summary>
+        /// 활성화된 모든 방에서 랜덤한 빈 타일 위치를 반환
+        /// </summary>
+        /// <param name="maxAttempts">최대 시도 횟수</param>
+        /// <returns>랜덤한 빈 타일의 좌표 (없으면 Coord.Zero 반환)</returns>
+        public Coord GetRandomEmptyTileFromRooms(int maxAttempts)
+        {
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                // 활성화된 방 중 랜덤 선택
+                Room randomRoom = GetRandomActiveRoom();
+                if (randomRoom == null) break; // 활성화된 방이 없으면 중단
+
+                // 방의 타일 중 랜덤 좌표 선택
+                int randomX = Random.Range(-(Room.X_LENGTH / 2), Room.X_LENGTH / 2 + 1);
+                int randomY = Random.Range(-(Room.Y_LENGTH / 2), Room.Y_LENGTH / 2 + 1);
+
+                // 중심좌표 + 랜덤 오프셋으로 완전한 타일 좌표 계산
+                int tileX = randomRoom.CenterPos.X + randomX;
+                int tileY = randomRoom.CenterPos.Y + randomY;
+
+                // 해당 타일이 비어 있는지 확인
+                Tile tile = GetTile(tileX, tileY);
+                if (tile.Status.HasFlag(StatusFlag.Empty))
+                {
+                    return new Coord(tileX, tileY);
+                }
+            }
+
+            // 빈 타일을 찾지 못한 경우
+            return Coord.Zero;
         }
     }
 }

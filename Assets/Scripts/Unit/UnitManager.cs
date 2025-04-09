@@ -14,7 +14,7 @@ namespace Unit
 
 
         [Inject] private Dungeon _dungeon;
-        // Dictionary<Coord, UnitBase>
+        private List<Enemy.Enemy> _enemies = new List<Enemy.Enemy>(); // 소환된 모든 Enemy를 관리
         
         
         /// <summary>
@@ -28,6 +28,9 @@ namespace Unit
             return Knight;
         }
 
+        /// <summary>
+        /// (X, Y) 위치에 type Enemy를 스폰하는 함수
+        /// </summary>
         public Enemy.Enemy SpawnEnemy(Type type, int x, int y)
         {
             Enemy.Enemy enemy;
@@ -45,8 +48,24 @@ namespace Unit
             }
 
             enemy.Transform.position = new Vector3(x, y, -1);
-            _dungeon.Tiles[x][y].Unit = enemy;
+            _dungeon.Tiles[x + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2].Unit = enemy;
+            
+            _enemies.Add(enemy);
+            
             return enemy;
+        }
+
+        public void RemoveEnemy(Enemy.Enemy enemy)
+        {
+            _enemies.Remove(enemy);
+        }
+        
+        public void ActOnAllEnemies()
+        {
+            foreach (Enemy.Enemy enemy in _enemies)
+            {
+                enemy.Act();
+            }
         }
     }
 }

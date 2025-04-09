@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Controller;
 using Map;
 using Unit;
@@ -14,8 +15,6 @@ namespace Workflows
     {
         private Dungeon _dungeon;
         private UnitManager _unitManager;
-
-        private Bat _bat;
 
 
         [Inject]
@@ -32,12 +31,25 @@ namespace Workflows
             Knight knight = _unitManager.SpawnKnight(0, 0);
             knight.PlayerController.NextTurn += NextTurn;
 
-            _bat = (Bat)_unitManager.SpawnEnemy(typeof(Bat), 3, 3);
+            // 적 15마리 스폰
+            for (int i = 0; i < 15; i++)
+            {
+                Coord spawnPosition = _dungeon.GetRandomEmptyTileFromRooms(100);
+                if (spawnPosition != Coord.Zero) // 적절한 위치를 찾은 경우
+                {
+                    _unitManager.SpawnEnemy(typeof(Bat), spawnPosition.X, spawnPosition.Y);
+                }
+                else
+                {
+                    Debug.LogWarning("더 이상 적을 스폰할 수 있는 빈 공간이 없습니다.");
+                    break;
+                }
+            }
         }
 
         public void NextTurn()
         {
-            _bat.Act();
+            _unitManager.ActOnAllEnemies();
         }
     }
 }

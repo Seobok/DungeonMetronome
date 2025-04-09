@@ -21,6 +21,8 @@ namespace Map
         
         public static Coord operator+(Coord a, Coord b) =>
             new Coord(a.X + b.X, a.Y + b.Y);
+        
+        public static Coord Zero => new Coord(0, 0);
 
         public bool Equals(Coord other)
         {
