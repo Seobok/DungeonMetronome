@@ -42,6 +42,13 @@ namespace Unit
                     Position = new Coord(x, y),
                 };
             }
+            else if (type == typeof(Slime))
+            {
+                enemy = new Slime(_dungeon, this)
+                {
+                    Position = new Coord(x, y),
+                };
+            }
             else
             {
                 throw new Exception($"[{nameof(SpawnEnemy)}] Invalid type");

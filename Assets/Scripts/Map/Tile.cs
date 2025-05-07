@@ -1,5 +1,6 @@
 using System;
 using Unit;
+using Unit.Player;
 
 namespace Map
 {
@@ -17,6 +18,7 @@ namespace Map
         public Coord Coord;
         public StatusFlag Status;
         public UnitBase Unit;
+        public Knight Player;
 
         
         public static bool operator==(Tile a, Tile b) =>

@@ -78,5 +78,16 @@ namespace Unit.Enemy.BT
 
             return this;
         }
+
+        public BehaviourTree Execution(Node node)
+        {
+            if (_current is Composite composite)
+            {
+                Execution execution = new Execution(node);
+                composite.Attach(execution);
+            }
+
+            return this;
+        }
     }
 }

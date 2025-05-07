@@ -11,39 +11,29 @@ namespace Unit.Enemy
         public Bat(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
         {
             Renderer.sprite = Resources.Load<Sprite>("Sprites/Bat/Bat");
+            Animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Sprites/Bat/Animator/Bat");
             
             //BT
             BehaviourTree = new BehaviourTree();
             BehaviourTree.SetRoot(new Selector())
                 .Sequence()
                     .Selector()
-                        .Execution(HasTargetPlayer)
-                        .Execution(DetectTargetPlayer)
+                        .Execution(new HasTargetPlayerAction(BlackBoard))
+                        .Execution(new DetectTargetPlayerAction(dungeon, unitManager, BlackBoard, this))
                     .CloseComposite()
                     .Selector()
                         .Sequence()
-                            .Execution(CheckTooFar)
-                            .Execution(RemoveTarget)
+                            .Execution(new CheckTooFarAction(BlackBoard, this))
+                            .Execution(new RemoveTargetAction(BlackBoard))
                         .CloseComposite()
-                        .Execution(MoveToTarget)
+                        .Execution(new MoveToTargetAction(Dungeon, BlackBoard, this))
                     .CloseComposite()
                 .CloseComposite()
-                .Execution(MoveRandomly);
+                .Execution(new MoveRandomlyAction(Dungeon, BlackBoard, this));
 
             Hp = CsvReader.EnemyData[nameof(Bat)].Hp;
             DetectRange = CsvReader.EnemyData[nameof(Bat)].DetectRange;
             MoveSpeed = CsvReader.EnemyData[nameof(Bat)].MoveSpeed;
-        }
-
-
-        public override int Hp { get; set; }
-        public override int DetectRange { get; set; }
-        public override int MoveSpeed { get; set; }
-
-        
-        public override void Act()
-        {
-            BehaviourTree.Invoke();
         }
     }
 }

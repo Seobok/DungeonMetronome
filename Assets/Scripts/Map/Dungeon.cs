@@ -196,5 +196,16 @@ namespace Map
             // 빈 타일을 찾지 못한 경우
             return Coord.Zero;
         }
+        
+        public Coord[] Offsets2Coords(Coord[] offsets, Tile curTile)
+        {
+            Coord[] coords = new Coord[offsets.Length];
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                coords[i] = new Coord(curTile.Coord.X + offsets[i].X, curTile.Coord.Y + offsets[i].Y);
+            }
+
+            return coords;
+        }
     }
 }

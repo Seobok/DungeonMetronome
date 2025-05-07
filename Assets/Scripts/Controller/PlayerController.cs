@@ -61,9 +61,17 @@ namespace Controller
             
             if ((tile.Status & StatusFlag.Empty) > 0)
             {
+                Tile curTile = _knight.Dungeon.GetTile(_knight.Position.X, _knight.Position.Y);
+                curTile.Player = null;
+                _knight.Dungeon.SetTile(_knight.Position.X, _knight.Position.Y, curTile);
+                
                 _knight.Position = tile.Coord;
                 _knight.Transform.DOMove(new Vector3(tile.Coord.X, tile.Coord.Y, _knight.Transform.position.z), 0.2f)
                     .SetEase(Ease.InOutCubic);
+                
+                curTile = _knight.Dungeon.GetTile(_knight.Position.X, _knight.Position.Y);
+                curTile.Player = _knight;
+                _knight.Dungeon.SetTile(_knight.Position.X, _knight.Position.Y, curTile);
             }
             else if ((tile.Status & StatusFlag.Unit) > 0)
             {

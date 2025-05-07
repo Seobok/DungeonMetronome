@@ -8,6 +8,7 @@ using Unit.Enemy;
 using Unit.Player;
 using UnityEngine;
 using VContainer;
+using Random = UnityEngine.Random;
 
 namespace Workflows
 {
@@ -35,9 +36,20 @@ namespace Workflows
             for (int i = 0; i < 15; i++)
             {
                 Coord spawnPosition = _dungeon.GetRandomEmptyTileFromRooms(100);
+                
                 if (spawnPosition != Coord.Zero) // 적절한 위치를 찾은 경우
                 {
-                    _unitManager.SpawnEnemy(typeof(Bat), spawnPosition.X, spawnPosition.Y);
+                    int random = Random.Range(0, 2);
+                    switch (random)
+                    {
+                        case 0:
+                            _unitManager.SpawnEnemy(typeof(Bat), spawnPosition.X, spawnPosition.Y);
+                            break;
+                        case 1:
+                            _unitManager.SpawnEnemy(typeof(Slime), spawnPosition.X, spawnPosition.Y);
+                            break;
+                    }
+                    
                 }
                 else
                 {

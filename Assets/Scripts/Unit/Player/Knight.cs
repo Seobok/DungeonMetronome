@@ -14,10 +14,18 @@ namespace Unit.Player
             Renderer.sprite = Resources.Load<Sprite>("Sprites/Knight/knight");
         }
         
+        private int Hp { get; set; }
         
         public PlayerController PlayerController { get; set; }
         
-        
-        
+        public void TakeDamage(int damage)
+        {
+            Debug.Log("TakeDamage");
+            Hp -= damage;
+            if (Hp <= 0)
+            {
+                //Die();
+            }
+        }
     }
 }

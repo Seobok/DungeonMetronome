@@ -14,6 +14,7 @@ namespace Unit
         {
             GameObject = new GameObject();
             Renderer = GameObject.AddComponent<SpriteRenderer>();
+            Animator = GameObject.AddComponent<Animator>(); // Animator 추가
             Dungeon = dungeon;
             UnitManager = unitManager;
         }
@@ -34,5 +35,6 @@ namespace Unit
         protected UnitManager UnitManager { get; private set; }
         protected readonly GameObject GameObject;
         protected readonly SpriteRenderer Renderer;
+        protected readonly Animator Animator;
     }
 }

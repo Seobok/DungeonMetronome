@@ -8,6 +8,11 @@ namespace Unit.Enemy.BT
         {
             _execute = execute;
         }
+
+        public Execution(Node node)
+        {
+            _execute = node.Invoke;
+        }
         
         
         private Func<Result> _execute;
