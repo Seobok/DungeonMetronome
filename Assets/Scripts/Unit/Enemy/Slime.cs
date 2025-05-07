@@ -1,4 +1,5 @@
-﻿using Map;
+﻿using Effect;
+using Map;
 using Unit.Enemy.BT;
 using UnityEngine;
 using Utility;
@@ -7,7 +8,7 @@ namespace Unit.Enemy
 {
     public class Slime : Enemy
     {
-        public Slime(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
+        public Slime(Dungeon dungeon, UnitManager unitManager, EffectPool effectPool) : base(dungeon, unitManager,effectPool)
         {
             Renderer.sprite = Resources.Load<Sprite>("Sprites/Slime/Slime");
             Animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Sprites/Slime/Animator/Slime");

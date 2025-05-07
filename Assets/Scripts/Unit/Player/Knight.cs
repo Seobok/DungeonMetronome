@@ -1,4 +1,5 @@
 using Controller;
+using Effect;
 using Map;
 using UnityEngine;
 using VContainer;
@@ -7,7 +8,7 @@ namespace Unit.Player
 {
     public class Knight : UnitBase
     {
-        public Knight(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
+        public Knight(Dungeon dungeon, UnitManager unitManager, EffectPool effectPool) : base(dungeon, unitManager, effectPool)
         {
             GameObject.name = "Knight";
             PlayerController = new PlayerController(this);
@@ -22,6 +23,8 @@ namespace Unit.Player
         {
             Debug.Log("TakeDamage");
             Hp -= damage;
+            EffectPool.GetEffect(EffectType.Hit).Play(Transform.position);
+            
             if (Hp <= 0)
             {
                 //Die();

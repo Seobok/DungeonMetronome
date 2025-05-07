@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Effect;
 using Map;
 using Unit;
 using UnityEngine;
@@ -8,12 +10,17 @@ namespace Workflows
 {
     public class DungeonSceneLifetimeScope : LifetimeScope
     {
+        [SerializeField] private List<EffectEntry> _effectEntries;
+        
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterEntryPoint<DungeonSceneWorkflow>(Lifetime.Scoped);
-
-            builder.Register<Dungeon>(Lifetime.Scoped);
-            builder.Register<UnitManager>(Lifetime.Scoped);
+            builder.RegisterInstance(_effectEntries);
+            
+            builder.Register<EffectPool>(Lifetime.Singleton);
+            builder.Register<Dungeon>(Lifetime.Singleton);
+            builder.Register<UnitManager>(Lifetime.Singleton);
+            
+            builder.RegisterEntryPoint<DungeonSceneWorkflow>();
         }
     }
 }

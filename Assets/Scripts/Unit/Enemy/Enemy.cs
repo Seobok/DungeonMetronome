@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Effect;
 using Map;
 using Unit.Enemy.BT;
 using Unit.Player;
@@ -21,7 +22,7 @@ namespace Unit.Enemy
     
     public abstract class Enemy : UnitBase
     {
-        public Enemy(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
+        public Enemy(Dungeon dungeon, UnitManager unitManager, EffectPool effectPool) : base(dungeon, unitManager, effectPool)
         {
             BlackBoard = new BlackBoard();
             
@@ -33,17 +34,10 @@ namespace Unit.Enemy
         public int MoveSpeed { get; set; }
 
 
-        //BehaviourTree용 변수
         private readonly Vector2[] _direction = new Vector2[4] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
         private const float MOVE_TIME = 0.2f;
-        //private Coord _nextMoveCoord;
-        //private bool _isReadyMove = false;
-        //private Coord[] _nextAttackCoords;
-        //private bool _isReadyAttack = false;
-        //private Knight _targetPlayer;
         protected BehaviourTree BehaviourTree;
         protected BlackBoard BlackBoard;
-        //protected readonly List<Coord[]> Patterns = new List<Coord[]>();   //0 => 오른쪽, 1 => 아래, 2 => 왼쪽, 3 => 위
 
 
         /// <summary>
@@ -120,6 +114,8 @@ namespace Unit.Enemy
         public void TakeDamage(int damage)
         {
             Hp -= damage;
+            EffectPool.GetEffect(EffectType.Hit).Play(Transform.position);
+            
             if (Hp <= 0)
             {
                 Die();

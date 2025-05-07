@@ -1,3 +1,4 @@
+using Effect;
 using Map;
 using UnityEngine;
 using VContainer;
@@ -10,13 +11,14 @@ namespace Unit
     /// </summary>
     public abstract class UnitBase
     {
-        protected UnitBase(Dungeon dungeon, UnitManager unitManager)
+        protected UnitBase(Dungeon dungeon, UnitManager unitManager, EffectPool effectPool)
         {
             GameObject = new GameObject();
             Renderer = GameObject.AddComponent<SpriteRenderer>();
             Animator = GameObject.AddComponent<Animator>(); // Animator 추가
             Dungeon = dungeon;
             UnitManager = unitManager;
+            EffectPool = effectPool;
         }
 
         public bool FlipX
@@ -24,15 +26,15 @@ namespace Unit
             get => Renderer.flipX;
             set => Renderer.flipX = value;
         }
-
         public Coord Position { get; set; }
-        
         public Transform Transform => GameObject.transform;
-        
         public Tile CurTile => Dungeon.GetTile(Position.X, Position.Y);
 
         public Dungeon Dungeon { get; private set; }
         protected UnitManager UnitManager { get; private set; }
+        protected EffectPool EffectPool { get; private set; }
+        
+        
         protected readonly GameObject GameObject;
         protected readonly SpriteRenderer Renderer;
         protected readonly Animator Animator;

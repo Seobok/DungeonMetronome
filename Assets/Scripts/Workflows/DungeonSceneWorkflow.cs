@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Controller;
+using Effect;
 using Map;
 using Unit;
 using Unit.Enemy;
@@ -16,17 +17,20 @@ namespace Workflows
     {
         private Dungeon _dungeon;
         private UnitManager _unitManager;
+        private EffectPool _effectPool;
 
 
         [Inject]
-        public void Construct(Dungeon dungeon, UnitManager unitManager)
+        public void Construct(Dungeon dungeon, UnitManager unitManager, EffectPool effectPool)
         {
+            _effectPool = effectPool;
             _dungeon = dungeon;
             _unitManager = unitManager;
         }
         
         private void Start()
         {
+            _effectPool.Init();
             _dungeon.ActivateDungeon(7);
 
             Knight knight = _unitManager.SpawnKnight(0, 0);

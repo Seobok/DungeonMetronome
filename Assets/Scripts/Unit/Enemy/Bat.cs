@@ -1,4 +1,5 @@
-﻿using Map;
+﻿using Effect;
+using Map;
 using Unit.Enemy.BT;
 using UnityEngine;
 using Utility;
@@ -8,7 +9,7 @@ namespace Unit.Enemy
 {
     public class Bat : Enemy
     {
-        public Bat(Dungeon dungeon, UnitManager unitManager) : base(dungeon, unitManager)
+        public Bat(Dungeon dungeon, UnitManager unitManager, EffectPool effectPool) : base(dungeon, unitManager,effectPool)
         {
             Renderer.sprite = Resources.Load<Sprite>("Sprites/Bat/Bat");
             Animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Sprites/Bat/Animator/Bat");

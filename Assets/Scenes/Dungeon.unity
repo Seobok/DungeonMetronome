@@ -181,6 +181,10 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1061920549}
+  _effectEntries:
+  - _type: 0
+    _prefab: {fileID: 4294607663902086706, guid: adaa9f6f2fbcce449b7439ad63c503c4, type: 3}
+    _preloadCount: 5
 --- !u!1 &1699509693
 GameObject:
   m_ObjectHideFlags: 0

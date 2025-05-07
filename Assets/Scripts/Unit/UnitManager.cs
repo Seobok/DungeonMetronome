@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Effect;
 using Map;
 using Unit.Enemy;
 using Unit.Player;
@@ -13,16 +14,24 @@ namespace Unit
         public Knight Knight { get; private set; }
 
 
-        [Inject] private Dungeon _dungeon;
-        private List<Enemy.Enemy> _enemies = new List<Enemy.Enemy>(); // 소환된 모든 Enemy를 관리
+        private readonly Dungeon _dungeon;
+        private readonly EffectPool _effectPool;
         
+        private List<Enemy.Enemy> _enemies = new List<Enemy.Enemy>(); // 소환된 모든 Enemy를 관리
+
+
+        public UnitManager(Dungeon dungeon, EffectPool effectPool)
+        {
+            _dungeon = dungeon;
+            _effectPool = effectPool;
+        }
         
         /// <summary>
         /// 나이트 캐릭터를 해당 위치에 소환
         /// </summary>
         public Knight SpawnKnight(int x, int y)
         {
-            Knight = new Knight(_dungeon, this);
+            Knight = new Knight(_dungeon, this, _effectPool);
             Knight.Transform.position = new Vector3(x, y, -1);
             
             return Knight;
@@ -37,14 +46,14 @@ namespace Unit
             
             if (type == typeof(Bat))
             {
-                enemy = new Bat(_dungeon, this)
+                enemy = new Bat(_dungeon, this, _effectPool)
                 {
                     Position = new Coord(x, y),
                 };
             }
             else if (type == typeof(Slime))
             {
-                enemy = new Slime(_dungeon, this)
+                enemy = new Slime(_dungeon, this, _effectPool)
                 {
                     Position = new Coord(x, y),
                 };
