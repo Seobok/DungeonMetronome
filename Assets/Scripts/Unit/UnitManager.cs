@@ -9,6 +9,12 @@ using VContainer;
 
 namespace Unit
 {
+    public enum UnitSpawnType
+    {
+        Bat,
+        Slime
+    }
+    
     public class UnitManager
     {
         public Knight Knight { get; private set; }
@@ -40,29 +46,59 @@ namespace Unit
         /// <summary>
         /// (X, Y) 위치에 type Enemy를 스폰하는 함수
         /// </summary>
-        public Enemy.Enemy SpawnEnemy(Type type, int x, int y)
+        // public Enemy.Enemy SpawnEnemy(Type type, int x, int y)
+        // {
+        //     Enemy.Enemy enemy;
+        //     
+        //     if (type == typeof(Bat))
+        //     {
+        //         enemy = new Bat(_dungeon, this, _effectPool)
+        //         {
+        //             Position = new Coord(x, y),
+        //         };
+        //     }
+        //     else if (type == typeof(Slime))
+        //     {
+        //         enemy = new Slime(_dungeon, this, _effectPool)
+        //         {
+        //             Position = new Coord(x, y),
+        //         };
+        //     }
+        //     else
+        //     {
+        //         throw new Exception($"[{nameof(SpawnEnemy)}] Invalid type");
+        //     }
+        //
+        //     enemy.Transform.position = new Vector3(x, y, -1);
+        //     _dungeon.Tiles[x + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2].Unit = enemy;
+        //     
+        //     _enemies.Add(enemy);
+        //     
+        //     return enemy;
+        // }
+
+        public Enemy.Enemy SpawnEnemy(UnitSpawnType unitType, int x, int y)
         {
             Enemy.Enemy enemy;
             
-            if (type == typeof(Bat))
+            switch (unitType)
             {
-                enemy = new Bat(_dungeon, this, _effectPool)
-                {
-                    Position = new Coord(x, y),
-                };
+                case UnitSpawnType.Bat:
+                    enemy = new Bat(_dungeon, this, _effectPool)
+                    {
+                        Position = new Coord(x, y),
+                    };
+                    break;
+                case UnitSpawnType.Slime:
+                    enemy = new Slime(_dungeon, this, _effectPool)
+                    {
+                        Position = new Coord(x, y),
+                    };
+                    break;
+                default:
+                    throw new Exception($"[{nameof(SpawnEnemy)}] Invalid unit spawn type");
             }
-            else if (type == typeof(Slime))
-            {
-                enemy = new Slime(_dungeon, this, _effectPool)
-                {
-                    Position = new Coord(x, y),
-                };
-            }
-            else
-            {
-                throw new Exception($"[{nameof(SpawnEnemy)}] Invalid type");
-            }
-
+            
             enemy.Transform.position = new Vector3(x, y, -1);
             _dungeon.Tiles[x + Dungeon.DUNGEON_X * Room.X_LENGTH / 2][y + Dungeon.DUNGEON_Y * Room.Y_LENGTH / 2].Unit = enemy;
             

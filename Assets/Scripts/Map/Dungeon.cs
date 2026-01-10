@@ -84,7 +84,6 @@ namespace Map
                     ActivateRandomDungeon(roomCount);
                     break;
                 case DungeonGenerationMode.TutorialPreset:
-                    GenerateTutorialLayout();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown dungeon generation mode.");
@@ -130,29 +129,46 @@ namespace Map
             }
         }
 
-        private void GenerateTutorialLayout()
+        public void GenerateTutorialLayout(TutorialDungeonLayout layout)
         {
-            Coord startRoomCoord = new Coord(DUNGEON_X / 2, DUNGEON_Y / 2);
-            List<Coord> roomCoords = new List<Coord>
+            if (layout == null)
             {
-                startRoomCoord,
-                new Coord(startRoomCoord.X + 1, startRoomCoord.Y),
-                new Coord(startRoomCoord.X + 2, startRoomCoord.Y)
-            };
+                throw new ArgumentNullException(nameof(layout));
+            }
 
-            for (int i = 0; i < roomCoords.Count; i++)
+            if (layout.rooms == null || layout.rooms.Count == 0)
             {
-                Coord roomCoord = roomCoords[i];
+                Debug.LogWarning("Tutorial layout has no rooms to generate.");
+                return;
+            }
+
+            Coord anchorCoord = layout.rooms[0].ToCoord();
+            for (int i = 0; i < layout.rooms.Count; i++)
+            {
+                Coord roomCoord = layout.rooms[i].ToCoord();
+                if (roomCoord.X < 0 || roomCoord.Y < 0 || roomCoord.X >= DUNGEON_X || roomCoord.Y >= DUNGEON_Y)
+                {
+                    Debug.LogWarning($"Tutorial room coord out of bounds: ({roomCoord.X}, {roomCoord.Y})");
+                    continue;
+                }
+
+                if (i >= _roomPool.Count)
+                {
+                    Debug.LogWarning("Tutorial layout exceeds pooled room count.");
+                    break;
+                }
+
                 Room room = _roomPool[i];
                 room.XInDungeon = roomCoord.X;
                 room.YInDungeon = roomCoord.Y;
                 _rooms[roomCoord.X][roomCoord.Y] = room;
 
-                int offsetX = roomCoord.X - startRoomCoord.X;
-                int offsetY = roomCoord.Y - startRoomCoord.Y;
+                int offsetX = roomCoord.X - anchorCoord.X;
+                int offsetY = roomCoord.Y - anchorCoord.Y;
                 room.CenterPos = new Coord(offsetX * Room.X_LENGTH, offsetY * Room.Y_LENGTH);
                 room.SpawnTiles();
             }
+
         }
 
         /// <summary>

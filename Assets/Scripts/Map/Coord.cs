@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Map
 {
+    [Serializable]
     public struct Coord : IEquatable<Coord>
     {
         public Coord(int x, int y)
