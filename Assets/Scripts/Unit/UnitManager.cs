@@ -11,6 +11,12 @@ namespace Unit
 {
     public class UnitManager
     {
+        public enum UnitSpawnType
+        {
+            Bat,
+            Slime
+        }
+
         public Knight Knight { get; private set; }
 
 
@@ -69,6 +75,19 @@ namespace Unit
             _enemies.Add(enemy);
             
             return enemy;
+        }
+
+        public Enemy.Enemy SpawnEnemy(UnitSpawnType unitType, int x, int y)
+        {
+            switch (unitType)
+            {
+                case UnitSpawnType.Bat:
+                    return SpawnEnemy(typeof(Bat), x, y);
+                case UnitSpawnType.Slime:
+                    return SpawnEnemy(typeof(Slime), x, y);
+                default:
+                    throw new Exception($"[{nameof(SpawnEnemy)}] Invalid unit spawn type");
+            }
         }
 
         public void RemoveEnemy(Enemy.Enemy enemy)

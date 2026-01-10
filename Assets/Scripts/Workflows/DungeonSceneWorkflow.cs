@@ -65,9 +65,8 @@ namespace Workflows
             {
                 foreach (UnitSpawn spawn in activeLayout.unitSpawns)
                 {
-                    Type enemyType = ResolveEnemyType(spawn.unitType);
                     Coord spawnCoord = spawn.ToCoord();
-                    _unitManager.SpawnEnemy(enemyType, spawnCoord.X, spawnCoord.Y);
+                    _unitManager.SpawnEnemy(spawn.unitType, spawnCoord.X, spawnCoord.Y);
                 }
             }
             else
@@ -105,17 +104,5 @@ namespace Workflows
             _unitManager.ActOnAllEnemies();
         }
 
-        private static Type ResolveEnemyType(UnitSpawnType unitSpawnType)
-        {
-            switch (unitSpawnType)
-            {
-                case UnitSpawnType.Bat:
-                    return typeof(Bat);
-                case UnitSpawnType.Slime:
-                    return typeof(Slime);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(unitSpawnType), unitSpawnType, "Unknown enemy type");
-            }
-        }
     }
 }

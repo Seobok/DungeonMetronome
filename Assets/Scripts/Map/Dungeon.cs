@@ -169,23 +169,6 @@ namespace Map
                 room.SpawnTiles();
             }
 
-            if (layout.blockedTiles == null)
-            {
-                return;
-            }
-
-            foreach (TileOverride tileOverride in layout.blockedTiles)
-            {
-                Coord tileCoord = tileOverride.ToCoord();
-                if (!TileObjects.ContainsKey(tileCoord))
-                {
-                    continue;
-                }
-
-                Tile tile = GetTile(tileCoord.X, tileCoord.Y);
-                tile.Status = tileOverride.status;
-                SetTile(tileCoord.X, tileCoord.Y, tile);
-            }
         }
 
         /// <summary>

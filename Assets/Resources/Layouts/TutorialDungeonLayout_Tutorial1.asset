@@ -19,7 +19,6 @@ MonoBehaviour:
     y: 7
   - x: 9
     y: 7
-  blockedTiles: []
   unitSpawns:
   - x: 2
     y: 0
