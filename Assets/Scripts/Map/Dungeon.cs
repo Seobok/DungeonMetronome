@@ -6,6 +6,12 @@ using Random = UnityEngine.Random;
 
 namespace Map
 {
+    public enum DungeonGenerationMode
+    {
+        RandomExpand,
+        TutorialPreset
+    }
+
     public class Dungeon
     {
         public Dungeon()
@@ -70,7 +76,22 @@ namespace Map
         /// </summary>
         /// <param name="roomCount"> 처리해야하는 방 갯수 </param>
         /// <exception cref="ArgumentException"> 정상적이지 않은 방 갯수가 입력됨 </exception>
-        public void ActivateDungeon(int roomCount)
+        public void ActivateDungeon(int roomCount, DungeonGenerationMode mode)
+        {
+            switch (mode)
+            {
+                case DungeonGenerationMode.RandomExpand:
+                    ActivateRandomDungeon(roomCount);
+                    break;
+                case DungeonGenerationMode.TutorialPreset:
+                    GenerateTutorialLayout();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown dungeon generation mode.");
+            }
+        }
+
+        private void ActivateRandomDungeon(int roomCount)
         {
             if (roomCount > MAX_ROOM_COUNT || roomCount < 1)
                 throw new ArgumentException();
@@ -106,6 +127,31 @@ namespace Map
                         setCount++;
                     }
                 }
+            }
+        }
+
+        private void GenerateTutorialLayout()
+        {
+            Coord startRoomCoord = new Coord(DUNGEON_X / 2, DUNGEON_Y / 2);
+            List<Coord> roomCoords = new List<Coord>
+            {
+                startRoomCoord,
+                new Coord(startRoomCoord.X + 1, startRoomCoord.Y),
+                new Coord(startRoomCoord.X + 2, startRoomCoord.Y)
+            };
+
+            for (int i = 0; i < roomCoords.Count; i++)
+            {
+                Coord roomCoord = roomCoords[i];
+                Room room = _roomPool[i];
+                room.XInDungeon = roomCoord.X;
+                room.YInDungeon = roomCoord.Y;
+                _rooms[roomCoord.X][roomCoord.Y] = room;
+
+                int offsetX = roomCoord.X - startRoomCoord.X;
+                int offsetY = roomCoord.Y - startRoomCoord.Y;
+                room.CenterPos = new Coord(offsetX * Room.X_LENGTH, offsetY * Room.Y_LENGTH);
+                room.SpawnTiles();
             }
         }
 
