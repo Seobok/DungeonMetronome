@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unit;
 using UnityEngine;
 
 namespace Map
@@ -26,7 +27,7 @@ namespace Map
     {
         public int x;
         public int y;
-        public UnitManager.UnitSpawnType unitType;
+        public UnitSpawnType unitType;
 
         public Coord ToCoord() => new Coord(x, y);
     }

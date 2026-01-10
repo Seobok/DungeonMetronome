@@ -82,10 +82,10 @@ namespace Workflows
                         switch (random)
                         {
                             case 0:
-                                _unitManager.SpawnEnemy(typeof(Bat), spawnPosition.X, spawnPosition.Y);
+                                _unitManager.SpawnEnemy(UnitSpawnType.Bat, spawnPosition.X, spawnPosition.Y);
                                 break;
                             case 1:
-                                _unitManager.SpawnEnemy(typeof(Slime), spawnPosition.X, spawnPosition.Y);
+                                _unitManager.SpawnEnemy(UnitSpawnType.Slime, spawnPosition.X, spawnPosition.Y);
                                 break;
                         }
                         
