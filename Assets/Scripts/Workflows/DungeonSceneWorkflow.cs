@@ -20,6 +20,8 @@ namespace Workflows
         private EffectPool _effectPool;
 
         [SerializeField] private bool isTutorial;
+        [SerializeField] private TutorialDungeonLayout tutorialLayout;
+        [SerializeField] private string tutorialLayoutResourcePath = "Layouts/TutorialDungeonLayout_Tutorial1";
 
 
         [Inject]
@@ -38,13 +40,35 @@ namespace Workflows
                 : DungeonGenerationMode.RandomExpand;
             _dungeon.ActivateDungeon(7, generationMode);
 
-            Knight knight = _unitManager.SpawnKnight(0, 0);
-            knight.PlayerController.NextTurn += NextTurn;
-
+            TutorialDungeonLayout activeLayout = null;
             if (isTutorial)
             {
-                _unitManager.SpawnEnemy(typeof(Slime), 2, 0);
-                _unitManager.SpawnEnemy(typeof(Bat), 5, 0);
+                activeLayout = tutorialLayout != null
+                    ? tutorialLayout
+                    : Resources.Load<TutorialDungeonLayout>(tutorialLayoutResourcePath);
+
+                if (activeLayout == null)
+                {
+                    Debug.LogError("Tutorial layout asset is missing. Falling back to default spawn.");
+                }
+                else
+                {
+                    _dungeon.GenerateTutorialLayout(activeLayout);
+                }
+            }
+
+            Coord playerSpawn = activeLayout != null ? activeLayout.playerSpawn : Coord.Zero;
+            Knight knight = _unitManager.SpawnKnight(playerSpawn.X, playerSpawn.Y);
+            knight.PlayerController.NextTurn += NextTurn;
+
+            if (isTutorial && activeLayout != null)
+            {
+                foreach (UnitSpawn spawn in activeLayout.unitSpawns)
+                {
+                    Type enemyType = ResolveEnemyType(spawn.unitType);
+                    Coord spawnCoord = spawn.ToCoord();
+                    _unitManager.SpawnEnemy(enemyType, spawnCoord.X, spawnCoord.Y);
+                }
             }
             else
             {
@@ -79,6 +103,19 @@ namespace Workflows
         public void NextTurn()
         {
             _unitManager.ActOnAllEnemies();
+        }
+
+        private static Type ResolveEnemyType(UnitSpawnType unitSpawnType)
+        {
+            switch (unitSpawnType)
+            {
+                case UnitSpawnType.Bat:
+                    return typeof(Bat);
+                case UnitSpawnType.Slime:
+                    return typeof(Slime);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(unitSpawnType), unitSpawnType, "Unknown enemy type");
+            }
         }
     }
 }
