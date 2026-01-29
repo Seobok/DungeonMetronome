@@ -1,11 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Controller;
 using Effect;
 using Map;
+using Map.Generation;
 using Unit;
-using Unit.Enemy;
 using Unit.Player;
 using UnityEngine;
 using VContainer;
@@ -18,6 +15,9 @@ namespace Workflows
         private Dungeon _dungeon;
         private UnitManager _unitManager;
         private EffectPool _effectPool;
+
+        [SerializeField] private bool usePresetGenerator = true;
+        [SerializeField] private DungeonPresetGenerationConfig presetConfig = new DungeonPresetGenerationConfig();
 
         [SerializeField] private bool isTutorial;
         [SerializeField] private TutorialDungeonLayout tutorialLayout;
@@ -35,6 +35,24 @@ namespace Workflows
         private void Start()
         {
             _effectPool.Init();
+            if (usePresetGenerator && presetConfig.NormalPresets.Count > 0 && presetConfig.ExitPresets.Count > 0)
+            {
+                DungeonPresetGenerator generator = new DungeonPresetGenerator(_dungeon);
+                DungeonGenerationResult result = generator.Generate(presetConfig);
+                Knight knight = _unitManager.SpawnKnight(result.StartPosition.X, result.StartPosition.Y);
+                knight.PlayerController.NextTurn += NextTurn;
+
+                foreach (DungeonPresetUnitSpawn spawn in result.UnitSpawns)
+                {
+                    if (TryGetSpawnType(spawn.UnitType, out UnitSpawnType spawnType))
+                    {
+                        _unitManager.SpawnEnemy(spawnType, spawn.Position.X, spawn.Position.Y);
+                    }
+                }
+
+                return;
+            }
+
             DungeonGenerationMode generationMode = isTutorial
                 ? DungeonGenerationMode.TutorialPreset
                 : DungeonGenerationMode.RandomExpand;
@@ -58,8 +76,8 @@ namespace Workflows
             }
 
             Coord playerSpawn = activeLayout != null ? activeLayout.playerSpawn : Coord.Zero;
-            Knight knight = _unitManager.SpawnKnight(playerSpawn.X, playerSpawn.Y);
-            knight.PlayerController.NextTurn += NextTurn;
+            Knight fallbackKnight = _unitManager.SpawnKnight(playerSpawn.X, playerSpawn.Y);
+            fallbackKnight.PlayerController.NextTurn += NextTurn;
 
             if (isTutorial && activeLayout != null)
             {
@@ -102,6 +120,22 @@ namespace Workflows
         public void NextTurn()
         {
             _unitManager.ActOnAllEnemies();
+        }
+
+        private bool TryGetSpawnType(RoomPresetUnitType unitType, out UnitSpawnType spawnType)
+        {
+            switch (unitType)
+            {
+                case RoomPresetUnitType.Bat:
+                    spawnType = UnitSpawnType.Bat;
+                    return true;
+                case RoomPresetUnitType.Slime:
+                    spawnType = UnitSpawnType.Slime;
+                    return true;
+                default:
+                    spawnType = default;
+                    return false;
+            }
         }
 
     }
