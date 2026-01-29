@@ -53,14 +53,8 @@ namespace Unit.Enemy
             BlackBoard.IsReadyToMove = false;
             
             Tile nextMoveTile = Dungeon.GetTile(nextMoveCoord.X, nextMoveCoord.Y);
-            // 갈 수 없으면 (플레이어가 있는지는 확인 X)
-            if (nextMoveTile.Status != StatusFlag.Empty)
-            {
-                //제자리 점프
-                Transform.DOMoveY(Transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
-            }
             // 플레이어가 있는 위치인 경우
-            else if (nextMoveTile.Coord == UnitManager.Knight.Position)
+            if (nextMoveTile.Player != null)
             {
                 // 1데미지
                 nextMoveTile.Player.TakeDamage(1);
@@ -70,19 +64,23 @@ namespace Unit.Enemy
                     (nextMoveTile.Coord.Y + Transform.position.y) / 2,
                     Transform.position.z), MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
             }
+            // 갈 수 없으면 (플레이어가 있는지는 확인 X)
+            else if (!TileRules.CanEnemyMoveTo(nextMoveTile))
+            {
+                //제자리 점프
+                Transform.DOMoveY(Transform.position.y + 0.5f, MOVE_TIME / 2).SetLoops(2, LoopType.Yoyo);
+            }
             // 갈 수 있는 경우
             else
             {
                 // 실제 타일 이동 X
                 Tile tile = Dungeon.GetTile(Position.X, Position.Y);
-                tile.Status = StatusFlag.Empty;
                 tile.Unit = null;
                 Dungeon.SetTile(Position.X, Position.Y, tile);
                 
                 Position = nextMoveTile.Coord;
                 
                 tile = Dungeon.GetTile(Position.X, Position.Y);
-                tile.Status = StatusFlag.Unit;
                 tile.Unit = this;
                 Dungeon.SetTile(Position.X, Position.Y, tile);
             
@@ -130,7 +128,6 @@ namespace Unit.Enemy
             //현재 좌표 기반으로 타일 정보 초기화
             Tile tile = Dungeon.GetTile(Position.X, Position.Y); // 현재 적이 위치한 타일 가져오기
 
-            tile.Status = StatusFlag.Empty; // 타일 상태를 빈 상태로 초기화
             tile.Unit = null;               // 유닛 정보 제거
 
             Dungeon.SetTile(Position.X, Position.Y, tile); // 초기화된 타일 정보 반영

@@ -37,7 +37,7 @@ namespace Utility
             bool pathSuccess = false;
             Stack<Tile> path= new Stack<Tile>();
 
-            if(end.Status == StatusFlag.Empty)
+            if (!TileRules.IsBlockedForEnemy(end) || end.Player != null)
             {
                 List<Tile> openSet = new List<Tile>();
                 Dictionary<Tile,PathFindCost> tileCosts = new Dictionary<Tile,PathFindCost>();
@@ -84,7 +84,7 @@ namespace Utility
                         // 1. 타일이 존재하지 않거나, 타일위에 다른 대상이 있어 지나갈수 없는 경우 갈 수 없음
                         // 2. 이미 한번 지난 타일은 갈 수 없음
                         // 3. 한번 거리를 측정한 적이 있는데 해당 측정한 경우가 더 짧은 경우
-                        if (neighbor.Status != StatusFlag.Empty) continue;
+                        if (neighbor != end && TileRules.IsBlockedForEnemy(neighbor)) continue;
                         if (closedSet.Contains(neighbor)) continue;
                         if (openSet.Contains(neighbor) && tileCosts[currentTile].GCost + GetDistance(currentTile, neighbor) >= tileCosts[neighbor].GCost) continue;
 
@@ -139,7 +139,7 @@ namespace Utility
                 {
                     Tile nextTile = dungeon.GetTile(curTile.Coord.X + (int)Dir[i].x, curTile.Coord.Y + (int)Dir[i].y);
                     if (tiles.Contains(nextTile)) continue;
-                    if (nextTile.Status != StatusFlag.Empty) continue;
+                    if (TileRules.IsBlockedForEnemy(nextTile) && nextTile.Player == null) continue;
                     if (GetDistance(currentTile,nextTile) > distance) continue;
                     
                     tiles.Add(nextTile);

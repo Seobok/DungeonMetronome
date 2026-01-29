@@ -296,7 +296,7 @@ namespace Map
 
                 // 해당 타일이 비어 있는지 확인
                 Tile tile = GetTile(tileX, tileY);
-                if (tile.Status.HasFlag(StatusFlag.Empty))
+                if (TileRules.IsSpawnable(tile))
                 {
                     return new Coord(tileX, tileY);
                 }
