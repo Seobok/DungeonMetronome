@@ -208,6 +208,41 @@ namespace Map
             TileObjects.Add(tile.Coord, tileGo);
         }
 
+        public void ClearTiles()
+        {
+            foreach (var tileObject in TileObjects.Values)
+            {
+                if (tileObject != null)
+                {
+                    GameObject.Destroy(tileObject);
+                }
+            }
+
+            TileObjects.Clear();
+            for (int i = 0; i < DUNGEON_X * Room.X_LENGTH; i++)
+            {
+                Tiles[i] = new Tile[DUNGEON_Y * Room.Y_LENGTH];
+            }
+        }
+
+        public bool TryGetTile(int x, int y, out Tile tile)
+        {
+            Coord coord = new Coord(x, y);
+            if (!HasTile(coord))
+            {
+                tile = default;
+                return false;
+            }
+
+            tile = GetTile(x, y);
+            return true;
+        }
+
+        public bool HasTile(Coord coord)
+        {
+            return TileObjects.ContainsKey(coord);
+        }
+
         public Tile GetTile(int x, int y)
         {
             x += DUNGEON_X * Room.X_LENGTH / 2;
@@ -224,6 +259,18 @@ namespace Map
         public void SetTile(int x, int y, Tile tile)
         {
             Tiles[x + DUNGEON_X * Room.X_LENGTH / 2][y + DUNGEON_Y * Room.Y_LENGTH / 2] = tile;
+        }
+
+        public void SetOrRegisterTile(Tile tile)
+        {
+            if (HasTile(tile.Coord))
+            {
+                SetTile(tile.Coord.X, tile.Coord.Y, tile);
+            }
+            else
+            {
+                RegisterTile(tile);
+            }
         }
         
         /// <summary>
@@ -249,7 +296,7 @@ namespace Map
 
                 // 해당 타일이 비어 있는지 확인
                 Tile tile = GetTile(tileX, tileY);
-                if (tile.Status.HasFlag(StatusFlag.Empty))
+                if (TileRules.IsSpawnable(tile))
                 {
                     return new Coord(tileX, tileY);
                 }

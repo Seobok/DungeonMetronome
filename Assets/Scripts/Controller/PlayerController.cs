@@ -59,7 +59,7 @@ namespace Controller
             
             Tile tile = _knight.Dungeon.GetTile(nextXPos, nextYPos);
             
-            if ((tile.Status & StatusFlag.Empty) > 0)
+            if (!TileRules.IsBlockedForPlayer(tile))
             {
                 Tile curTile = _knight.Dungeon.GetTile(_knight.Position.X, _knight.Position.Y);
                 curTile.Player = null;
@@ -73,15 +73,12 @@ namespace Controller
                 curTile.Player = _knight;
                 _knight.Dungeon.SetTile(_knight.Position.X, _knight.Position.Y, curTile);
             }
-            else if ((tile.Status & StatusFlag.Unit) > 0)
+            else if (TileRules.TryGetEnemy(tile, out Enemy enemy))
             {
                 //해당 유닛이 아이템이면
                 
                 //해당 유닛이 Enemy이면
-                if (tile.Unit is Enemy enemy)
-                {
-                    enemy.TakeDamage(1);
-                }
+                enemy.TakeDamage(1);
             }
             
             NextTurn?.Invoke();

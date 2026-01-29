@@ -25,7 +25,8 @@ namespace Unit.Enemy.BT
                 return Result.Success;
             }
 
-            if (_blackBoard.TargetPlayer == null || _blackBoard.TargetPlayer.CurTile.Status != StatusFlag.Empty)
+            if (_blackBoard.TargetPlayer == null ||
+                (TileRules.IsBlockedForEnemy(_blackBoard.TargetPlayer.CurTile) && _blackBoard.TargetPlayer.CurTile.Player == null))
                 return Result.Failure;
 
             Stack<Tile> path = _dungeon.FindPath(_enemy.CurTile, _blackBoard.TargetPlayer.CurTile);

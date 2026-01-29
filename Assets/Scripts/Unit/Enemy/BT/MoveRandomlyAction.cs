@@ -40,7 +40,7 @@ namespace Unit.Enemy.BT
                     );
 
                     // 이동 가능한 타일만 추가
-                    if (candidateTile.Status == StatusFlag.Empty)
+                    if (TileRules.CanEnemyMoveTo(candidateTile))
                     {
                         nextTileList.Add(candidateTile);
                     }
